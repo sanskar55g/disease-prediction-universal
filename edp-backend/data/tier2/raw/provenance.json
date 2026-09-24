@@ -1,0 +1,38 @@
+{
+  "release_evidences.json": {
+    "source": "DDXPlus (figshare article 22687585)",
+    "url": "https://ndownloader.figshare.com/files/40278013",
+    "sha256": "281c78b044ae60514e28ecc9052d08a8225dd3e2db3f00f8788b99c47b05e0c0",
+    "bytes": 120263,
+    "rows": null,
+    "fetched_at": "2026-09-24T03:38:50+00:00",
+    "note": ""
+  },
+  "release_test_patients.parquet": {
+    "source": "DDXPlus (figshare article 22687585)",
+    "url": "https://ndownloader.figshare.com/files/40278016",
+    "sha256": "17f0d1ca23a174e83dd3801704ada923b4def008051d99cb4a2432561387c907",
+    "bytes": 30862244,
+    "rows": 134529,
+    "fetched_at": "2026-09-24T03:38:54+00:00",
+    "note": ""
+  },
+  "release_validate_patients.parquet": {
+    "source": "DDXPlus (figshare article 22687585)",
+    "url": "https://ndownloader.figshare.com/files/40278022",
+    "sha256": "a0d8b26bd8e78be830dffb5ac97b3277984048193588d1052e4d4fadd20227b5",
+    "bytes": 30394267,
+    "rows": 132448,
+    "fetched_at": "2026-09-24T03:38:59+00:00",
+    "note": ""
+  },
+  "release_conditions.json": {
+    "source": "DDXPlus (figshare article 22687585)",
+    "url": "https://ndownloader.figshare.com/files/62561569",
+    "sha256": "56edf4682d8e86a4209fc3a33932e50ce03d1cc1fecc326c26d5ef8fa5c24890",
+    "bytes": 20889,
+    "rows": null,
+    "fetched_at": "2026-09-24T03:39:00+00:00",
+    "note": ""
+  }
+}

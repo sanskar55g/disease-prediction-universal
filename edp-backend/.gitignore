@@ -1,0 +1,16 @@
+# data: raw downloads and processed tables are never committed; provenance files are
+data/*/raw/*
+data/*/processed/*
+!data/*/raw/.gitkeep
+!data/*/processed/.gitkeep
+!data/*/*/provenance.json
+# trained artifacts are rebuilt with the scripts; benchmark reports are committed
+models/*/*.joblib
+models/*/*.pkl
+models/*/*.parquet
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.env
+data/*/download.log

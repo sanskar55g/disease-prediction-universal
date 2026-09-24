@@ -1,0 +1,92 @@
+{
+  "heart_disease.parquet": {
+    "source": "UCI ML Repository #45: Heart Disease",
+    "url": "https://archive.ics.uci.edu/dataset/45",
+    "sha256": "fb684b8955d08a0a127c363c399e62348deeb10ec2aa7d6c711728d0d71e659d",
+    "bytes": 11750,
+    "rows": 303,
+    "fetched_at": "2026-09-24T03:33:59+00:00",
+    "note": "target=num binarised as: num > 0 (any vessel narrowing)"
+  },
+  "heart_failure_death.parquet": {
+    "source": "UCI ML Repository #519: Heart Failure Clinical Records",
+    "url": "https://archive.ics.uci.edu/dataset/519",
+    "sha256": "19c35c936cc968e0ada587fbae28574e91baacd2c99ea8ec82dde2506f324189",
+    "bytes": 13335,
+    "rows": 299,
+    "fetched_at": "2026-09-24T03:33:59+00:00",
+    "note": "target=death_event binarised as: death_event == 1"
+  },
+  "diabetes_brfss.parquet": {
+    "source": "UCI ML Repository #891: CDC Diabetes Health Indicators",
+    "url": "https://archive.ics.uci.edu/dataset/891",
+    "sha256": "34013c143f9c735fc9940c47277b2ffcd4dd6ef6f285feaab91bd789eacb0036",
+    "bytes": 1417140,
+    "rows": 253680,
+    "fetched_at": "2026-09-24T03:34:00+00:00",
+    "note": "target=Diabetes_binary binarised as: Diabetes_binary == 1"
+  },
+  "diabetes_early.parquet": {
+    "source": "UCI ML Repository #529: Early Stage Diabetes Risk Prediction",
+    "url": "https://archive.ics.uci.edu/dataset/529",
+    "sha256": "0bd65d47c925449d7a237c58ee60ae96110b69a212f51e17ec0f17f85b7e7b3c",
+    "bytes": 11578,
+    "rows": 520,
+    "fetched_at": "2026-09-24T03:34:01+00:00",
+    "note": "target=class binarised as: class == Positive"
+  },
+  "chronic_kidney.parquet": {
+    "source": "UCI ML Repository #336: Chronic Kidney Disease",
+    "url": "https://archive.ics.uci.edu/dataset/336",
+    "sha256": "5bec18f43c6a1fcaa4d039b693e828b981673281b3f5c15c3bcaec16ea71784e",
+    "bytes": 21549,
+    "rows": 400,
+    "fetched_at": "2026-09-24T03:34:01+00:00",
+    "note": "target=class binarised as: class == ckd"
+  },
+  "liver_disease.parquet": {
+    "source": "UCI ML Repository #225: ILPD (Indian Liver Patient Dataset)",
+    "url": "https://archive.ics.uci.edu/dataset/225",
+    "sha256": "06d04bfedb76e6b165ac865c33e4a3f343ecb1f85e9ad0d01d3e3663f76bfb9f",
+    "bytes": 15877,
+    "rows": 583,
+    "fetched_at": "2026-09-24T03:34:01+00:00",
+    "note": "target=Selector binarised as: Selector == 1 (liver patient)"
+  },
+  "cirrhosis_death.parquet": {
+    "source": "UCI ML Repository #878: Cirrhosis Patient Survival Prediction",
+    "url": "https://archive.ics.uci.edu/dataset/878",
+    "sha256": "35bff1c7e63b3a118be06e012f9d3365a1e1e8b4cd1c4c6a61665ea57ada5c72",
+    "bytes": 22689,
+    "rows": 418,
+    "fetched_at": "2026-09-24T03:34:01+00:00",
+    "note": "target=Status binarised as: Status == D (death)"
+  },
+  "parkinsons.parquet": {
+    "source": "UCI ML Repository #174: Parkinsons",
+    "url": "https://archive.ics.uci.edu/dataset/174",
+    "sha256": "2a7ed54be08e96079244d6723e5fef739ddd1b399f793ad6ee4801da289ee472",
+    "bytes": 49886,
+    "rows": 195,
+    "fetched_at": "2026-09-24T03:34:13+00:00",
+    "note": "target=status binarised as: status == 1"
+  },
+  "breast_cancer.parquet": {
+    "source": "UCI ML Repository #17: Breast Cancer Wisconsin (Diagnostic)",
+    "url": "https://archive.ics.uci.edu/dataset/17",
+    "sha256": "5181f7cd41388120401f5c7c7d1a0df2e3e4e1901a25e47a73dda09689f23e36",
+    "bytes": 143637,
+    "rows": 569,
+    "fetched_at": "2026-09-24T03:34:14+00:00",
+    "note": "target=Diagnosis binarised as: Diagnosis == M (malignant)"
+  },
+  "thyroid_cancer_recurrence.parquet": {
+    "source": "UCI ML Repository #915: Differentiated Thyroid Cancer Recurrence",
+    "url": "https://archive.ics.uci.edu/dataset/915",
+    "sha256": "83bab9a92b91504d76b91acc8fdf2fcae1f96016f658e77bca47de2c96010200",
+    "bytes": 11713,
+    "rows": 383,
+    "fetched_at": "2026-09-24T03:34:14+00:00",
+    "note": "target=Recurred binarised as: Recurred == Yes"
+  }
+}

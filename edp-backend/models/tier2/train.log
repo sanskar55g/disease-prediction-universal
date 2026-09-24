@@ -1,0 +1,3 @@
+Tier 2: training on DDXPlus 'validate' split, evaluating on 'test'
+  train=132,448  test=134,529  conditions=49
+    logistic_regression  acc 0.997  macroF1 0.997  top3 1.000  (7.2s)
