@@ -20,14 +20,12 @@ origins = [x.strip() for x in os.getenv("CORS_ORIGINS", "*").split(",")]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 init_db()
 
-
 def db():
     session = SessionLocal()
     try:
         yield session
     finally:
         session.close()
-
 
 def current_user(authorization: str | None = Header(default=None), session: Session = Depends(db)) -> User:
     if not authorization or not authorization.lower().startswith("bearer "):
@@ -41,13 +39,11 @@ def current_user(authorization: str | None = Header(default=None), session: Sess
         raise HTTPException(401, "User not found")
     return user
 
-
 def history_for(user: User, session: Session) -> str:
     records = session.query(MedicalRecord).filter_by(user_id=user.id).order_by(MedicalRecord.created_at.asc()).all()
     docs = session.query(MedicalDocument).filter_by(user_id=user.id).order_by(MedicalDocument.created_at.asc()).all()
     msgs = session.query(ChatMessage).filter_by(user_id=user.id).order_by(ChatMessage.created_at.asc()).all()
     return build_history_context(records, docs, msgs)
-
 
 def run_prediction(user: User, intake: dict, session: Session, history: str) -> dict:
     intake = dict(intake)
@@ -67,11 +63,15 @@ def run_prediction(user: User, intake: dict, session: Session, history: str) -> 
     session.commit()
     return result
 
-
 @app.get("/api/health")
 def health():
     return {"ok": True, "service": "universal-disease-prediction", "version": app.version}
 
+@app.post("/api/orchestrator/classify")
+def orchestrator_classify(intake: dict):
+    """Demo endpoint: classify patient situation and show the downstream tier recommendation.
+    No authentication and no patient data is persisted. Use only with local/demo data."""
+    return classify(intake)
 
 @app.post("/api/auth/register")
 def register(req: RegisterRequest, session: Session = Depends(db)):
@@ -84,7 +84,6 @@ def register(req: RegisterRequest, session: Session = Depends(db)):
     session.refresh(user)
     return {"user": {"id": user.id, "email": user.email, "name": user.name}, "token": create_token(user.id)}
 
-
 @app.post("/api/auth/login")
 def login(req: LoginRequest, session: Session = Depends(db)):
     user = session.query(User).filter_by(email=req.email.strip().lower()).first()
@@ -92,11 +91,9 @@ def login(req: LoginRequest, session: Session = Depends(db)):
         raise HTTPException(401, "Invalid email or password")
     return {"user": {"id": user.id, "email": user.email, "name": user.name}, "token": create_token(user.id)}
 
-
 @app.get("/api/me")
 def me(user: User = Depends(current_user)):
     return {"id": user.id, "email": user.email, "name": user.name, "created_at": user.created_at}
-
 
 @app.post("/api/documents")
 async def upload_document(file: UploadFile = File(...), document_type: str = Form("auto"),
@@ -127,7 +124,6 @@ async def upload_document(file: UploadFile = File(...), document_type: str = For
     session.commit()
     return {"id": doc.id, "filename": doc.original_name, "document_type": dtype, "analysis": analysis}
 
-
 @app.get("/api/history")
 def history(user: User = Depends(current_user), session: Session = Depends(db)):
     docs = session.query(MedicalDocument).filter_by(user_id=user.id).order_by(MedicalDocument.created_at.desc()).all()
@@ -139,11 +135,9 @@ def history(user: User = Depends(current_user), session: Session = Depends(db)):
         "predictions": [{"id": p.id, "result": json.loads(p.result_json), "created_at": p.created_at} for p in predictions]
     }
 
-
 @app.post("/api/predict")
 def predict(req: PredictionRequest, user: User = Depends(current_user), session: Session = Depends(db)):
     return run_prediction(user, req.model_dump(), session, history_for(user, session))
-
 
 @app.post("/api/chat")
 def chat(req: ChatRequest, user: User = Depends(current_user), session: Session = Depends(db)):
@@ -159,12 +153,10 @@ def chat(req: ChatRequest, user: User = Depends(current_user), session: Session 
     session.commit()
     return reply
 
-
 @app.get("/api/orchestrator/history")
 def orchestrator_history(limit: int = 20, user: User = Depends(current_user), session: Session = Depends(db)):
     rows = session.query(Prediction).filter_by(user_id=user.id).order_by(Prediction.created_at.desc()).limit(min(limit, 100)).all()
     return [{"id": p.id, "routing": json.loads(p.result_json).get("routing"), "created_at": p.created_at} for p in rows]
-
 
 @app.get("/api/status")
 def status(user: User = Depends(current_user)):
@@ -176,11 +168,9 @@ def status(user: User = Depends(current_user)):
             out[str(tier)] = {"ready": False, "error": str(exc)[:300]}
     return {"tiers": out, "groq_enabled": bool(os.getenv("GROQ_API_KEY") or os.getenv("ORCH_LLM_API_KEY"))}
 
-
 @app.get("/api/tier1/diseases")
 def tier1_diseases(user: User = Depends(current_user)):
     return engines()[1].status()
-
 
 @app.get("/api/tier2/evidence")
 def tier2_evidence(user: User = Depends(current_user)):
@@ -188,7 +178,6 @@ def tier2_evidence(user: User = Depends(current_user)):
         return {"evidence": engines()[2].evidence_catalog()}
     except Exception as exc:
         raise HTTPException(503, str(exc))
-
 
 @app.get("/api/medical-disclaimer")
 def medical_disclaimer():
