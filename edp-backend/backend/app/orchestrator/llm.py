@@ -100,10 +100,10 @@ def _duration_from_text(text: str) -> float | None:
     value = text.lower()
     matches = []
     patterns = [
-        (r"(\\d+(?:\\.\\d+)?)\\s*(?:days?|d)\\b", 1.0),
-        (r"(\\d+(?:\\.\\d+)?)\\s*(?:weeks?|wks?|wk)\\b", 7.0),
-        (r"(\\d+(?:\\.\\d+)?)\\s*(?:months?|mos?|mo)\\b", 30.0),
-        (r"(\\d+(?:\\.\\d+)?)\\s*(?:years?|yrs?|yr)\\b", 365.0),
+        (r"(\d+(?:\.\d+)?)\s*(?:days?|d)\b", 1.0),
+        (r"(\d+(?:\.\d+)?)\s*(?:weeks?|wks?|wk)\b", 7.0),
+        (r"(\d+(?:\.\d+)?)\s*(?:months?|mos?|mo)\b", 30.0),
+        (r"(\d+(?:\.\d+)?)\s*(?:years?|yrs?|yr)\b", 365.0),
     ]
     for pattern, multiplier in patterns:
         for match in re.finditer(pattern, value):
