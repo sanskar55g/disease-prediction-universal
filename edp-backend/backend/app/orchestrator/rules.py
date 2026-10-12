@@ -171,16 +171,15 @@ class Orchestrator:
         if symptoms or free_text:
             if duration is not None and duration <= ACUTE_DAYS:
                 add(2, 0.6, f"symptom duration {duration:g} d is within the acute window (<= {ACUTE_DAYS} d)")
+                add(2, min(0.3, 0.06 * len(symptoms)), f"{len(symptoms)} discrete symptom(s) to classify")
             elif duration is None:
-                # Unknown duration is not enough evidence to force Tier 2.
-                # Conversation extraction should supply a duration when the
-                # patient has mentioned one earlier.
-                add(2, 0.0, "symptoms present but duration is still unknown")
-            add(2, min(0.3, 0.06 * len(symptoms)), f"{len(symptoms)} discrete symptom(s) to classify")
-            if intake.get("onset") == "sudden":
-                add(2, 0.15, "sudden onset")
-            if intake.get("fever") or "fever" in text_blob:
-                add(2, 0.1, "fever reported")
+                # Unknown duration must not automatically become Tier 2.
+                # Only explicit acute signals can move it above the fallback.
+                if intake.get("onset") == "sudden":
+                    add(2, 0.4, "sudden onset suggests an acute presentation")
+                if intake.get("fever") or "fever" in text_blob:
+                    add(2, 0.1, "fever reported")
+            # A chronic duration does not receive Tier 2 symptom points.
 
         # Tier 3: non-specific / long-standing / fallback
         if symptoms or free_text:
@@ -192,8 +191,8 @@ class Orchestrator:
                 add(3, 0.2, "non-specific constitutional symptoms")
             if 2 in prior_tiers_failed:
                 add(3, 0.4, "Tier 2 previously returned no confident answer")
-        if (symptoms or free_text) and scores[2] == 0.0 and scores[3] == 0.0:
-            add(3, 0.3, "fallback: symptoms present but duration/evidence did not establish an acute route")
+        if (symptoms or free_text) and scores[2] < 0.35:
+            add(3, 0.3, "symptoms present but there is not enough evidence to establish an acute Tier 2 route")
 
         # Tier 4: phenotype codes, genomics, chronic undiagnosed
         if hpo:
