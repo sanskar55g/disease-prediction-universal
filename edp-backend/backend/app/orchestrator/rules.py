@@ -178,7 +178,7 @@ class Orchestrator:
                 if intake.get("onset") == "sudden":
                     add(2, 0.4, "sudden onset suggests an acute presentation")
                 if intake.get("fever") or "fever" in text_blob:
-                    add(2, 0.1, "fever reported")
+                    add(2, 0.45, "fever reported with no chronic duration established")
             # A chronic duration does not receive Tier 2 symptom points.
 
         # Tier 3: non-specific / long-standing / fallback
