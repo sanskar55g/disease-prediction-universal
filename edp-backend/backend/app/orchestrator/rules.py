@@ -172,7 +172,10 @@ class Orchestrator:
             if duration is not None and duration <= ACUTE_DAYS:
                 add(2, 0.6, f"symptom duration {duration:g} d is within the acute window (<= {ACUTE_DAYS} d)")
             elif duration is None:
-                add(2, 0.35, "symptoms present, duration unknown (assume possibly acute)")
+                # Unknown duration is not enough evidence to force Tier 2.
+                # Conversation extraction should supply a duration when the
+                # patient has mentioned one earlier.
+                add(2, 0.0, "symptoms present but duration is still unknown")
             add(2, min(0.3, 0.06 * len(symptoms)), f"{len(symptoms)} discrete symptom(s) to classify")
             if intake.get("onset") == "sudden":
                 add(2, 0.15, "sudden onset")
@@ -189,8 +192,8 @@ class Orchestrator:
                 add(3, 0.2, "non-specific constitutional symptoms")
             if 2 in prior_tiers_failed:
                 add(3, 0.4, "Tier 2 previously returned no confident answer")
-        if not any(scores.values()) and (symptoms or free_text):
-            add(3, 0.3, "fallback: symptoms present but nothing else matched")
+        if (symptoms or free_text) and scores[2] == 0.0 and scores[3] == 0.0:
+            add(3, 0.3, "fallback: symptoms present but duration/evidence did not establish an acute route")
 
         # Tier 4: phenotype codes, genomics, chronic undiagnosed
         if hpo:
