@@ -1,29 +1,3083 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Universal Disease Prediction</title>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Universal Disease Prediction · Chat v4</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;background:#07111f;color:#e8eef7}button,input,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh}.top{height:68px;border-bottom:1px solid #203149;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#0a1525}.brand{font-weight:800;font-size:19px}.brand span{color:#62d7c9}.pill{font-size:12px;border:1px solid #29415d;border-radius:99px;padding:7px 11px;color:#9db1c9}.grid{display:grid;grid-template-columns:250px 1fr 330px;gap:18px;padding:18px;max-width:1500px;margin:auto}.panel{background:#0d1a2c;border:1px solid #21334c;border-radius:14px;overflow:hidden}.side{padding:18px}.nav{display:block;width:100%;text-align:left;border:0;background:transparent;color:#9db1c9;padding:12px;border-radius:9px;margin:4px 0}.nav.active,.nav:hover{background:#14253b;color:#fff}.main{display:flex;flex-direction:column;min-height:calc(100vh - 104px)}.hero{padding:22px;border-bottom:1px solid #203149}.hero h1{margin:0 0 6px;font-size:27px}.muted{color:#8ea3bc;font-size:13px}.chat{flex:1;padding:20px;overflow:auto}.msg{max-width:82%;padding:13px 15px;border-radius:12px;margin:10px 0;line-height:1.45;font-size:14px}.user{margin-left:auto;background:#174b59}.bot{background:#142236;border:1px solid #233951}.composer{padding:15px;border-top:1px solid #203149}.composer textarea{width:100%;min-height:80px;resize:vertical;background:#081321;border:1px solid #2a3c55;color:#fff;border-radius:10px;padding:12px;outline:none}.row{display:flex;gap:9px;align-items:center;margin-top:10px}.primary{background:#48cbbb;color:#06151b;border:0;border-radius:9px;padding:10px 17px;font-weight:750}.secondary{background:#14253a;color:#d8e5f3;border:1px solid #29405b;border-radius:9px;padding:9px 13px}.agent{padding:14px;border-bottom:1px solid #1e3046}.agent:last-child{border:0}.agenthead{display:flex;justify-content:space-between;align-items:center}.dot{width:9px;height:9px;border-radius:50%;display:inline-block;background:#48cbbb;margin-right:8px}.status{font-size:11px;color:#67d9ca}.trace{font-size:12px;color:#9db1c9;margin-top:7px;line-height:1.45}.result{margin:14px 20px;padding:15px;border:1px solid #31516b;border-radius:12px;background:#0a1828}.tier{display:inline-block;padding:5px 9px;border-radius:7px;background:#17384a;color:#72dfd1;font-weight:700;font-size:12px}.auth{position:fixed;inset:0;background:#06101c;display:flex;align-items:center;justify-content:center;z-index:5}.authbox{width:390px;padding:28px;background:#0d1a2c;border:1px solid #29405a;border-radius:16px}.authbox h2{margin-top:0}.field{width:100%;background:#081321;color:#fff;border:1px solid #2a3c55;border-radius:9px;padding:11px;margin:7px 0}.small{font-size:11px;color:#778da7}.upload{border:1px dashed #35516d;padding:14px;border-radius:10px;margin-top:14px}.history{padding:16px}.item{padding:9px 0;border-bottom:1px solid #1e3046;font-size:12px}.hide{display:none}@media(max-width:1050px){.grid{grid-template-columns:210px 1fr}.right{display:none}}@media(max-width:700px){.grid{grid-template-columns:1fr}.side{display:none}}
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#f4f7fa;
+  color:#102033;
+}
+
+button,
+input,
+textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+  transition:all .2s ease;
+}
+
+button:hover{
+  transform:translateY(-1px);
+}
+
+/* =========================
+   MAIN APP
+========================= */
+
+.app{
+  min-height:100vh;
+}
+
+/* =========================
+   TOP HEADER
+========================= */
+
+.top{
+  height:72px;
+  position:sticky;
+  top:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 32px;
+  background:#ffffff;
+  border-bottom:1px solid #e5ebf0;
+  box-shadow:0 2px 12px rgba(20,40,60,.04);
+}
+
+.brand{
+  font-weight:800;
+  font-size:20px;
+  letter-spacing:-.3px;
+  color:#102033;
+}
+
+.brand span{
+  color:#11b6a4;
+}
+
+.pill{
+  font-size:12px;
+  border:1px solid #dbe4eb;
+  border-radius:99px;
+  padding:7px 13px;
+  color:#5f7183;
+  background:#f8fafc;
+}
+
+/* =========================
+   IMAGE SLIDESHOW LAYER
+========================= */
+
+.slideshow{
+  position:relative;
+  width:100%;
+  height:58vh;
+  min-height:430px;
+  max-height:680px;
+  overflow:hidden;
+  background:#102033;
+}
+
+.slide{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  background-size:cover;
+  background-position:center;
+  animation:slideShow 20s infinite;
+}
+
+.slide::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(4,24,38,.78),rgba(4,24,38,.35),rgba(4,24,38,.12));
+}
+
+.slide:nth-child(1){
+  background-image:url("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=2000&q=85");
+  animation-delay:0s;
+}
+
+.slide:nth-child(2){
+  background-image:url("https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=2000&q=85");
+  animation-delay:5s;
+}
+
+.slide:nth-child(3){
+  background-image:url("https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=2000&q=85");
+  animation-delay:10s;
+}
+
+.slide:nth-child(4){
+  background-image:url("https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=2000&q=85");
+  animation-delay:15s;
+}
+
+.slide-content{
+  position:absolute;
+  left:8%;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:2;
+  max-width:620px;
+  color:#ffffff;
+}
+
+.slide-content .eyebrow{
+  display:inline-block;
+  padding:7px 12px;
+  border:1px solid rgba(255,255,255,.3);
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(8px);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+}
+
+.slide-content h1{
+  margin:15px 0 10px;
+  font-size:clamp(34px,5vw,62px);
+  line-height:1.04;
+  letter-spacing:-1.8px;
+  color:#ffffff;
+}
+
+.slide-content p{
+  margin:0;
+  max-width:570px;
+  color:rgba(255,255,255,.88);
+  font-size:16px;
+  line-height:1.65;
+}
+
+.slide-dots{
+  position:absolute;
+  left:8%;
+  bottom:28px;
+  z-index:3;
+  display:flex;
+  gap:7px;
+}
+
+.slide-dots span{
+  width:28px;
+  height:4px;
+  border-radius:99px;
+  background:rgba(255,255,255,.45);
+}
+
+@keyframes slideShow{
+  0%{opacity:0;transform:scale(1.03)}
+  5%{opacity:1}
+  25%{opacity:1}
+  30%{opacity:0;transform:scale(1.08)}
+  100%{opacity:0}
+}
+
+@media(max-width:700px){
+  .slideshow{
+    height:52vh;
+    min-height:390px;
+  }
+
+  .slide-content{
+    left:25px;
+    right:25px;
+  }
+
+  .slide-content h1{
+    font-size:36px;
+  }
+}
+
+
+/* =========================
+   ORCHESTRATOR SHOWCASE
+========================= */
+
+.orchestrator-showcase{
+  position:relative;
+  min-height:760px;
+  margin:0;
+  padding:70px 35px 55px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 45%,rgba(19,184,166,.13),transparent 25%),
+    radial-gradient(circle at 20% 80%,rgba(44,116,255,.08),transparent 28%),
+    linear-gradient(145deg,#071923,#0b2230 48%,#071923);
+  color:white;
+}
+
+.orchestrator-showcase::before{
+  content:"";
+  position:absolute;
+  width:620px;
+  height:620px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  border:1px solid rgba(92,220,205,.13);
+  border-radius:50%;
+  box-shadow:0 0 0 90px rgba(72,203,187,.025),0 0 0 180px rgba(72,203,187,.018);
+}
+
+.orchestrator-heading{
+  position:relative;
+  z-index:5;
+  text-align:center;
+  max-width:800px;
+  margin:0 auto 25px;
+}
+
+.orchestrator-heading .eyebrow{
+  display:inline-block;
+  padding:7px 13px;
+  border:1px solid rgba(72,203,187,.3);
+  border-radius:999px;
+  background:rgba(72,203,187,.08);
+  color:#72e2d4;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+}
+
+.orchestrator-heading h2{
+  margin:13px 0 7px;
+  font-size:clamp(28px,4vw,46px);
+  letter-spacing:-1.2px;
+}
+
+.orchestrator-heading p{
+  margin:0;
+  color:#9eb4c3;
+  font-size:14px;
+  line-height:1.6;
+}
+
+.orbit-stage{
+  position:relative;
+  width:min(820px,94vw);
+  height:570px;
+  margin:0 auto;
+}
+
+.orbit-ring{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:520px;
+  height:520px;
+  transform:translate(-50%,-50%);
+  border:1px dashed rgba(116,225,212,.25);
+  border-radius:50%;
+  animation:ringPulse 5s ease-in-out infinite;
+}
+
+.orbit-ring::before,
+.orbit-ring::after{
+  content:"";
+  position:absolute;
+  inset:45px;
+  border:1px solid rgba(116,225,212,.08);
+  border-radius:50%;
+}
+
+.orbit-ring::after{
+  inset:95px;
+}
+
+@keyframes ringPulse{
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.72}
+  50%{transform:translate(-50%,-50%) scale(1.025);opacity:1}
+}
+
+.agent-orbit{
+  position:absolute;
+  inset:0;
+}
+
+.agent-card{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:150px;
+  min-height:170px;
+  transform:translate(-50%,-50%) rotate(var(--angle)) translateY(-255px) rotate(calc(var(--angle) * -1));
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:14px 10px;
+  border:1px solid rgba(173,230,223,.16);
+  border-radius:22px;
+  background:rgba(13,38,51,.82);
+  backdrop-filter:blur(12px);
+  box-shadow:0 15px 40px rgba(0,0,0,.25);
+  transition:all .55s ease;
+  z-index:4;
+}
+
+.agent-card:nth-child(1){--angle:0deg}
+.agent-card:nth-child(2){--angle:72deg}
+.agent-card:nth-child(3){--angle:144deg}
+.agent-card:nth-child(4){--angle:216deg}
+.agent-card:nth-child(5){--angle:288deg}
+
+.agent-card.active{
+  border-color:#54d8ca;
+  background:linear-gradient(145deg,rgba(19,184,166,.24),rgba(12,42,56,.92));
+  box-shadow:0 0 0 5px rgba(72,203,187,.08),0 18px 55px rgba(19,184,166,.2);
+  transform:translate(-50%,-50%) rotate(var(--angle)) translateY(-255px) rotate(calc(var(--angle) * -1)) scale(1.09);
+}
+
+.agent-avatar{
+  width:76px;
+  height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:linear-gradient(145deg,#edfdfa,#bceee7);
+  border:4px solid rgba(255,255,255,.85);
+  box-shadow:0 8px 22px rgba(0,0,0,.22);
+  font-size:42px;
+}
+
+.agent-card b{
+  color:#f4fffd;
+  font-size:12px;
+  text-align:center;
+}
+
+.agent-card .agent-role{
+  color:#7f9baa;
+  font-size:9px;
+  text-align:center;
+  line-height:1.25;
+}
+
+.agent-card .agent-status{
+  font-size:8px;
+  letter-spacing:.7px;
+  color:#54d8ca;
+  font-weight:800;
+}
+
+.agent-center{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:245px;
+  min-height:245px;
+  transform:translate(-50%,-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:28px;
+  border:1px solid rgba(113,225,213,.28);
+  border-radius:50%;
+  background:radial-gradient(circle,#123b49 0%,#0a2634 62%,#081c28 100%);
+  box-shadow:0 0 50px rgba(19,184,166,.12),inset 0 0 35px rgba(72,203,187,.05);
+  z-index:6;
+}
+
+.agent-center .center-icon{
+  font-size:30px;
+  margin-bottom:6px;
+}
+
+.agent-center .center-label{
+  color:#74e0d3;
+  font-size:10px;
+  letter-spacing:1.8px;
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+.agent-center h3{
+  margin:7px 0 7px;
+  color:#ffffff;
+  font-size:22px;
+  line-height:1.1;
+}
+
+.agent-center p{
+  margin:0;
+  color:#a7bdc8;
+  font-size:11px;
+  line-height:1.45;
+}
+
+.agent-center .center-step{
+  margin-top:12px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(72,203,187,.09);
+  color:#65d9cb;
+  font-size:9px;
+  font-weight:800;
+}
+
+.orchestrator-footer{
+  position:relative;
+  z-index:5;
+  display:flex;
+  justify-content:center;
+  gap:25px;
+  margin-top:5px;
+  color:#7893a1;
+  font-size:11px;
+}
+
+.orchestrator-footer span::before{
+  content:"●";
+  color:#4fd6c8;
+  margin-right:6px;
+}
+
+
+
+.orchestrator-status{
+  position:absolute;
+  right:30px;
+  bottom:25px;
+  z-index:7;
+  min-width:210px;
+  padding:12px 15px;
+  border:1px solid rgba(173,230,223,.13);
+  border-radius:12px;
+  background:rgba(4,22,31,.62);
+  backdrop-filter:blur(8px);
+  color:#9eb4c3;
+  font-size:10px;
+}
+
+.orchestrator-status b{
+  color:#dffaf6;
+  font-size:11px;
+}
+
+@media(max-width:700px){
+  .orchestrator-showcase{
+    min-height:650px;
+    padding:50px 15px 35px;
+  }
+
+  .orbit-stage{
+    height:500px;
+    width:100%;
+  }
+
+  .orbit-ring{
+    width:370px;
+    height:370px;
+  }
+
+  .agent-card{
+    width:112px;
+    min-height:135px;
+    transform:translate(-50%,-50%) rotate(var(--angle)) translateY(-185px) rotate(calc(var(--angle) * -1));
+  }
+
+  .agent-card.active{
+    transform:translate(-50%,-50%) rotate(var(--angle)) translateY(-185px) rotate(calc(var(--angle) * -1)) scale(1.05);
+  }
+
+  .agent-avatar{
+    width:58px;
+    height:58px;
+    font-size:31px;
+  }
+
+  .agent-center{
+    width:180px;
+    min-height:180px;
+    padding:20px;
+  }
+
+  .agent-center h3{
+    font-size:17px;
+  }
+
+  .agent-center p{
+    font-size:9px;
+  }
+
+  .orchestrator-footer{
+    flex-wrap:wrap;
+    gap:8px 18px;
+  }
+}
+
+/* =========================
+   MAIN GRID
+========================= */
+
+.grid{
+  display:grid;
+  grid-template-columns:250px minmax(0,1fr);
+  gap:20px;
+  padding:25px;
+  max-width:1500px;
+  margin:0 auto 45px;
+  align-items:start;
+  position:relative;
+}
+
+.panel{
+  background:#ffffff;
+  border:1px solid #e1e8ee;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 8px 30px rgba(25,45,65,.055);
+}
+
+/* =========================
+   LEFT SIDEBAR
+========================= */
+
+.side{
+  padding:20px;
+  position:sticky;
+  top:95px;
+}
+
+.side h3{
+  margin:0 0 18px;
+  font-size:17px;
+  color:#182b3f;
+}
+
+.nav{
+  display:block;
+  width:100%;
+  text-align:left;
+  border:0;
+  background:transparent;
+  color:#6b7d8f;
+  padding:12px 13px;
+  border-radius:10px;
+  margin:5px 0;
+  font-size:14px;
+}
+
+.nav.active{
+  background:#e6f8f5;
+  color:#079d8c;
+  font-weight:650;
+}
+
+.nav:hover{
+  background:#eef8f7;
+  color:#079d8c;
+}
+
+/* =========================
+   UPLOAD BOX
+========================= */
+
+.upload{
+  border:1px dashed #b9ccd8;
+  background:#f8fafc;
+  padding:16px;
+  border-radius:12px;
+  margin-top:22px;
+}
+
+.upload b{
+  color:#24384b;
+  font-size:14px;
+}
+
+.upload input{
+  width:100%;
+  margin-top:8px;
+  font-size:11px;
+  color:#65778a;
+}
+
+.small{
+  font-size:11px;
+  color:#718295;
+  line-height:1.5;
+}
+
+/* =========================
+   CENTER PANEL
+========================= */
+
+.main{
+  display:flex;
+  flex-direction:column;
+  min-height:calc(100vh - 122px);
+}
+
+.hero{
+  padding:27px 25px;
+  background:
+    linear-gradient(
+      135deg,
+      #f7fffd,
+      #ffffff
+    );
+  border-bottom:1px solid #e5ebf0;
+}
+
+.hero h1{
+  margin:0 0 7px;
+  font-size:28px;
+  letter-spacing:-.6px;
+  color:#122438;
+}
+
+.muted{
+  color:#718295;
+  font-size:13px;
+  line-height:1.5;
+}
+
+/* =========================
+   CHAT AREA
+========================= */
+
+.chat{
+  flex:1;
+  padding:25px;
+  overflow:auto;
+  background:#fbfcfd;
+}
+
+.msg{
+  max-width:82%;
+  padding:14px 16px;
+  border-radius:14px;
+  margin:11px 0;
+  line-height:1.55;
+  font-size:14px;
+}
+
+.user{
+  margin-left:auto;
+  background:#dff7f3;
+  color:#173e39;
+  border-bottom-right-radius:4px;
+}
+
+.bot{
+  background:#ffffff;
+  color:#26384b;
+  border:1px solid #e2e9ef;
+  border-bottom-left-radius:4px;
+  box-shadow:0 3px 12px rgba(30,50,70,.035);
+}
+
+/* =========================
+   COMPOSER
+========================= */
+
+.composer{
+  padding:18px;
+  border-top:1px solid #e4ebf0;
+  background:#ffffff;
+}
+
+.composer textarea{
+  width:100%;
+  min-height:90px;
+  resize:vertical;
+  background:#f8fafc;
+  border:1px solid #d6e1e8;
+  color:#182b3f;
+  border-radius:12px;
+  padding:13px;
+  outline:none;
+  line-height:1.5;
+}
+
+.composer textarea:focus{
+  border-color:#12b8a6;
+  box-shadow:0 0 0 3px rgba(18,184,166,.08);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.row{
+  display:flex;
+  gap:9px;
+  align-items:center;
+  margin-top:11px;
+}
+
+.primary{
+  background:#13b8a6;
+  color:#ffffff;
+  border:0;
+  border-radius:10px;
+  padding:11px 18px;
+  font-weight:750;
+  box-shadow:0 5px 15px rgba(19,184,166,.18);
+}
+
+.primary:hover{
+  background:#0fa894;
+}
+
+.secondary{
+  background:#ffffff;
+  color:#405467;
+  border:1px solid #d5e0e8;
+  border-radius:10px;
+  padding:10px 14px;
+}
+
+.secondary:hover{
+  background:#f5f8fa;
+  border-color:#c5d3dd;
+}
+
+/* =========================
+   ORCHESTRATOR
+========================= */
+
+.agent{
+  padding:16px;
+  border-bottom:1px solid #e6edf2;
+  background:#ffffff;
+}
+
+.agent:last-child{
+  border:0;
+}
+
+.agenthead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.agenthead b{
+  color:#24384b;
+  font-size:13px;
+}
+
+.dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  display:inline-block;
+  background:#15b9a7;
+  margin-right:8px;
+  box-shadow:0 0 0 4px rgba(21,185,167,.1);
+}
+
+.status{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.3px;
+  color:#0a9d8b;
+}
+
+.trace{
+  font-size:12px;
+  color:#718295;
+  margin-top:8px;
+  line-height:1.5;
+}
+
+.right > div:first-child{
+  padding:18px !important;
+  background:#fbfcfd;
+  border-bottom:1px solid #e4ebf0 !important;
+}
+
+.right > div:first-child b{
+  color:#182b3f;
+}
+
+.history{
+  padding:17px;
+  background:#ffffff;
+}
+
+.history b{
+  color:#26394c;
+  font-size:13px;
+}
+
+/* =========================
+   RESULT
+========================= */
+
+.result{
+  margin:15px 20px;
+  padding:17px;
+  border:1px solid #c9e6e1;
+  border-radius:13px;
+  background:#f0faf8;
+}
+
+.tier{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:8px;
+  background:#d7f5f0;
+  color:#087d70;
+  font-weight:750;
+  font-size:12px;
+}
+
+/* =========================
+   LOGIN SCREEN
+   ONLY VISUAL CHANGES
+========================= */
+
+.auth{
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(72,203,187,.12),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(35,105,150,.12),
+      transparent 35%
+    ),
+    #071522;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+.authbox{
+  width:390px;
+  padding:31px;
+  background:#0d1a2c;
+  border:1px solid #29405a;
+  border-radius:18px;
+  box-shadow:0 25px 80px rgba(0,0,0,.35);
+}
+
+.authbox h2{
+  margin-top:0;
+  margin-bottom:8px;
+  color:#ffffff;
+  font-size:23px;
+}
+
+.authbox .muted{
+  color:#91a5b9;
+  margin-bottom:20px;
+}
+
+.field{
+  width:100%;
+  background:#081321;
+  color:#ffffff;
+  border:1px solid #2a3c55;
+  border-radius:10px;
+  padding:12px;
+  margin:7px 0;
+  outline:none;
+}
+
+.field::placeholder{
+  color:#70869d;
+}
+
+.field:focus{
+  border-color:#48cbbb;
+  box-shadow:0 0 0 3px rgba(72,203,187,.08);
+}
+
+.authbox .primary{
+  background:#48cbbb;
+  color:#06151b;
+}
+
+.authbox .secondary{
+  background:#14253a;
+  color:#d8e5f3;
+  border-color:#29405b;
+}
+
+.authbox .small{
+  color:#ff9d9d;
+  min-height:16px;
+}
+
+/* =========================
+   FLOATING CHAT WINDOW
+========================= */
+
+/* =========================
+   IMMERSIVE AI CHAT
+========================= */
+
+.chat-launcher{
+  position:fixed;
+  right:28px;
+  bottom:28px;
+  width:64px;
+  height:64px;
+  border:0;
+  border-radius:50%;
+  background:linear-gradient(145deg,#13b8a6,#087d70);
+  color:#ffffff;
+  font-size:29px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 12px 32px rgba(19,184,166,.32);
+  z-index:900;
+  animation:launcherFloat 3s ease-in-out infinite;
+}
+
+.chat-launcher::after{
+  content:"";
+  position:absolute;
+  inset:-7px;
+  border:1px solid rgba(19,184,166,.28);
+  border-radius:50%;
+  animation:launcherPulse 2.4s ease-out infinite;
+}
+
+.chat-launcher:hover{
+  background:linear-gradient(145deg,#16c5b2,#0b8d7f);
+  transform:translateY(-3px) scale(1.04);
+}
+
+.chat-window{
+  position:fixed;
+  right:3.5vw;
+  bottom:3.5vh;
+  width:75vw;
+  height:75vh;
+  min-width:720px;
+  min-height:560px;
+  max-width:1250px;
+  max-height:850px;
+  background:#ffffff;
+  border:1px solid #d8e5e9;
+  border-radius:26px;
+  box-shadow:0 30px 90px rgba(10,35,50,.28);
+  overflow:hidden;
+  display:none;
+  flex-direction:column;
+  z-index:899;
+}
+
+.chat-window.open{
+  display:flex;
+  animation:chatOpen .28s ease-out;
+}
+
+.chat-window-header{
+  min-height:86px;
+  padding:15px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  background:linear-gradient(135deg,#071c29,#0d3340);
+  border-bottom:1px solid #1c4a55;
+  color:#ffffff;
+}
+
+.chat-ai-identity{
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.chat-ai-avatar{
+  position:relative;
+  width:54px;
+  height:54px;
+  flex:0 0 54px;
+  border-radius:17px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  background:linear-gradient(145deg,#d9fffa,#8ee8dc);
+  box-shadow:0 0 0 4px rgba(72,203,187,.10);
+  animation:aiFloat 2.8s ease-in-out infinite;
+}
+
+.chat-ai-avatar::after{
+  content:"";
+  position:absolute;
+  width:9px;
+  height:9px;
+  right:-2px;
+  bottom:1px;
+  border-radius:50%;
+  background:#36e0bf;
+  border:2px solid #0d3340;
+}
+
+.chat-window-header b{
+  color:#ffffff;
+  font-size:18px;
+  letter-spacing:-.2px;
+}
+
+.chat-subtitle{
+  margin-top:4px;
+  color:#a9c1ca;
+  font-size:12px;
+}
+
+.ai-live{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:6px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.7px;
+  color:#62ead1;
+}
+
+.ai-live::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#36e0bf;
+  box-shadow:0 0 0 4px rgba(54,224,191,.10);
+}
+
+.chat-close{
+  width:40px;
+  height:40px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+  background:rgba(255,255,255,.07);
+  color:#d9edf0;
+  font-size:26px;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.chat-close:hover{
+  background:rgba(255,255,255,.14);
+  color:#ffffff;
+}
+
+.chat-window .chat{
+  flex:1;
+  min-height:0;
+  padding:28px 34px;
+  overflow:auto;
+  background:
+    radial-gradient(circle at 15% 15%,rgba(19,184,166,.055),transparent 28%),
+    #f6fafb;
+}
+
+
+/* =========================
+   LIVE CHAT TIER STRIP
+========================= */
+.chat-live-tier{
+  margin:0 24px;
+  padding:11px 15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  border:1px solid #b9e5df;
+  border-radius:12px;
+  background:#eaf9f6;
+  color:#087d70;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.7px;
+}
+.chat-live-tier b{
+  font-size:11px;
+  letter-spacing:.2px;
+}
+
+/* =========================
+   CHAT ROUTING RESULT CARD
+========================= */
+.chat-routing-card{
+  margin:8px 0 18px 0;
+  padding:20px;
+  border:1px solid #b9e5df;
+  border-radius:18px;
+  background:linear-gradient(145deg,#ffffff,#eefaf8);
+  box-shadow:0 8px 25px rgba(12,91,85,.08);
+  animation:routingCardIn .35s ease-out;
+}
+.routing-topline{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+.routing-live{
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1px;
+  color:#0b9486;
+}
+.routing-change{
+  padding:6px 10px;
+  border-radius:999px;
+  background:#dff7f3;
+  color:#087d70;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.6px;
+}
+.routing-tier-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding-bottom:16px;
+  border-bottom:1px solid #dcefeb;
+}
+.routing-label{
+  font-size:10px;
+  color:#779098;
+  font-weight:800;
+  letter-spacing:.8px;
+}
+.routing-tier{
+  margin-top:3px;
+  font-size:31px;
+  line-height:1;
+  font-weight:900;
+  color:#087d70;
+}
+.routing-route{
+  text-align:right;
+  color:#55717a;
+  font-size:11px;
+  line-height:1.7;
+}
+.routing-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:15px;
+}
+.routing-grid > div{
+  padding:12px;
+  border-radius:12px;
+  background:#f7fcfb;
+  border:1px solid #e0f0ed;
+}
+.routing-grid span{
+  display:block;
+  color:#81969c;
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  margin-bottom:5px;
+}
+.routing-grid b{
+  display:block;
+  color:#19353e;
+  font-size:12px;
+  line-height:1.45;
+}
+.routing-agents{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+.routing-agents span{
+  padding:6px 9px;
+  border-radius:999px;
+  background:#eaf8f6;
+  color:#087d70;
+  font-size:9px;
+  font-weight:800;
+}
+@keyframes routingCardIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@media(max-width:700px){
+  .routing-grid{grid-template-columns:1fr}
+  .routing-tier-row{align-items:flex-start;flex-direction:column}
+  .routing-route{text-align:left}
+}
+
+.chat-window .msg{
+  max-width:78%;
+  padding:17px 20px;
+  border-radius:18px;
+  margin:14px 0;
+  font-size:15px;
+  line-height:1.65;
+}
+
+.chat-window .bot{
+  position:relative;
+  padding-left:52px;
+  border-color:#dbe8eb;
+  box-shadow:0 5px 18px rgba(20,50,65,.045);
+}
+
+.chat-window .bot::before{
+  content:"🤖";
+  position:absolute;
+  left:12px;
+  top:14px;
+  width:29px;
+  height:29px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  background:#e4faf6;
+  font-size:17px;
+  animation:botBob 2.5s ease-in-out infinite;
+}
+
+.chat-window .user{
+  background:#d7f5f0;
+  color:#173e39;
+  box-shadow:0 5px 15px rgba(19,184,166,.08);
+}
+
+.chat-window .composer{
+  flex:none;
+  padding:18px 22px 20px;
+  border-top:1px solid #dfe9ec;
+  background:#ffffff;
+}
+
+.chat-window .composer textarea{
+  min-height:82px;
+  max-height:150px;
+  padding:15px 17px;
+  background:#f7fafb;
+  border-radius:15px;
+  font-size:14px;
+}
+
+.chat-window .composer .row{
+  margin-top:10px;
+  justify-content:flex-end;
+}
+
+.chat-window .composer .primary{
+  min-width:165px;
+}
+
+@keyframes chatOpen{
+  from{opacity:0;transform:translateY(18px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+@keyframes launcherFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-5px)}
+}
+
+@keyframes launcherPulse{
+  0%{transform:scale(.85);opacity:.65}
+  70%,100%{transform:scale(1.25);opacity:0}
+}
+
+@keyframes aiFloat{
+  0%,100%{transform:translateY(0) rotate(-2deg)}
+  50%{transform:translateY(-4px) rotate(2deg)}
+}
+
+@keyframes botBob{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-2px)}
+}
+
+@media(max-width:900px){
+  .chat-window{
+    right:2vw;
+    bottom:2vh;
+    width:96vw;
+    height:82vh;
+    min-width:0;
+    min-height:0;
+  }
+}
+
+@media(max-width:700px){
+  .chat-window{
+    right:10px;
+    bottom:78px;
+    width:calc(100vw - 20px);
+    height:calc(100vh - 105px);
+    max-width:none;
+    max-height:none;
+    border-radius:20px;
+  }
+
+  .chat-window-header{
+    min-height:76px;
+    padding:12px 14px;
+  }
+
+  .chat-ai-avatar{
+    width:46px;
+    height:46px;
+    flex-basis:46px;
+    font-size:25px;
+  }
+
+  .chat-window-header b{
+    font-size:15px;
+  }
+
+  .chat-window .chat{
+    padding:18px 14px;
+  }
+
+  .chat-window .msg{
+    max-width:90%;
+    font-size:14px;
+  }
+
+  .chat-window .composer{
+    padding:12px;
+  }
+
+  .chat-launcher{
+    right:15px;
+    bottom:15px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .chat-launcher,.chat-ai-avatar,.chat-window .bot::before{
+    animation:none;
+  }
+}
+
+/* =========================
+   HIDE
+========================= */
+
+.hide{
+  display:none;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1100px){
+
+  .grid{
+    grid-template-columns:220px minmax(0,1fr);
+  }
+
+  .right{
+    grid-column:1/-1;
+  }
+
+  .side{
+    position:static;
+  }
+
+}
+
+@media(max-width:700px){
+
+  .top{
+    height:64px;
+    padding:0 15px;
+  }
+
+  .brand{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+}
+  .top .secondary{
+    display:none;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+    padding:15px;
+  }
+
+  .right{
+    grid-column:auto;
+  }
+
+  .side{
+    position:static;
+  }
+
+  .main{
+    min-height:650px;
+  }
+
+  .hero h1{
+    font-size:23px;
+  }
+
+  .chat{
+    min-height:400px;
+  }
+
+  .authbox{
+    width:calc(100% - 30px);
+    padding:25px;
+  }
+
+}
+
+/* =========================
+   ORCHESTRATOR REFINEMENTS
+========================= */
+
+/* create breathing room after the slideshow */
+.slideshow{
+  margin-bottom:24px;
+}
+
+/* give the orchestrator more vertical breathing room */
+.orchestrator-showcase{
+  min-height:800px;
+  padding:62px 35px 58px;
+}
+
+.orchestrator-heading{
+  margin-bottom:48px;
+}
+
+.orchestrator-heading h2{
+  margin-bottom:10px;
+}
+
+.orchestrator-heading p{
+  max-width:720px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.orbit-stage{
+  height:590px;
+}
+
+.orbit-ring{
+  width:540px;
+  height:540px;
+}
+
+/* the whole group slowly travels around the circle */
+.agent-orbit{
+  animation:agentOrbit 32s linear infinite;
+  transform-origin:50% 50%;
+}
+
+@keyframes agentOrbit{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
+}
+
+/* keep each doctor card upright while it travels around the circle */
+.agent-card .agent-card-inner{
+  animation:agentCounterOrbit 32s linear infinite;
+  transform-origin:50% 50%;
+}
+
+@keyframes agentCounterOrbit{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(-360deg)}
+}
+
+/* no glowing active effect — use a clean active border instead */
+.agent-card.active{
+  background:rgba(13,38,51,.9);
+  border-color:#54d8ca;
+  box-shadow:0 15px 40px rgba(0,0,0,.25);
+}
+
+.agent-card.active .agent-avatar{
+  border-color:#54d8ca;
+}
+
+.agent-card{
+  transition:border-color .3s ease,background .3s ease;
+}
+
+.agent-center{
+  width:270px;
+  min-height:270px;
+  padding:34px;
+}
+
+.agent-center h3{
+  margin:8px 0 9px;
+  font-size:23px;
+}
+
+.agent-center p{
+  max-width:185px;
+}
+
+.agent-center .center-step{
+  margin-top:13px;
+}
+
+.orchestrator-footer{
+  margin-top:15px;
+}
+
+@media(max-width:700px){
+  .slideshow{
+    margin-bottom:18px;
+  }
+
+  .orchestrator-showcase{
+    min-height:690px;
+    padding:48px 15px 35px;
+  }
+
+  .orchestrator-heading{
+    margin-bottom:28px;
+  }
+
+  .orbit-stage{
+    height:510px;
+  }
+
+  .orbit-ring{
+    width:380px;
+    height:380px;
+  }
+
+  .agent-center{
+    width:190px;
+    min-height:190px;
+    padding:21px;
+  }
+
+  .agent-center h3{
+    font-size:17px;
+  }
+
+  .agent-center p{
+    max-width:140px;
+    font-size:9px;
+  }
+}
+
+
+/* =========================
+   ELABORATE PATIENT WORKSPACE
+========================= */
+
+.patient-clinical-section{
+  position:relative;
+  margin:32px auto 28px;
+  width:min(1500px,calc(100% - 50px));
+  min-height:720px;
+  border-radius:28px;
+  overflow:hidden;
+  border:1px solid #d6e4e8;
+  background:#071e2a;
+  box-shadow:0 22px 70px rgba(15,40,55,.14);
+}
+
+.patient-clinical-section::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(4,25,36,.96) 0%,rgba(5,29,41,.82) 34%,rgba(5,29,41,.50) 62%,rgba(5,29,41,.76) 100%),
+    url("https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=2200&q=85") center/cover no-repeat;
+  opacity:.98;
+}
+
+.patient-clinical-section::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 78% 30%,rgba(68,218,204,.16),transparent 28%),
+    linear-gradient(180deg,rgba(4,24,34,.08),rgba(4,24,34,.48));
+  pointer-events:none;
+}
+
+.patient-clinical-inner{
+  position:relative;
+  z-index:2;
+  padding:48px;
+}
+
+.patient-clinical-heading{
+  max-width:850px;
+  color:#fff;
+  margin-bottom:32px;
+}
+
+.patient-clinical-heading .eyebrow{
+  color:#66e1d3;
+}
+
+.patient-clinical-heading h2{
+  margin:9px 0 10px;
+  font-size:36px;
+  letter-spacing:-1px;
+  color:#fff;
+}
+
+.patient-clinical-heading p{
+  margin:0;
+  color:#b7cad4;
+  font-size:15px;
+  line-height:1.65;
+  max-width:760px;
+}
+
+.patient-clinical-layout{
+  display:grid;
+  grid-template-columns:1.05fr 1.45fr 1fr;
+  gap:18px;
+  align-items:stretch;
+}
+
+.clinical-glass{
+  min-height:500px;
+  padding:24px;
+  border:1px solid rgba(183,225,230,.20);
+  border-radius:22px;
+  background:rgba(7,31,43,.72);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 18px 55px rgba(0,0,0,.18);
+}
+
+.clinical-card-label{
+  color:#6de0d2;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+
+.clinical-glass h3{
+  margin:0 0 18px;
+  color:#fff;
+  font-size:21px;
+}
+
+.patient-id-card{
+  display:flex;
+  gap:15px;
+  align-items:center;
+  padding:17px;
+  border-radius:16px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.09);
+  margin-bottom:20px;
+}
+
+.patient-scan-avatar{
+  width:58px;
+  height:58px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  background:linear-gradient(135deg,#b9fff6,#5bcfc3);
+  color:#07303a;
+  box-shadow:0 8px 24px rgba(66,218,204,.18);
+}
+
+.patient-id-card b{
+  display:block;
+  color:#fff;
+  font-size:15px;
+}
+
+.patient-id-card span{
+  display:block;
+  margin-top:4px;
+  color:#94b0bc;
+  font-size:11px;
+}
+
+.clinical-stat-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.clinical-stat{
+  padding:15px;
+  border-radius:14px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.075);
+}
+
+.clinical-stat span{
+  display:block;
+  color:#8eabb6;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.clinical-stat strong{
+  display:block;
+  margin-top:7px;
+  color:#fff;
+  font-size:14px;
+}
+
+.evidence-visual{
+  position:relative;
+  height:235px;
+  overflow:hidden;
+  border-radius:18px;
+  margin-bottom:16px;
+  background:
+    linear-gradient(90deg,rgba(3,21,30,.22),rgba(3,21,30,.05)),
+    url("https://images.unsplash.com/photo-1581595219315-a187dd40c322?auto=format&fit=crop&w=1200&q=85") center/cover no-repeat;
+  border:1px solid rgba(180,224,230,.16);
+}
+
+.evidence-visual::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,transparent 48%,rgba(3,20,29,.82));
+}
+
+.scan-caption{
+  position:absolute;
+  z-index:2;
+  left:18px;
+  right:18px;
+  bottom:15px;
+  color:#fff;
+}
+
+.scan-caption b{
+  display:block;
+  font-size:15px;
+}
+
+.scan-caption span{
+  display:block;
+  margin-top:4px;
+  color:#b9cdd5;
+  font-size:11px;
+}
+
+.evidence-list{
+  display:grid;
+  gap:9px;
+}
+
+.evidence-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 13px;
+  border-radius:13px;
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.075);
+}
+
+.evidence-icon{
+  width:35px;
+  height:35px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(100,221,210,.13);
+  color:#73e2d5;
+  font-size:17px;
+}
+
+.evidence-row b{
+  color:#edf8fa;
+  font-size:12px;
+}
+
+.evidence-row span{
+  display:block;
+  color:#88a5b0;
+  font-size:10px;
+  margin-top:3px;
+}
+
+.workspace-timeline{
+  position:relative;
+  margin-top:7px;
+  padding-left:23px;
+}
+
+.workspace-timeline::before{
+  content:"";
+  position:absolute;
+  left:6px;
+  top:7px;
+  bottom:8px;
+  width:1px;
+  background:rgba(102,225,211,.35);
+}
+
+.timeline-item{
+  position:relative;
+  padding:0 0 22px;
+}
+
+.timeline-item::before{
+  content:"";
+  position:absolute;
+  left:-21px;
+  top:3px;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#62ddd0;
+  box-shadow:0 0 0 4px rgba(98,221,208,.10);
+}
+
+.timeline-item b{
+  color:#f1fbfc;
+  font-size:12px;
+}
+
+.timeline-item p{
+  margin:5px 0 0;
+  color:#8eaab5;
+  font-size:11px;
+  line-height:1.5;
+}
+
+.clinical-action-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  margin-top:18px;
+  padding:17px 20px;
+  border-radius:17px;
+  background:rgba(255,255,255,.065);
+  border:1px solid rgba(255,255,255,.09);
+}
+
+.clinical-action-bar b{
+  color:#fff;
+  font-size:13px;
+}
+
+.clinical-action-bar span{
+  display:block;
+  color:#91abb5;
+  font-size:10px;
+  margin-top:4px;
+}
+
+.clinical-action-bar .clinical-scroll-btn{
+  border:1px solid rgba(108,224,211,.45);
+  background:rgba(92,220,208,.12);
+  color:#82e8dc;
+  padding:10px 15px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+@media(max-width:1050px){
+  .patient-clinical-layout{
+    grid-template-columns:1fr 1fr;
+  }
+  .clinical-glass:last-child{
+    grid-column:1/-1;
+    min-height:320px;
+  }
+}
+
+@media(max-width:700px){
+  .patient-clinical-section{
+    width:calc(100% - 24px);
+    margin:20px auto;
+    min-height:auto;
+  }
+
+  .patient-clinical-inner{
+    padding:28px 18px;
+  }
+
+  .patient-clinical-heading h2{
+    font-size:27px;
+  }
+
+  .patient-clinical-layout{
+    grid-template-columns:1fr;
+  }
+
+  .clinical-glass,
+  .clinical-glass:last-child{
+    grid-column:auto;
+    min-height:auto;
+  }
+
+  .clinical-action-bar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
+
+
+/* =========================
+   PATIENT WORKSPACE V2
+   FRONTEND-ONLY VISUAL LAYER
+   ========================= */
+
+.patient-clinical-section{
+  width:min(1540px,calc(100% - 42px));
+  min-height:900px;
+  margin:38px auto 34px;
+  border-radius:30px;
+  background:#061923;
+  border:1px solid rgba(121,218,210,.24);
+  box-shadow:0 28px 90px rgba(8,31,43,.20);
+}
+
+.patient-clinical-section::before{
+  background:
+    linear-gradient(90deg,rgba(3,20,29,.96) 0%,rgba(3,25,35,.91) 35%,rgba(4,29,40,.73) 61%,rgba(4,25,35,.88) 100%),
+    url("https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=2400&q=88") center/cover no-repeat;
+}
+
+.patient-clinical-section::after{
+  background:
+    radial-gradient(circle at 73% 28%,rgba(59,224,208,.17),transparent 24%),
+    radial-gradient(circle at 15% 85%,rgba(55,139,255,.10),transparent 25%),
+    linear-gradient(180deg,rgba(3,20,29,.02),rgba(3,20,29,.62));
+}
+
+.patient-clinical-bg-label{
+  position:absolute;
+  top:22px;
+  left:48px;
+  right:48px;
+  z-index:3;
+  display:flex;
+  justify-content:space-between;
+  color:rgba(169,218,221,.58);
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:1.7px;
+}
+
+.patient-clinical-inner{
+  padding:70px 48px 42px;
+}
+
+.patient-clinical-heading{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:30px;
+  max-width:none;
+  margin-bottom:30px;
+}
+
+.patient-clinical-heading h2{
+  font-size:42px;
+  line-height:1.04;
+  letter-spacing:-1.5px;
+}
+
+.patient-clinical-heading p{
+  max-width:790px;
+}
+
+.clinical-live-badge{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:10px 13px;
+  border:1px solid rgba(89,222,208,.24);
+  border-radius:999px;
+  background:rgba(44,208,190,.08);
+  color:#7ce7db;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.clinical-live-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#44dec9;
+  box-shadow:0 0 0 5px rgba(68,222,201,.10);
+}
+
+.clinical-dashboard{
+  display:grid;
+  grid-template-columns:1fr 1.35fr 1fr;
+  gap:16px;
+}
+
+.clinical-glass{
+  min-height:590px;
+  padding:23px;
+  border:1px solid rgba(184,230,232,.19);
+  border-radius:22px;
+  background:rgba(5,28,40,.76);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 20px 60px rgba(0,0,0,.20);
+}
+
+.clinical-card-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.clinical-card-top h3{
+  margin:0;
+}
+
+.clinical-mini-status{
+  padding:5px 8px;
+  border-radius:7px;
+  background:rgba(75,219,205,.09);
+  border:1px solid rgba(75,219,205,.14);
+  color:#73e1d5;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.7px;
+  white-space:nowrap;
+}
+
+.clinical-divider{
+  height:1px;
+  margin:22px 0;
+  background:rgba(179,226,229,.10);
+}
+
+.patient-scan-avatar{
+  background:linear-gradient(135deg,#c5fff8,#5bd5c8);
+}
+
+.medical-scan-viewer{
+  position:relative;
+  height:290px;
+  overflow:hidden;
+  border:1px solid rgba(150,225,228,.20);
+  border-radius:18px;
+  background:
+    linear-gradient(90deg,rgba(3,17,25,.42),rgba(3,17,25,.05)),
+    url("https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1400&q=88") center/cover no-repeat;
+  box-shadow:inset 0 0 60px rgba(0,0,0,.32);
+}
+
+.medical-scan-viewer::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse at center,rgba(205,245,244,.18),transparent 42%),
+    repeating-linear-gradient(0deg,transparent 0 15px,rgba(112,224,218,.035) 16px);
+  mix-blend-mode:screen;
+}
+
+.scan-grid-lines{
+  position:absolute;
+  inset:0;
+  opacity:.24;
+  background:
+    linear-gradient(rgba(118,228,220,.15) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(118,228,220,.15) 1px,transparent 1px);
+  background-size:34px 34px;
+}
+
+.scan-crosshair{
+  position:absolute;
+  z-index:2;
+  background:rgba(107,227,217,.45);
+  box-shadow:0 0 8px rgba(78,222,208,.32);
+}
+
+.scan-crosshair.horizontal{
+  width:100%;
+  height:1px;
+  top:50%;
+}
+
+.scan-crosshair.vertical{
+  height:100%;
+  width:1px;
+  left:50%;
+}
+
+.scan-frame{
+  position:absolute;
+  z-index:3;
+  inset:38px 50px;
+  border:1px solid rgba(208,247,246,.34);
+}
+
+.scan-frame-corner{
+  position:absolute;
+  width:16px;
+  height:16px;
+  border-color:#8be8de;
+}
+
+.scan-frame-corner.tl{left:-1px;top:-1px;border-left:2px solid;border-top:2px solid}
+.scan-frame-corner.tr{right:-1px;top:-1px;border-right:2px solid;border-top:2px solid}
+.scan-frame-corner.bl{left:-1px;bottom:-1px;border-left:2px solid;border-bottom:2px solid}
+.scan-frame-corner.br{right:-1px;bottom:-1px;border-right:2px solid;border-bottom:2px solid}
+
+.scan-meta{
+  position:absolute;
+  z-index:4;
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  left:15px;
+  right:15px;
+  color:#c4e9e8;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+
+.scan-meta-top{top:13px}
+.scan-meta-bottom{bottom:12px;color:#83b7ba}
+
+.scan-meta b{
+  color:#76e4d8;
+}
+
+.scan-caption{
+  z-index:5;
+}
+
+.scan-controls{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:10px 0 15px;
+  color:#77dcd1;
+  font-size:10px;
+}
+
+.scan-progress{
+  height:3px;
+  flex:1;
+  overflow:hidden;
+  border-radius:99px;
+  background:rgba(255,255,255,.09);
+}
+
+.scan-progress i{
+  display:block;
+  width:34%;
+  height:100%;
+  border-radius:99px;
+  background:#5ad8cc;
+}
+
+.scan-count{
+  color:#7e9fa7;
+  font-size:8px;
+  letter-spacing:.6px;
+}
+
+.compact-evidence{
+  gap:7px;
+}
+
+.compact-evidence .evidence-row{
+  padding:9px 10px;
+}
+
+.compact-evidence em{
+  margin-left:auto;
+  color:#69dacc;
+  font-size:7px;
+  font-style:normal;
+  font-weight:900;
+  letter-spacing:.6px;
+}
+
+.intelligence-visual{
+  position:relative;
+  height:178px;
+  overflow:hidden;
+  border:1px solid rgba(176,225,228,.15);
+  border-radius:17px;
+}
+
+.intelligence-image{
+  position:absolute;
+  inset:0;
+  background:
+    url("https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=88") center/cover no-repeat;
+  filter:saturate(.72);
+}
+
+.intelligence-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(3,25,35,.76),rgba(5,51,57,.34),rgba(3,20,30,.82));
+}
+
+.intelligence-copy{
+  position:absolute;
+  z-index:2;
+  left:17px;
+  right:17px;
+  bottom:15px;
+}
+
+.intelligence-copy span{
+  display:block;
+  margin-bottom:5px;
+  color:#75dfd3;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1.1px;
+}
+
+.intelligence-copy b{
+  color:#fff;
+  font-size:14px;
+}
+
+.intelligence-metrics{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+
+.intelligence-metrics div{
+  padding:11px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:11px;
+  background:rgba(255,255,255,.045);
+}
+
+.intelligence-metrics span{
+  display:block;
+  color:#83a3ad;
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+}
+
+.intelligence-metrics strong{
+  display:block;
+  margin-top:5px;
+  color:#effbfb;
+  font-size:11px;
+}
+
+.clinical-route-panel{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  margin-top:12px;
+  padding:12px;
+  border:1px solid rgba(77,218,204,.15);
+  border-radius:13px;
+  background:rgba(45,209,191,.055);
+}
+
+.route-pulse{
+  width:9px;
+  height:9px;
+  flex:0 0 9px;
+  border-radius:50%;
+  background:#48ddca;
+  box-shadow:0 0 0 5px rgba(72,221,202,.09);
+}
+
+.clinical-route-panel span{
+  display:block;
+  color:#6eddd1;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.9px;
+}
+
+.clinical-route-panel b{
+  display:block;
+  margin-top:3px;
+  color:#eefafa;
+  font-size:11px;
+}
+
+.clinical-route-panel small{
+  display:block;
+  margin-top:3px;
+  color:#7f9ca5;
+  font-size:8px;
+  line-height:1.4;
+}
+
+.clinical-evidence-strip{
+  display:grid;
+  grid-template-columns:1.1fr repeat(4,1fr);
+  gap:10px;
+  margin-top:15px;
+}
+
+.evidence-strip-title,
+.file-chip{
+  min-height:72px;
+  padding:12px 14px;
+  border:1px solid rgba(180,226,230,.12);
+  border-radius:15px;
+  background:rgba(5,28,40,.68);
+}
+
+.evidence-strip-title{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.evidence-strip-title .clinical-card-label{
+  margin-bottom:4px;
+}
+
+.evidence-strip-title b{
+  color:#e9f8f8;
+  font-size:11px;
+}
+
+.file-chip{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.file-chip-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  border-radius:10px;
+  background:rgba(88,216,205,.10);
+  font-size:17px;
+}
+
+.file-chip b{
+  display:block;
+  color:#eaf8f8;
+  font-size:9px;
+}
+
+.file-chip small{
+  display:block;
+  margin-top:3px;
+  color:#7898a2;
+  font-size:7px;
+}
+
+.file-chip strong{
+  margin-left:auto;
+  color:#69dacc;
+  font-size:7px;
+  letter-spacing:.5px;
+}
+
+.clinical-action-bar{
+  margin-top:15px;
+  background:rgba(255,255,255,.055);
+}
+
+@media(max-width:1150px){
+  .clinical-dashboard{
+    grid-template-columns:1fr 1fr;
+  }
+  .clinical-intelligence-card{
+    grid-column:1/-1;
+  }
+  .clinical-evidence-strip{
+    grid-template-columns:1fr 1fr;
+  }
+  .evidence-strip-title{
+    grid-column:1/-1;
+  }
+}
+
+@media(max-width:700px){
+  .patient-clinical-section{
+    width:calc(100% - 20px);
+    margin:20px auto;
+    border-radius:22px;
+  }
+
+  .patient-clinical-bg-label{
+    left:20px;
+    right:20px;
+    font-size:6px;
+  }
+
+  .patient-clinical-inner{
+    padding:55px 16px 25px;
+  }
+
+  .patient-clinical-heading{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .patient-clinical-heading h2{
+    font-size:29px;
+  }
+
+  .clinical-dashboard{
+    grid-template-columns:1fr;
+  }
+
+  .clinical-intelligence-card{
+    grid-column:auto;
+  }
+
+  .clinical-evidence-strip{
+    grid-template-columns:1fr;
+  }
+
+  .evidence-strip-title{
+    grid-column:auto;
+  }
+
+  .medical-scan-viewer{
+    height:245px;
+  }
+}
+
+
+/* ===== CLINICAL EVIDENCE COMMAND CENTER ===== */
+.patient-clinical-section{
+  position:relative !important;
+  width:min(1540px,calc(100% - 34px)) !important;
+  min-height:780px !important;
+  margin:30px auto 34px !important;
+  overflow:hidden !important;
+  border:1px solid rgba(102,215,215,.22) !important;
+  border-radius:30px !important;
+  background:#061a25 !important;
+  box-shadow:0 28px 90px rgba(5,28,40,.22) !important;
+}
+.patient-clinical-section::before,.patient-clinical-section::after{display:none !important}
+.clinical-bg-slideshow,.clinical-bg-slide,.clinical-bg-vignette,.clinical-scan-lines{position:absolute;inset:0}
+.clinical-bg-slideshow{z-index:0;background:#061a25}
+.clinical-bg-slide{background-position:center;background-size:cover;opacity:0;animation:clinicalBgFade 18s infinite}
+.clinical-bg-slide-1{background-image:url('https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=2200&q=85');animation-delay:0s}
+.clinical-bg-slide-2{background-image:url('https://images.unsplash.com/photo-1530497610245-72fa7ae3c73d?auto=format&fit=crop&w=2200&q=85');animation-delay:6s}
+.clinical-bg-slide-3{background-image:url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=2200&q=85');animation-delay:12s}
+@keyframes clinicalBgFade{0%,5%{opacity:.40}28%,38%{opacity:.40}43%,100%{opacity:0}}
+.clinical-bg-vignette{z-index:2;background:linear-gradient(90deg,rgba(3,20,29,.97),rgba(4,28,39,.80) 28%,rgba(3,27,38,.64) 50%,rgba(3,22,32,.84) 78%,rgba(3,19,28,.96)),linear-gradient(180deg,rgba(2,19,28,.62),rgba(2,24,34,.84))}
+.clinical-scan-lines{z-index:3;opacity:.15;background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(128,230,225,.12) 4px);pointer-events:none}
+.clinical-workspace-shell{position:relative;z-index:5;padding:36px 38px 24px}
+.clinical-workspace-head{display:flex;align-items:flex-end;justify-content:space-between;gap:25px;margin-bottom:25px}
+.clinical-workspace-head h2{margin:5px 0 8px;font-size:37px;color:#f2ffff;letter-spacing:-1.3px}
+.clinical-workspace-head p{max-width:760px;margin:0;color:#9bb8c0;font-size:12px;line-height:1.6}
+.clinical-kicker{display:block;color:#66ded2;font-size:8px;font-weight:900;letter-spacing:1.35px}
+.clinical-secure-pill{padding:10px 13px;border:1px solid rgba(90,219,208,.22);border-radius:999px;background:rgba(50,205,190,.07);color:#73dfd4;font-size:8px;font-weight:900;letter-spacing:.8px;white-space:nowrap}
+.clinical-secure-pill span{display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:#55dfce;box-shadow:0 0 0 4px rgba(85,223,206,.08)}
+.clinical-command-center{display:grid;grid-template-columns:250px minmax(440px,1fr) 270px;gap:14px;align-items:stretch}
+.clinical-side-column{display:flex;flex-direction:column;gap:14px}
+.clinical-panel{padding:18px;border:1px solid rgba(182,229,232,.16);border-radius:19px;background:rgba(5,27,39,.73);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 50px rgba(0,0,0,.17)}
+.clinical-panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:16px}
+.clinical-panel-heading>div>span{display:block;color:#60d8ce;font-size:7px;font-weight:900;letter-spacing:1px;margin-bottom:4px}
+.clinical-panel-heading h3{margin:0;color:#effafa;font-size:13px}
+.clinical-panel-heading>b{padding:4px 7px;border-radius:6px;background:rgba(67,220,205,.08);color:#6ee1d5;font-size:7px;letter-spacing:.7px}
+.patient-identity{display:flex;align-items:center;gap:10px;padding:11px;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06)}
+.patient-identity-icon{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#a7f6ee,#31a99e);color:#07323a;font-size:19px}
+.patient-identity strong,.patient-identity span{display:block}.patient-identity strong{color:#edfafa;font-size:10px}.patient-identity span{margin-top:3px;color:#7f9da6;font-size:8px}
+.patient-info-rows{margin-top:12px}.patient-info-rows>div{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);gap:8px}.patient-info-rows span{color:#7999a2;font-size:8px}.patient-info-rows b{color:#d9efef;font-size:8px;text-align:right}.patient-tier-placeholder{color:#69ddd1 !important}
+.evidence-source-row{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055)}
+.evidence-source-row:last-child{border-bottom:0}.evidence-source-row i{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:rgba(76,216,205,.08);font-style:normal}.evidence-source-row div{flex:1}.evidence-source-row strong,.evidence-source-row span{display:block}.evidence-source-row strong{color:#e7f7f7;font-size:9px}.evidence-source-row span{margin-top:2px;color:#75939d;font-size:7px}.evidence-source-row em{color:#5edacd;font-size:6px;font-style:normal;font-weight:900}
+.clinical-center-column{min-width:0;display:flex}
+.clinical-upload-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:570px;padding:30px;border:1px solid rgba(118,224,216,.31);border-radius:24px;background:linear-gradient(145deg,rgba(11,45,58,.76),rgba(5,27,39,.65));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:inset 0 0 90px rgba(61,207,196,.045),0 25px 70px rgba(0,0,0,.20);overflow:hidden}
+.clinical-upload-card::before{content:"";position:absolute;inset:16px;border:1px dashed rgba(115,226,218,.24);border-radius:18px;pointer-events:none}
+.upload-orbit{position:absolute;border:1px solid rgba(84,220,208,.12);border-radius:50%;pointer-events:none}.upload-orbit-one{width:340px;height:340px}.upload-orbit-two{width:520px;height:520px;border-color:rgba(84,220,208,.07)}
+.upload-cloud-icon{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;width:68px;height:68px;border-radius:20px;background:linear-gradient(145deg,rgba(93,226,216,.24),rgba(63,127,255,.20));border:1px solid rgba(105,225,217,.34);color:#73e6db;font-size:34px;box-shadow:0 0 40px rgba(63,219,207,.11);margin-bottom:12px}
+.upload-kicker{position:relative;z-index:2;margin-bottom:4px}.clinical-upload-card h3{position:relative;z-index:2;margin:0;color:#f4ffff;font-size:23px;letter-spacing:-.5px}.clinical-upload-card>p{position:relative;z-index:2;max-width:470px;margin:8px auto 18px;color:#8eafb7;font-size:10px;text-align:center;line-height:1.5}
+.upload-type-grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(6,1fr);gap:7px;width:100%;max-width:600px;margin-bottom:17px}.upload-type-grid>div{padding:9px 5px;text-align:center;border:1px solid rgba(178,226,229,.10);border-radius:10px;background:rgba(255,255,255,.035)}.upload-type-grid span{display:block;font-size:15px}.upload-type-grid b{display:block;margin-top:3px;color:#dff6f4;font-size:7px}.upload-type-grid small{display:block;margin-top:2px;color:#72919b;font-size:6px}
+.clinical-file-dropzone{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;width:min(560px,100%);min-height:78px;border:1px dashed rgba(95,220,210,.43);border-radius:15px;background:rgba(24,93,99,.10);cursor:pointer;transition:.2s}.clinical-file-dropzone:hover{background:rgba(47,187,177,.12);border-color:rgba(111,235,224,.68)}.clinical-file-dropzone input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.file-drop-icon{display:flex;align-items:center;justify-content:center;width:27px;height:27px;border-radius:50%;background:rgba(77,217,205,.12);color:#71e4d8;font-size:17px}.clinical-file-dropzone strong{margin-top:5px;color:#eaf9f8;font-size:10px}.clinical-file-dropzone small{margin-top:3px;color:#7798a1;font-size:7px}
+.clinical-upload-button{position:relative;z-index:2;margin-top:10px;width:min(560px,100%);padding:12px 18px;border:0;border-radius:11px;background:linear-gradient(90deg,#19b9ae,#277ff0);color:white;font-size:10px;font-weight:900;cursor:pointer;box-shadow:0 10px 28px rgba(28,178,181,.16)}.clinical-upload-button span{float:right;font-size:14px}.clinical-upload-message{position:relative;z-index:2;min-height:13px;margin:6px 0 0 !important;color:#66dfd4 !important;font-size:8px !important}.upload-security{position:relative;z-index:2;margin-top:10px;color:#688890;font-size:7px}.upload-security span{color:#55d9cc}
+.pipeline-panel{flex:1}.pipeline-step{display:flex;align-items:center;gap:8px}.pipeline-step>strong{display:flex;align-items:center;justify-content:center;width:27px;height:27px;flex:0 0 27px;border:1px solid rgba(86,221,208,.32);border-radius:50%;color:#72e1d6;font-size:9px;background:rgba(58,205,194,.07)}.pipeline-step div{flex:1}.pipeline-step b,.pipeline-step span{display:block}.pipeline-step b{color:#e7f8f7;font-size:9px}.pipeline-step span{margin-top:2px;color:#74939c;font-size:6.5px;line-height:1.35}.pipeline-step em{padding:4px 5px;border:1px solid rgba(73,218,203,.15);border-radius:5px;color:#64dccf;font-size:5.5px;font-style:normal;font-weight:900}.pipeline-line{width:1px;height:11px;margin:2px 0 2px 13px;background:linear-gradient(#4fd5ca,transparent)}
+.tier-preview-panel{min-height:190px}.tier-preview-empty{padding:10px;border:1px dashed rgba(112,222,215,.15);border-radius:11px;text-align:center;background:rgba(255,255,255,.025);margin-bottom:10px}.tier-preview-empty span{display:block;color:#69ddd1;font-size:18px}.tier-preview-empty b{display:block;margin-top:2px;color:#e8f7f6;font-size:9px}.tier-preview-empty small{display:block;margin-top:3px;color:#6f8e98;font-size:6.5px;line-height:1.4}.tier-preview-row{display:grid;grid-template-columns:43px 1fr 45px;align-items:center;gap:6px;margin-top:7px}.tier-preview-row>span{color:#8daab1;font-size:6.5px;font-weight:900}.tier-preview-row>i{height:4px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}.tier-preview-row>i b{display:block;width:0;height:100%;border-radius:99px;background:#5bd8ce}.tier-preview-row>em{color:#6e8e97;font-size:5px;font-style:normal;text-align:right}
+.clinical-bottom-strip{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:13px;padding:12px 15px;border:1px solid rgba(177,227,230,.10);border-radius:13px;background:rgba(4,25,35,.55)}.clinical-bottom-strip>div:first-child span,.clinical-bottom-strip>div:first-child b{display:block}.clinical-bottom-strip span{color:#69ddd2;font-size:6.5px;font-weight:900;letter-spacing:.9px}.clinical-bottom-strip b{margin-top:3px;color:#aac5c9;font-size:8px}.clinical-bottom-status{color:#68ddd2;font-size:7px;font-weight:900}.clinical-bottom-status>span{display:inline-block;width:6px;height:6px;margin-right:4px;border-radius:50%;background:#57ddcf;box-shadow:0 0 0 4px rgba(87,221,207,.07)}
+
+/* ===== CONSULTATION / TIER AREA ===== */
+.clinical-consultation-grid{grid-template-columns:220px minmax(0,1fr) !important;gap:15px !important;max-width:1540px !important;margin:0 auto 60px !important;padding:0 0 !important}.clinical-tools-panel{min-height:620px !important;background:linear-gradient(180deg,#0b2633,#071c27) !important;border:1px solid rgba(93,207,202,.18) !important}.consultation-nav-heading{padding-bottom:13px;margin-bottom:5px;border-bottom:1px solid rgba(255,255,255,.06)}.consultation-nav-heading span,.consultation-nav-heading b{display:block}.consultation-nav-heading span{color:#67ddd2;font-size:7px;font-weight:900;letter-spacing:1px}.consultation-nav-heading b{margin-top:4px;color:#eefafa;font-size:12px}.clinical-tools-panel .nav{width:100%;margin:3px 0;text-align:left}.tools-info-card{margin-top:18px;padding:13px;border:1px solid rgba(79,215,204,.13);border-radius:12px;background:rgba(65,210,198,.045)}.tools-info-card span{display:block;color:#61dacf;font-size:6px;font-weight:900;letter-spacing:.8px}.tools-info-card b{display:block;margin-top:5px;color:#e9f8f7;font-size:9px}.tools-info-card small{display:block;margin-top:5px;color:#74949d;font-size:7px;line-height:1.5}.clinical-consultation-panel{min-height:620px !important;padding:0 !important;overflow:hidden;background:linear-gradient(180deg,#f9ffff,#edf6f7) !important;border:1px solid #d7e7e8 !important}.consultation-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:29px 30px 22px;border-bottom:1px solid #dbe9ea;background:linear-gradient(135deg,#fbffff,#eff9f8)}.consultation-hero h1{margin:5px 0 7px;color:#10263a;font-size:30px;letter-spacing:-1px}.consultation-model-pill{padding:9px 11px;border:1px solid #cce8e5;border-radius:999px;background:#f0fbfa;color:#168f85;font-size:7px;font-weight:900;letter-spacing:.7px;white-space:nowrap}.consultation-model-pill span{display:inline-block;width:6px;height:6px;margin-right:5px;border-radius:50%;background:#16b8aa}.consultation-flow-strip{display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 20px;border-bottom:1px solid #e0ebec;background:#f6fbfb;color:#69858d;font-size:6.5px;font-weight:900;letter-spacing:.7px}.consultation-flow-strip i{color:#19b6aa;font-style:normal;font-size:10px}.clinical-consultation-panel #result{margin:18px 20px}.clinical-consultation-panel #result:not(.hide){padding:22px;border:1px solid #aee2dd;border-radius:17px;background:linear-gradient(135deg,#f7ffff,#eaf8f6);box-shadow:0 15px 40px rgba(19,138,128,.09)}.clinical-consultation-panel #result .tier{display:inline-flex;align-items:center;padding:7px 10px;border-radius:8px;background:#d7f6f1;color:#0c8d82;font-size:10px;font-weight:900;letter-spacing:.7px}.clinical-consultation-panel #result h3{color:#122d42 !important}.consultation-empty-state{display:flex;align-items:center;gap:15px;margin:18px 20px;padding:18px;border:1px dashed #c9dfdf;border-radius:15px;background:rgba(242,250,249,.75)}.consultation-ai-orb{display:flex;align-items:center;justify-content:center;width:42px;height:42px;flex:0 0 42px;border-radius:13px;background:linear-gradient(135deg,#c9fff7,#71d8cf);color:#078e83;font-size:21px;box-shadow:0 8px 20px rgba(27,166,154,.12)}.consultation-empty-state b,.consultation-empty-state span{display:block}.consultation-empty-state b{color:#193247;font-size:11px}.consultation-empty-state span{margin-top:4px;color:#718b94;font-size:8px;line-height:1.5}
+
+/* More aesthetic tier result cards produced by the existing JavaScript */
+.chat-routing-card{margin:13px 0 !important;border:1px solid rgba(83,209,198,.26) !important;border-radius:17px !important;background:linear-gradient(145deg,rgba(246,255,254,.98),rgba(229,248,246,.96)) !important;box-shadow:0 12px 30px rgba(14,117,111,.08) !important;color:#173447 !important;overflow:hidden}.routing-topline{padding:11px 15px !important;background:linear-gradient(90deg,#dff8f4,#f3fbfb) !important;border-bottom:1px solid #cfe8e6 !important}.routing-live{color:#0a978c !important;font-size:8px !important}.routing-change{color:#128a81 !important;font-size:7px !important;font-weight:900 !important}.routing-tier-row{padding:18px 15px !important}.routing-label{color:#77939a !important;font-size:7px !important;letter-spacing:1px !important}.routing-tier{font-size:34px !important;color:#0b8e84 !important;letter-spacing:-1px !important}.routing-route{color:#587680 !important;font-size:8px !important;line-height:1.8 !important}.routing-grid{padding:0 15px 15px !important;display:grid !important;grid-template-columns:1fr 1fr !important;gap:8px !important}.routing-grid>div{padding:12px !important;border:1px solid #d8ebea !important;border-radius:11px !important;background:rgba(255,255,255,.58) !important}.routing-grid span{display:block !important;color:#7b979e !important;font-size:6px !important;text-transform:uppercase !important;letter-spacing:.8px !important}.routing-grid b{display:block !important;margin-top:4px !important;color:#193747 !important;font-size:8px !important;line-height:1.5 !important}.routing-agents{display:flex !important;flex-wrap:wrap !important;gap:6px !important;padding:0 15px 15px !important}.routing-agents span{padding:6px 8px !important;border-radius:999px !important;background:#dff6f2 !important;color:#148d84 !important;font-size:6px !important;font-weight:900 !important}
+
+@media(max-width:1100px){.clinical-command-center{grid-template-columns:210px minmax(360px,1fr)}.clinical-right-column{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.clinical-upload-card{min-height:520px}.clinical-consultation-grid{grid-template-columns:1fr !important}.clinical-tools-panel{min-height:auto !important}.clinical-tools-panel .nav{width:auto;margin-right:5px}.tools-info-card{display:none}}
+@media(max-width:760px){.patient-clinical-section{width:calc(100% - 16px) !important;border-radius:20px !important}.clinical-workspace-shell{padding:24px 13px 18px}.clinical-workspace-head{align-items:flex-start;flex-direction:column}.clinical-workspace-head h2{font-size:27px}.clinical-command-center{grid-template-columns:1fr}.clinical-right-column{grid-column:auto;display:flex}.upload-type-grid{grid-template-columns:repeat(3,1fr)}.clinical-upload-card{min-height:520px;padding:22px 15px}.clinical-bottom-strip{align-items:flex-start;flex-direction:column}.clinical-consultation-grid{padding:0 8px !important}.consultation-hero{align-items:flex-start;flex-direction:column;padding:22px}.consultation-flow-strip{overflow:auto;justify-content:flex-start;white-space:nowrap}.routing-grid{grid-template-columns:1fr !important}}
+
+
+/* =========================
+   HEADER POLISH
+   +5% HEIGHT / CENTER GLOWING BRAND
+   FRONTEND-ONLY
+========================= */
+
+.top{
+  height:76px !important;
+  min-height:76px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding:0 32px;
+  background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
+  border-bottom:1px solid #dfe8ef;
+  box-shadow:0 4px 18px rgba(12,36,58,.055),0 1px 0 rgba(35,120,180,.04);
+}
+
+.top .brand{
+  position:absolute;
+  left:25%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+  font-size:45px !important;
+  font-weight:750 !important;
+  letter-spacing:-.65px;
+  color:#06151b !important;
+  text-shadow:0 0 .5px rgba(40, 233, 229, 0.8),0 0 5px rgba(40, 233, 229, 0.8);
+
+}
+
+.top .brand span{
+    margin-left: 5px;
+
+  font-size:45px !important;
+  font-weight:75 !important;
+  letter-spacing:-.65px;
+  color:#07131f !important;
+  text-shadow:0 0 .5px rgba(40, 233, 229, 0.8),0 0 5px rgba(40, 233, 229, 0.8);
+}
+
+
+.brand-black{
+  color:#0b1117;
+  font-weight:700;
+  text-shadow:none;
+  animation:none;
+}
+
+.brand-blue{
+  color:#00cfe8;
+  font-weight:700;
+  animation:brandBluePulse 5s ease-in-out infinite;
+}
+
+.top > div:last-child{
+  position:relative;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.top .pill{
+  line-height:1;
+}
+
+.top > div:last-child .secondary{
+  margin-left:0;
+}
+
+@media(max-width:760px){
+  .top{
+    height:400px !important;
+    min-height:76px;
+    padding:0 14px;
+  }
+  .top .brand{
+    font-size:500px !important;
+    letter-spacing:-.45px;
+  }
+  .top .brand span{
+    margin-left:3px;
+  }
+  .top .pill{
+    display:none;
+  }
+}
+
+@media(max-width:480px){
+  .top .brand{
+    font-size:500px !important;
+  }
+  .top > div:last-child .secondary{
+    padding:8px 11px;
+    font-size:40px;
+  }
+}
+
 </style></head>
-<body><div id="auth" class="auth"><div class="authbox"><h2>Universal Disease Prediction</h2><p class="muted">Research / demo decision-support platform</p><input id="name" class="field" placeholder="Name (register only)"><input id="email" class="field" placeholder="Email"><input id="password" type="password" class="field" placeholder="Password (8+ characters)"><div class="row"><button class="primary" onclick="handleAuth('login')">Login</button><button class="secondary" onclick="handleAuth('register')">Create account</button></div><p id="authmsg" class="small"></p></div></div>
+<body><div id="auth" class="auth"><div class="authbox"><h2>Universal Disease Prediction</h2><p class="muted">Research / demo decision-support platform</p><input id="name" class="field" placeholder="Name (register only)"><input id="email" class="field" placeholder="Email"><input id="password" type="password" class="field" placeholder="Password (8+ characters)"><div class="row"><button id="loginBtn" type="button" class="primary">Login</button><button id="registerBtn" type="button" class="secondary">Create account</button></div><p id="authmsg" class="small"></p></div></div>
 <div class="app"><header class="top"><div class="brand">Universal <span>Disease Prediction</span></div><div><span id="userpill" class="pill">Not signed in</span> <button class="secondary" onclick="logout()">Logout</button></div></header>
-<div class="grid"><aside class="panel side"><h3>Patient workspace</h3><button class="nav active">◉ AI Consultation</button><button class="nav" onclick="loadHistory()">▣ Medical History</button><button class="nav" onclick="loadStatus()">⚙ Model Status</button><div class="upload"><b>Upload evidence</b><p class="small">PDF reports, prescriptions, X-rays, CT/MRI images</p><input id="file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp"><button class="secondary" style="margin-top:9px" onclick="upload()">Upload & store</button><p id="uploadmsg" class="small"></p></div></aside>
-<main class="panel main"><div class="hero"><h1>AI Medical Consultation</h1><div class="muted">Longitudinal history → multi-agent evidence analysis → deterministic tier routing → prediction engine</div></div><div id="chat" class="chat"><div class="msg bot">Hello. Describe your symptoms, duration, relevant history, medications, or attach a medical report. The orchestrator will process the evidence and route it to the appropriate tier.</div></div><div id="result" class="result hide"></div><div class="composer"><textarea id="message" placeholder="Example: I have been feeling unusually tired and thirsty for 3 weeks..."></textarea><div class="row"><button class="primary" onclick="send()">Run AI analysis</button><button class="secondary" onclick="document.getElementById('message').value=''">Clear</button></div></div></main>
-<aside class="panel right"><div style="padding:16px;border-bottom:1px solid #203149"><b>Orchestrator — live trace</b><div class="muted">Agent simulation for review</div></div><div id="agents"></div><div class="history"><b>System status</b><div id="status" class="small" style="margin-top:8px">Sign in to load status.</div></div></aside></div></div>
+<section class="slideshow" aria-label="Healthcare platform slideshow">
+  <div class="slide">
+    <div class="slide-content">
+      <span class="eyebrow">AI-powered healthcare</span>
+      <h1>Intelligent Disease Prediction</h1>
+      <p>Bring symptoms, medical history, reports, and clinical evidence together in one intelligent decision-support platform.</p>
+    </div>
+  </div>
+  <div class="slide">
+    <div class="slide-content">
+      <span class="eyebrow">Evidence analysis</span>
+      <h1>Understand the Evidence</h1>
+      <p>Analyze patient information and medical documents through a structured multi-agent workflow.</p>
+    </div>
+  </div>
+  <div class="slide">
+    <div class="slide-content">
+      <span class="eyebrow">Smart triage</span>
+      <h1>From Symptoms to Insights</h1>
+      <p>Use intelligent routing and evidence-based analysis to support earlier and more informed decisions.</p>
+    </div>
+  </div>
+  <div class="slide">
+    <div class="slide-content">
+      <span class="eyebrow">Unified platform</span>
+      <h1>One Clear Patient View</h1>
+      <p>Connect longitudinal history, uploaded evidence, prediction models, and orchestration in a single workspace.</p>
+    </div>
+  </div>
+  <div class="slide-dots"><span></span><span></span><span></span><span></span></div>
+</section>
+
+<section class="orchestrator-showcase" aria-label="AI orchestrator agents">
+  <div class="orchestrator-heading">
+    <span class="eyebrow">Multi-agent intelligence</span>
+    <h2>The Orchestrator</h2>
+    <p>Specialized AI agents work together to understand the patient, evaluate evidence, triage risk, and route the case to the right prediction tier.</p>
+  </div>
+
+  <div class="orbit-stage">
+    <div class="orbit-ring"></div>
+    <div id="agents" class="agent-orbit"></div>
+
+    <div class="agent-center">
+      <div class="center-icon">🩺</div>
+      <div class="center-label">Agents Responsible</div>
+      <h3 id="agentCenterTitle">History Agent</h3>
+      <p id="agentCenterInfo">Retrieves longitudinal medical records, documents and prior predictions.</p>
+      <div id="agentCenterStep" class="center-step">AGENT 01 · ACTIVE</div>
+    </div>
+  </div>
+
+  <div class="orchestrator-footer">
+    <span>Continuous agent handoff</span>
+    <span>Evidence-driven routing</span>
+    <span>Deterministic tier selection</span>
+  </div>
+
+  <div class="orchestrator-status">
+    <b>System status</b>
+    <div id="status" class="small" style="margin-top:8px">Sign in to load status.</div>
+  </div>
+</section>
+
+
+<section class="patient-clinical-section" aria-label="Patient clinical evidence workspace">
+  <div class="clinical-bg-slideshow" aria-hidden="true">
+    <div class="clinical-bg-slide clinical-bg-slide-1"></div>
+    <div class="clinical-bg-slide clinical-bg-slide-2"></div>
+    <div class="clinical-bg-slide clinical-bg-slide-3"></div>
+    <div class="clinical-bg-vignette"></div>
+    <div class="clinical-scan-lines"></div>
+  </div>
+
+  <div class="clinical-workspace-shell">
+    <div class="clinical-workspace-head">
+      <div>
+        <span class="clinical-kicker">PATIENT EVIDENCE CENTER · SECURE CLINICAL WORKSPACE</span>
+        <h2>Patient Clinical Workspace</h2>
+        <p>Bring together symptoms, medical records, diagnostic scans and clinical evidence before the multi-agent prediction pipeline begins.</p>
+      </div>
+      <div class="clinical-secure-pill"><span></span> SECURE EVIDENCE ENVIRONMENT</div>
+    </div>
+
+    <div class="clinical-command-center">
+      <!-- LEFT INFORMATION COLUMN -->
+      <aside class="clinical-side-column clinical-left-column">
+        <div class="clinical-panel patient-info-panel">
+          <div class="clinical-panel-heading">
+            <div><span>01</span><h3>Patient information</h3></div>
+            <b>LIVE</b>
+          </div>
+          <div class="patient-identity">
+            <div class="patient-identity-icon">♙</div>
+            <div><strong>Current patient</strong><span>Longitudinal record</span></div>
+          </div>
+          <div class="patient-info-rows">
+            <div><span>Patient ID</span><b>ACTIVE SESSION</b></div>
+            <div><span>History</span><b>LONGITUDINAL</b></div>
+            <div><span>Evidence</span><b>MULTI-SOURCE</b></div>
+            <div><span>Current Tier</span><b class="patient-tier-placeholder">—</b></div>
+          </div>
+        </div>
+
+        <div class="clinical-panel recent-evidence-panel">
+          <div class="clinical-panel-heading">
+            <div><span>02</span><h3>Evidence sources</h3></div>
+            <b>VAULT</b>
+          </div>
+          <div class="evidence-source-row"><i>📄</i><div><strong>Clinical reports</strong><span>PDF / documents</span></div><em>READY</em></div>
+          <div class="evidence-source-row"><i>🩻</i><div><strong>X-ray images</strong><span>Diagnostic imaging</span></div><em>READY</em></div>
+          <div class="evidence-source-row"><i>🧠</i><div><strong>CT / MRI scans</strong><span>DICOM imaging</span></div><em>READY</em></div>
+          <div class="evidence-source-row"><i>🧪</i><div><strong>Lab results</strong><span>Clinical measurements</span></div><em>READY</em></div>
+        </div>
+      </aside>
+
+      <!-- CENTER FUNCTIONAL UPLOAD -->
+      <div class="clinical-center-column">
+        <div class="clinical-upload-card">
+          <div class="upload-orbit upload-orbit-one"></div>
+          <div class="upload-orbit upload-orbit-two"></div>
+          <div class="upload-cloud-icon">☁</div>
+          <span class="clinical-kicker upload-kicker">EVIDENCE INGESTION</span>
+          <h3>Upload Medical Evidence</h3>
+          <p>Drop a report, X-ray, CT/MRI scan or diagnostic file into the patient record.</p>
+
+          <div class="upload-type-grid">
+            <div><span>📄</span><b>PDF</b><small>Reports</small></div>
+            <div><span>🩻</span><b>X-RAY</b><small>Images</small></div>
+            <div><span>◉</span><b>CT</b><small>DICOM</small></div>
+            <div><span>🧠</span><b>MRI</b><small>DICOM</small></div>
+            <div><span>🧪</span><b>LAB</b><small>Results</small></div>
+            <div><span>💊</span><b>RX</b><small>Prescriptions</small></div>
+          </div>
+
+          <label class="clinical-file-dropzone">
+            <input id="file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp">
+            <span class="file-drop-icon">＋</span>
+            <strong>Choose clinical evidence</strong>
+            <small>PDF · PNG · JPG · WEBP · CT/MRI image formats</small>
+          </label>
+          <button class="clinical-upload-button" type="button" onclick="upload()">Upload & store evidence <span>→</span></button>
+          <p id="uploadmsg" class="clinical-upload-message"></p>
+
+          <div class="upload-security"><span>●</span> Evidence is attached to the current longitudinal patient record</div>
+        </div>
+      </div>
+
+      <!-- RIGHT PIPELINE COLUMN -->
+      <aside class="clinical-side-column clinical-right-column">
+        <div class="clinical-panel pipeline-panel">
+          <div class="clinical-panel-heading">
+            <div><span>03</span><h3>AI analysis pipeline</h3></div>
+            <b>5 AGENTS</b>
+          </div>
+          <div class="pipeline-step"><strong>1</strong><div><b>History Agent</b><span>Reviews longitudinal context</span></div><em>READY</em></div>
+          <div class="pipeline-line"></div>
+          <div class="pipeline-step"><strong>2</strong><div><b>Symptom Agent</b><span>Normalizes clinical symptoms</span></div><em>READY</em></div>
+          <div class="pipeline-line"></div>
+          <div class="pipeline-step"><strong>3</strong><div><b>Evidence Agent</b><span>Combines medical evidence</span></div><em>READY</em></div>
+          <div class="pipeline-line"></div>
+          <div class="pipeline-step"><strong>4</strong><div><b>Triage Agent</b><span>Evaluates clinical severity</span></div><em>READY</em></div>
+          <div class="pipeline-line"></div>
+          <div class="pipeline-step"><strong>5</strong><div><b>Tier Router</b><span>Routes to prediction model</span></div><em>READY</em></div>
+        </div>
+
+        <div class="clinical-panel tier-preview-panel">
+          <div class="clinical-panel-heading">
+            <div><span>04</span><h3>Prediction routing</h3></div>
+            <b>LIVE</b>
+          </div>
+          <div class="tier-preview-empty"><span>—</span><b>Awaiting analysis</b><small>Run the AI consultation to calculate the current prediction tier.</small></div>
+          <div class="tier-preview-row"><span>TIER 1</span><i><b></b></i><em>SCREENING</em></div>
+          <div class="tier-preview-row"><span>TIER 2</span><i><b></b></i><em>ACUTE</em></div>
+          <div class="tier-preview-row"><span>TIER 3</span><i><b></b></i><em>COMPLEX</em></div>
+          <div class="tier-preview-row"><span>TIER 4</span><i><b></b></i><em>HIGH RISK</em></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="clinical-bottom-strip">
+      <div><span>CLINICAL FLOW</span><b>Evidence → Multi-agent analysis → Deterministic routing → Prediction</b></div>
+      <div class="clinical-bottom-status"><span></span> ORCHESTRATOR READY</div>
+    </div>
+  </div>
+</section>
+
+<div class="grid clinical-consultation-grid">
+  <aside class="panel side clinical-tools-panel">
+    <div class="consultation-nav-heading">
+      <span>CLINICAL TOOLS</span>
+      <b>PATIENT WORKSPACE</b>
+    </div>
+    <button class="nav active">◉ AI Consultation</button>
+    <button class="nav" onclick="loadHistory()">▣ Medical History</button>
+    <button class="nav" onclick="loadStatus()">⚙ Model Status</button>
+    <div class="tools-info-card">
+      <span>DECISION SUPPORT</span>
+      <b>Longitudinal + Multi-Agent</b>
+      <small>Every new consultation can contribute to the patient's longitudinal history and trigger fresh routing.</small>
+    </div>
+  </aside>
+
+  <main class="panel main clinical-consultation-panel">
+    <div class="consultation-hero">
+      <div>
+        <span class="clinical-kicker">05 · AI DECISION SUPPORT</span>
+        <h1>AI Medical Consultation</h1>
+        <div class="muted">Longitudinal history → multi-agent evidence analysis → deterministic tier routing → prediction engine</div>
+      </div>
+      <div class="consultation-model-pill"><span></span> MULTI-AGENT ENGINE</div>
+    </div>
+
+    <div class="consultation-flow-strip">
+      <span>01 INPUT</span><i>→</i><span>02 EXTRACT</span><i>→</i><span>03 COMBINE HISTORY</span><i>→</i><span>04 CLASSIFY</span><i>→</i><span>05 UPDATE TIER</span>
+    </div>
+
+    <div id="result" class="result hide"></div>
+
+    <div class="consultation-empty-state">
+      <div class="consultation-ai-orb">✦</div>
+      <div><b>Ready for clinical input</b><span>Describe symptoms, duration, relevant history or ask a question. The response is processed through the live orchestration pipeline.</span></div>
+    </div>
+  </main>
+
+  <!-- Floating chat launcher and window -->
+  <button id="chatLauncher" class="chat-launcher" onclick="toggleChat()" aria-label="Open AI chat">💬</button>
+
+  <div id="chatWindow" class="chat-window">
+    <div class="chat-window-header">
+      <div class="chat-ai-identity">
+        <div class="chat-ai-avatar" aria-hidden="true">🤖</div>
+        <div>
+          <b>AI Medical Assistant</b>
+          <div class="chat-subtitle">Your intelligent health decision-support companion</div>
+          <div class="ai-live">AI ASSISTANT ONLINE</div>
+        </div>
+      </div>
+      <button class="chat-close" onclick="toggleChat()" aria-label="Close chat">×</button>
+    </div>
+
+    <div id="chatLiveTier" class="chat-live-tier"><span>LIVE ROUTING</span><b id="chatLiveTierValue">WAITING FOR PATIENT INPUT</b></div>
+
+    <div id="chat" class="chat">
+      <div class="msg bot">Hello. Describe your symptoms, duration, relevant history, medications, or attach a medical report. The orchestrator will process the evidence and route it to the appropriate tier.</div>
+    </div>
+
+    <div class="composer">
+      <textarea id="message" placeholder="Example: I have been feeling unusually tired and thirsty for 3 weeks..."></textarea>
+      <div class="row">
+        <button class="primary" onclick="send()">Run AI analysis</button>
+        <button class="secondary" onclick="document.getElementById('message').value=''">Clear</button>
+      </div>
+    </div>
+  </div>
+</div></div>
 <script>
 const API=location.protocol==='file:'?'http://localhost:8000/api':(localStorage.getItem('udp_api')||'http://localhost:8000/api');let token=localStorage.getItem('udp_token')||'';let user=null;
-const agents=[['History Agent','Retrieves longitudinal medical records, documents and prior predictions.'],['Symptom Agent','Normalizes symptoms, onset, duration and patient context.'],['Evidence Agent','Combines structured findings from reports and uploaded evidence.'],['Triage Agent','Checks red flags, acute/chronic patterns and evidence strength.'],['Tier Router','Selects the applicable prediction tier using deterministic rules.']];
-function setAgents(active=0,decision){document.getElementById('agents').innerHTML=agents.map((a,i)=>'<div class="agent"><div class="agenthead"><b><span class="dot"></span>'+a[0]+'</b><span class="status">'+(i<=active?'ACTIVE':'QUEUED')+'</span></div><div class="trace">'+(decision&&i===4?('Primary Tier: '+decision.primary_tier+' · Secondary: '+(decision.secondary_tiers||[]).join(', ')||'none'):a[1])+'</div></div>').join('')}
+let lastChatTier=null;
+const agents=[['History Agent','Retrieves longitudinal medical records, documents and prior predictions.','📋'],['Symptom Agent','Normalizes symptoms, onset, duration and patient context.','🩺'],['Evidence Agent','Combines structured findings from reports and uploaded evidence.','🔬'],['Triage Agent','Checks red flags, acute/chronic patterns and evidence strength.','🚑'],['Tier Router','Selects the applicable prediction tier using deterministic rules.','🧠']];
+let orbitIndex=0;
+let orbitDecision=null;
+function renderAgents(){
+  let box=document.getElementById('agents');
+  if(!box)return;
+  box.innerHTML=agents.map((a,i)=>'<div class="agent-card '+(i===orbitIndex?'active':'')+'"><div class="agent-card-inner"><div class="agent-avatar">'+a[2]+'</div><b>'+a[0]+'</b><div class="agent-role">AI MEDICAL AGENT</div><div class="agent-status">'+(i===orbitIndex?'ACTIVE':'READY')+'</div></div></div>').join('');
+}
+function setAgents(active=0,decision){
+  orbitIndex=active;
+  if(decision)orbitDecision=decision;
+  let cards=document.querySelectorAll('#agents .agent-card');
+  cards.forEach((card,i)=>{
+    card.classList.toggle('active',i===active);
+    let status=card.querySelector('.agent-status');
+    if(status)status.textContent=i===active?'ACTIVE':'READY';
+  });
+  let title=document.getElementById('agentCenterTitle');
+  let info=document.getElementById('agentCenterInfo');
+  let step=document.getElementById('agentCenterStep');
+  if(title)title.textContent=agents[active][0];
+  if(info)info.textContent=(orbitDecision&&active===4)?('Primary Tier: '+(orbitDecision.primary_tier??'?')+' · Secondary: '+((orbitDecision.secondary_tiers||[]).join(', ')||'none')):agents[active][1];
+  if(step)step.textContent='AGENT '+String(active+1).padStart(2,'0')+' · ACTIVE';
+}
+renderAgents();
 setAgents(0);
+setInterval(()=>{orbitIndex=(orbitIndex+1)%agents.length;setAgents(orbitIndex);},6400);
 async function req(path,opt={}){let h={...(opt.headers||{})};if(token)h.Authorization='Bearer '+token;let r=await fetch(API+path,{...opt,headers:h});let d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.detail||'Request failed');return d}
-async function handleAuth(mode){try{let body={email:email.value,password:password.value};if(mode==='register')body.name=name.value;let d=await req('/auth/'+mode,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});token=d.token;localStorage.setItem('udp_token',token);user=d.user;authmsg.textContent='';document.getElementById('auth').classList.add('hide');userpill.textContent=user.name||user.email;loadStatus()}catch(e){authmsg.textContent=e.message}}
+async function handleAuth(mode){
+  const nameEl=document.getElementById('name');
+  const emailEl=document.getElementById('email');
+  const passwordEl=document.getElementById('password');
+  const authmsgEl=document.getElementById('authmsg');
+  const authEl=document.getElementById('auth');
+  const userpillEl=document.getElementById('userpill');
+
+  try{
+    authmsgEl.textContent='Connecting to server...';
+    const body={email:emailEl.value.trim(),password:passwordEl.value};
+
+    if(!body.email || !body.password){
+      throw new Error('Please enter your email and password.');
+    }
+
+    if(mode==='register'){
+      body.name=nameEl.value.trim();
+      if(!body.name){
+        throw new Error('Please enter your name.');
+      }
+    }
+
+    const d=await req('/auth/'+mode,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+
+    if(!d.token || !d.user){
+      throw new Error('Login response did not contain a valid token.');
+    }
+
+    token=d.token;
+    localStorage.setItem('udp_token',token);
+    user=d.user;
+    authmsgEl.textContent='';
+    authEl.classList.add('hide');
+    userpillEl.textContent=user.name||user.email;
+    loadStatus();
+  }catch(e){
+    console.error('Authentication error:',e);
+    authmsgEl.textContent=e.message||'Login failed. Check that the backend is running.';
+  }
+}
+
+window.handleAuth=handleAuth;
+
+const loginBtnEl=document.getElementById('loginBtn');
+const registerBtnEl=document.getElementById('registerBtn');
+if(loginBtnEl) loginBtnEl.addEventListener('click',()=>handleAuth('login'));
+if(registerBtnEl) registerBtnEl.addEventListener('click',()=>handleAuth('register'));
 function logout(){localStorage.removeItem('udp_token');location.reload()}
-async function send(){let m=message.value.trim();if(!m)return;add(m,'user');message.value='';setAgents(0);await pause(250);setAgents(1);await pause(250);setAgents(2);try{setAgents(3);let intake={message:m,free_text:m,symptoms:[m]};let orch=await req('/orchestrator/classify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(intake)});await pause(300);let routing={primary_tier:orch.recommended_tier,secondary_tiers:orch.secondary_tiers||[]};setAgents(4,routing);showOrchestrator(orch);add('Patient situation classified as '+formatSituation(orch.patient_situation)+'. Recommended downstream tier: Tier '+(orch.recommended_tier??'?')+'.','bot');if(token){try{let d=await req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});add(d.message||'Prediction analysis complete.','bot');showResult(d.result)}catch(e){add('Orchestrator completed. Prediction engine: '+e.message,'bot')}}else{add('Demo mode: orchestration completed. Sign in only if you want to run the authenticated prediction engine.','bot')}}catch(e){add('Backend error: '+e.message,'bot')} }
+async function send(){let m=message.value.trim();if(!m)return;add(m,'user');message.value='';setAgents(0);await pause(250);setAgents(1);await pause(250);setAgents(2);try{setAgents(3);let d=await req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});let routing=d.result?.routing||{};await pause(300);setAgents(4,routing);add(d.message||'Analysis complete.','bot');addRoutingCard(routing,d.result);showResult(d.result)}catch(e){add('Backend error: '+e.message,'bot')} }
 function add(t,c){let x=document.createElement('div');x.className='msg '+c;x.textContent=t;chat.appendChild(x);chat.scrollTop=chat.scrollHeight}
-function formatSituation(s){if(!s)return'unknown';if(typeof s==='string')return s.replaceAll('_',' ');return(s.type||'unknown').replaceAll('_',' ')}
-function showOrchestrator(d){let s=d.patient_situation||{};result.classList.remove('hide');result.innerHTML='<span class="tier">TIER '+(d.recommended_tier??'?')+'</span><h3 style="margin:10px 0 5px">Patient Situation Classified</h3><div style="font-size:18px;font-weight:700;text-transform:capitalize">'+formatSituation(s)+'</div><div class="muted" style="margin-top:6px">Confidence: '+(s.confidence!=null?Math.round(Number(s.confidence)*100)+'%':'not available')+'</div><div class="muted" style="margin-top:6px">'+(s.reason||'Situation classification returned by the orchestration layer.')+'</div><div class="muted" style="margin-top:10px">Recommended downstream specialist tier: <b>Tier '+(d.recommended_tier??'?')+'</b></div>')}
-function showResult(r){result.classList.remove('hide');let rt=r?.routing||{};result.innerHTML='<span class="tier">TIER '+(rt.primary_tier??'?')+'</span><h3 style="margin:10px 0 5px">Orchestration complete</h3><div class="muted">'+(rt.reason||'Routing decision returned by the orchestration layer.')+'</div><pre style="white-space:pre-wrap;font-size:11px;color:#9db1c9;margin-bottom:0">'+JSON.stringify(r?.tier_results||{},null,2)+'</pre>'}
+function addRoutingCard(rt,result){
+  rt=rt||{};
+  let tier=rt.primary_tier ?? result?.routing?.primary_tier ?? '?';
+  let change=lastChatTier===null?'INITIAL ROUTING':(String(lastChatTier)===String(tier)?'TIER UNCHANGED':'TIER UPDATED · '+lastChatTier+' → '+tier);
+  let situation=rt.patient_situation?.situation || 'general_or_unclear';
+  let duration=null;
+  let symptoms=[];
+  let payload=(rt.payloads&&tier!=='?')?rt.payloads[String(tier)]||{}:{};
+  if(Array.isArray(payload.symptoms)) symptoms=payload.symptoms;
+  if(payload.duration_days!==undefined) duration=payload.duration_days;
+  let secondary=(rt.secondary_tiers||[]).map(x=>'Tier '+x).join(' · ')||'None';
+  let reasons=(rt.reasons&&tier!=='?'&&rt.reasons[String(tier)])||[];
+  let symptomText=symptoms.length?symptoms.join(' · '):'Clinical symptoms being evaluated';
+  let durationText=duration!==null&&duration!==undefined?String(duration)+' days':'Not established yet';
+  let reason=reasons.length?reasons.join(' · '):(rt.reason||rt.patient_situation?.reason||'Decision returned by the orchestration rules.');
+
+  let card=document.createElement('div');
+  card.className='chat-routing-card';
+  card.innerHTML=`
+    <div class="routing-topline">
+      <span class="routing-live">● ORCHESTRATOR ANALYSIS COMPLETE</span>
+      <span class="routing-change">${change}</span>
+    </div>
+    <div class="routing-tier-row">
+      <div>
+        <div class="routing-label">CURRENT PREDICTION TIER</div>
+        <div class="routing-tier">TIER ${tier}</div>
+      </div>
+      <div class="routing-route">Primary: Tier ${tier}<br>Secondary: ${secondary}</div>
+    </div>
+    <div class="routing-grid">
+      <div><span>Clinical situation</span><b>${formatRoutingText(situation)}</b></div>
+      <div><span>Duration</span><b>${durationText}</b></div>
+      <div><span>Detected symptoms</span><b>${symptomText}</b></div>
+      <div><span>Why this Tier</span><b>${reason}</b></div>
+    </div>
+    <div class="routing-agents">
+      <span>✓ History Agent</span><span>✓ Symptom Agent</span><span>✓ Evidence Agent</span><span>✓ Triage Agent</span><span>✓ Tier Router</span>
+    </div>`;
+  chat.appendChild(card);
+  const liveTier=document.getElementById('chatLiveTierValue');
+  if(liveTier) liveTier.textContent='CURRENT TIER '+tier+' · '+formatRoutingText(situation);
+  chat.scrollTop=chat.scrollHeight;
+  lastChatTier=tier==='?'?null:tier;
+}
+
+function formatRoutingText(v){return String(v).replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase())}
+function showResult(r){result.classList.remove('hide');let rt=r?.routing||{};result.innerHTML='<span class="tier">TIER '+(rt.primary_tier??'?')+'</span><h3 style="margin:10px 0 5px">Orchestration complete</h3><div class="muted">'+(rt.patient_situation?.reason||'Routing decision returned by the orchestration layer.')+'</div><pre style="white-space:pre-wrap;font-size:11px;color:#9db1c9;margin-bottom:0">'+JSON.stringify(r?.tier_results||{},null,2)+'</pre>'}
 async function upload(){let f=document.getElementById('file').files[0];if(!f)return;try{let fd=new FormData();fd.append('file',f);let d=await req('/documents',{method:'POST',body:fd});uploadmsg.textContent='Stored: '+d.filename+' ('+d.document_type+')';add('Medical evidence uploaded and added to longitudinal history: '+d.filename,'bot')}catch(e){uploadmsg.textContent=e.message}}
 async function loadHistory(){try{let d=await req('/history');add('History loaded: '+d.records.length+' records, '+d.documents.length+' documents, '+d.predictions.length+' predictions.','bot')}catch(e){add(e.message,'bot')}}
 async function loadStatus(){try{let d=await req('/status');status.innerHTML=Object.entries(d.tiers||{}).map(([k,v])=>'Tier '+k+': '+(v.ready?'ready':'not ready')).join('<br>')+'<br>Groq: '+(d.groq_enabled?'enabled':'not configured')}catch(e){status.textContent=e.message}}
 function pause(ms){return new Promise(r=>setTimeout(r,ms))}
-if(token){req('/me').then(d=>{user=d;auth.classList.add('hide');userpill.textContent=d.name||d.email;loadStatus()}).catch(()=>{localStorage.removeItem('udp_token');token='';auth.classList.add('hide');userpill.textContent='Demo mode'})}else{auth.classList.add('hide');userpill.textContent='Demo mode'}
+function toggleChat(){document.getElementById('chatWindow').classList.toggle('open')}
+if(token){req('/me').then(d=>{user=d;document.getElementById('auth').classList.add('hide');document.getElementById('userpill').textContent=d.name||d.email;loadStatus()}).catch(()=>logout())}
 </script></body></html>

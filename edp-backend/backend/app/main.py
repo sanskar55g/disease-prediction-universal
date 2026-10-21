@@ -45,6 +45,15 @@ def history_for(user: User, session: Session) -> str:
     msgs = session.query(ChatMessage).filter_by(user_id=user.id).order_by(ChatMessage.created_at.asc()).all()
     return build_history_context(records, docs, msgs)
 
+def chat_context_for(user: User, session: Session, limit: int = 30) -> str:
+    msgs = (
+        session.query(ChatMessage)
+        .filter_by(user_id=user.id, role="user")
+        .order_by(ChatMessage.created_at.asc())
+        .all()
+    )
+    return "\n".join(f"[patient] {m.content}" for m in msgs[-limit:])
+
 def run_prediction(user: User, intake: dict, session: Session, history: str) -> dict:
     intake = dict(intake)
     intake["medical_history"] = history
@@ -141,12 +150,20 @@ def predict(req: PredictionRequest, user: User = Depends(current_user), session:
 
 @app.post("/api/chat")
 def chat(req: ChatRequest, user: User = Depends(current_user), session: Session = Depends(db)):
+    # Keep the previous patient conversation separate from the current message.
+    # The orchestrator uses both to build the latest longitudinal clinical state.
+    previous_chat = chat_context_for(user, session)
+
     session.add(ChatMessage(user_id=user.id, role="user", content=req.message))
     session.commit()
+
     intake = req.model_dump()
     intake["free_text"] = req.message
-    if not intake["symptoms"]:
-        intake["symptoms"] = [req.message]
+    intake["conversation_context"] = previous_chat
+
+    # Do not replace a structured symptom list supplied by the client.
+    # The orchestrator's enrichment layer will extract/merge symptoms from
+    # both the current message and previous patient messages.
     result = run_prediction(user, intake, session, history_for(user, session))
     reply = {"message": "Your message was added to your longitudinal history and processed by the routing pipeline. Model outputs are not a diagnosis.", "result": result}
     session.add(ChatMessage(user_id=user.id, role="assistant", content=json.dumps(reply, default=str)))
