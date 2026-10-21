@@ -3020,13 +3020,15 @@ function setAgents(active=0,decision){
   const coreTier=document.getElementById('debateCoreTier');
   const caseText=document.getElementById('debateCaseText');
   const tier=decision?.primary_tier ?? decision?.routing?.primary_tier ?? null;
-  const argumentsByAgent=[
-    'Reviewing available longitudinal history and prior records. Actual history details depend on the backend response.',
-    'Extracting and normalizing the reported symptoms and their context.',
-    'Reviewing the available clinical evidence and uploaded documents.',
-    'Assessing the reported situation and available evidence for routing considerations.',
-    tier!==null?'Backend routing result received: Tier '+tier+'. Review the returned reason and secondary tiers below.':'Preparing the routing step; the backend has not returned a tier yet.'
-  ];
+  const argumentsByAgent=(window.liveAgentTrace&&window.liveAgentTrace.length===agents.length)
+    ? window.liveAgentTrace.map((entry)=>entry.message)
+    : [
+      'Waiting for the backend response. No patient-history conclusion is available yet.',
+      'Waiting for the backend response. No symptom-extraction result is available yet.',
+      'Waiting for the backend response. No evidence result is available yet.',
+      'Waiting for the backend response. No triage conclusion is available yet.',
+      'Waiting for the backend routing decision.'
+    ];
   if(argName)argName.textContent=agents[active][0];
   if(argText)argText.textContent=decision?.reason || (decision?.reasons?.[String(tier)]?.join(' · ')) || argumentsByAgent[active];
   if(argIcon)argIcon.textContent=agents[active][2];
@@ -3093,7 +3095,49 @@ const registerBtnEl=document.getElementById('registerBtn');
 if(loginBtnEl) loginBtnEl.addEventListener('click',()=>handleAuth('login'));
 if(registerBtnEl) registerBtnEl.addEventListener('click',()=>handleAuth('register'));
 function logout(){localStorage.removeItem('udp_token');location.reload()}
-async function send(){let m=message.value.trim();if(!m)return;window.lastPatientInput=m;add(m,'user');message.value='';setAgents(0);await pause(250);setAgents(1);await pause(250);setAgents(2);try{setAgents(3);let d=await req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});let routing=d.result?.routing||{};await pause(300);setAgents(4,routing);add(d.message||'Analysis complete.','bot');addRoutingCard(routing,d.result);showResult(d.result)}catch(e){add('Backend error: '+e.message,'bot')} }
+function buildAgentTrace(result){
+  const routing=result?.routing||{};
+  const tier=routing.primary_tier;
+  const payload=(routing.payloads&&tier!==undefined)?(routing.payloads[String(tier)]||{}):{};
+  const tierResult=(result?.tier_results&&tier!==undefined)?result.tier_results[String(tier)]:null;
+  const reasons=(routing.reasons&&tier!==undefined)?(routing.reasons[String(tier)]||[]):[];
+  const situation=routing.patient_situation||{};
+  const symptoms=Array.isArray(payload.symptoms)?payload.symptoms:[];
+  const evidenceAvailable=!!(tierResult&&tierResult.available!==false);
+  return [
+    {name:'History Agent',message:result?.medical_history_used?'Backend confirms medical-history context was included in the prediction request.':'Backend reports no saved medical-history context was used for this request.'},
+    {name:'Symptom Agent',message:symptoms.length?'Backend routing payload contains these normalized symptoms: '+symptoms.join(', ')+'.':'The backend did not return a normalized symptom list for the selected tier.'},
+    {name:'Evidence Agent',message:evidenceAvailable?'Selected tier returned a result payload. Inspect the result card for the actual model output.':'No usable result payload was returned for the selected tier; check the tier result and backend logs.'},
+    {name:'Triage Agent',message:situation.situation?'Backend classified the patient situation as "'+String(situation.situation)+'". '+(situation.reason||''):'The backend did not return a patient-situation classification.'},
+    {name:'Tier Router',message:tier!==undefined?'Backend selected Tier '+tier+'. '+(reasons.join(' ')||routing.reason||'No detailed routing rationale was returned.'):'The backend response did not include a primary tier.'}
+  ];
+}
+async function send(){
+  const m=message.value.trim();
+  if(!m)return;
+  window.lastPatientInput=m;
+  window.liveAgentTrace=null;
+  add(m,'user');
+  message.value='';
+  setAgents(0);
+  try{
+    const request=req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});
+    for(let i=0;i<4;i++){setAgents(i);await pause(220);}
+    const d=await request;
+    const result=d.result||{};
+    const routing=result.routing||{};
+    window.liveAgentTrace=buildAgentTrace(result);
+    window.liveAgentTrace.forEach((entry,i)=>{if(i===4)setAgents(i,routing);});
+    for(let i=0;i<agents.length;i++){setAgents(i,routing);await pause(350);}
+    setAgents(4,routing);
+    add(d.message||'Analysis complete.','bot');
+    addRoutingCard(routing,result);
+    showResult(result);
+  }catch(e){
+    window.liveAgentTrace=null;
+    add('Backend error: '+e.message,'bot');
+  }
+}
 function add(t,c){let x=document.createElement('div');x.className='msg '+c;x.textContent=t;chat.appendChild(x);chat.scrollTop=chat.scrollHeight}
 function addRoutingCard(rt,result){
   rt=rt||{};
