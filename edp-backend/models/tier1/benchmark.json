@@ -10,25 +10,25 @@
         "auc_mean": 0.911,
         "auc_std": 0.0178,
         "brier": 0.1195,
-        "fit_seconds": 0.2
+        "fit_seconds": 0.1
       },
       "random_forest": {
         "auc_mean": 0.9115,
         "auc_std": 0.0206,
         "brier": 0.1221,
-        "fit_seconds": 3.6
+        "fit_seconds": 2.7
       },
       "xgboost": {
-        "auc_mean": 0.8892,
-        "auc_std": 0.0171,
-        "brier": 0.1375,
+        "auc_mean": 0.8907,
+        "auc_std": 0.0169,
+        "brier": 0.1383,
         "fit_seconds": 0.3
       },
       "lightgbm": {
         "auc_mean": 0.8946,
         "auc_std": 0.0228,
         "brier": 0.1455,
-        "fit_seconds": 0.5
+        "fit_seconds": 0.2
       }
     },
     "selected_model": "random_forest",
@@ -66,13 +66,13 @@
         "auc_mean": 0.9114,
         "auc_std": 0.0198,
         "brier": 0.1166,
-        "fit_seconds": 3.1
+        "fit_seconds": 2.7
       },
       "xgboost": {
-        "auc_mean": 0.9003,
-        "auc_std": 0.0112,
-        "brier": 0.1275,
-        "fit_seconds": 0.2
+        "auc_mean": 0.901,
+        "auc_std": 0.0144,
+        "brier": 0.1279,
+        "fit_seconds": 0.3
       },
       "lightgbm": {
         "auc_mean": 0.8924,
@@ -109,19 +109,19 @@
         "auc_mean": 0.9754,
         "auc_std": 0.0091,
         "brier": 0.0605,
-        "fit_seconds": 0.1
+        "fit_seconds": 0.2
       },
       "random_forest": {
         "auc_mean": 0.9977,
         "auc_std": 0.002,
         "brier": 0.0284,
-        "fit_seconds": 3.1
+        "fit_seconds": 3.3
       },
       "xgboost": {
-        "auc_mean": 0.9965,
-        "auc_std": 0.0028,
+        "auc_mean": 0.9961,
+        "auc_std": 0.0031,
         "brier": 0.0262,
-        "fit_seconds": 0.3
+        "fit_seconds": 0.4
       },
       "lightgbm": {
         "auc_mean": 0.9966,
@@ -168,19 +168,19 @@
         "auc_mean": 1.0,
         "auc_std": 0.0,
         "brier": 0.0078,
-        "fit_seconds": 3.4
+        "fit_seconds": 3.2
       },
       "xgboost": {
         "auc_mean": 1.0,
         "auc_std": 0.0,
-        "brier": 0.0048,
-        "fit_seconds": 0.2
+        "brier": 0.0045,
+        "fit_seconds": 0.4
       },
       "lightgbm": {
         "auc_mean": 1.0,
         "auc_std": 0.0,
         "brier": 0.0011,
-        "fit_seconds": 0.3
+        "fit_seconds": 0.4
       }
     },
     "selected_model": "lightgbm",
@@ -229,19 +229,19 @@
         "auc_mean": 0.763,
         "auc_std": 0.025,
         "brier": 0.1718,
-        "fit_seconds": 3.3
+        "fit_seconds": 3.5
       },
       "xgboost": {
-        "auc_mean": 0.7471,
-        "auc_std": 0.0313,
-        "brier": 0.1956,
-        "fit_seconds": 0.3
+        "auc_mean": 0.7551,
+        "auc_std": 0.0325,
+        "brier": 0.1925,
+        "fit_seconds": 0.4
       },
       "lightgbm": {
         "auc_mean": 0.7402,
         "auc_std": 0.0223,
         "brier": 0.2006,
-        "fit_seconds": 0.3
+        "fit_seconds": 0.4
       }
     },
     "selected_model": "random_forest",
@@ -276,19 +276,19 @@
         "auc_mean": 0.8328,
         "auc_std": 0.0396,
         "brier": 0.1804,
-        "fit_seconds": 3.6
+        "fit_seconds": 3.3
       },
       "xgboost": {
-        "auc_mean": 0.8261,
-        "auc_std": 0.0523,
-        "brier": 0.1738,
-        "fit_seconds": 0.6
+        "auc_mean": 0.8295,
+        "auc_std": 0.0449,
+        "brier": 0.1692,
+        "fit_seconds": 1.4
       },
       "lightgbm": {
         "auc_mean": 0.8232,
         "auc_std": 0.0414,
         "brier": 0.1786,
-        "fit_seconds": 0.4
+        "fit_seconds": 0.5
       }
     },
     "selected_model": "random_forest",
@@ -333,10 +333,10 @@
         "fit_seconds": 3.1
       },
       "xgboost": {
-        "auc_mean": 0.9615,
-        "auc_std": 0.0174,
-        "brier": 0.0687,
-        "fit_seconds": 0.3
+        "auc_mean": 0.9638,
+        "auc_std": 0.0144,
+        "brier": 0.0672,
+        "fit_seconds": 0.4
       },
       "lightgbm": {
         "auc_mean": 0.976,
@@ -389,19 +389,19 @@
         "auc_mean": 0.9916,
         "auc_std": 0.0049,
         "brier": 0.0337,
-        "fit_seconds": 3.5
+        "fit_seconds": 3.3
       },
       "xgboost": {
-        "auc_mean": 0.9942,
-        "auc_std": 0.005,
-        "brier": 0.0263,
-        "fit_seconds": 0.5
+        "auc_mean": 0.994,
+        "auc_std": 0.0047,
+        "brier": 0.0273,
+        "fit_seconds": 0.6
       },
       "lightgbm": {
         "auc_mean": 0.9947,
         "auc_std": 0.0048,
         "brier": 0.0255,
-        "fit_seconds": 0.4
+        "fit_seconds": 0.6
       }
     },
     "selected_model": "logistic_regression",
@@ -450,29 +450,29 @@
         "auc_mean": 0.9828,
         "auc_std": 0.0102,
         "brier": 0.0424,
-        "fit_seconds": 0.1
+        "fit_seconds": 0.2
       },
       "random_forest": {
         "auc_mean": 0.9886,
         "auc_std": 0.0089,
         "brier": 0.0396,
-        "fit_seconds": 3.4
+        "fit_seconds": 3.1
       },
       "xgboost": {
-        "auc_mean": 0.9887,
-        "auc_std": 0.0083,
-        "brier": 0.036,
-        "fit_seconds": 0.3
+        "auc_mean": 0.9875,
+        "auc_std": 0.0087,
+        "brier": 0.0365,
+        "fit_seconds": 0.4
       },
       "lightgbm": {
         "auc_mean": 0.9859,
         "auc_std": 0.0077,
         "brier": 0.0403,
-        "fit_seconds": 0.3
+        "fit_seconds": 0.4
       }
     },
-    "selected_model": "xgboost",
-    "selected_auc": 0.9887,
+    "selected_model": "random_forest",
+    "selected_auc": 0.9886,
     "features": [
       "Age",
       "Gender",
@@ -490,6 +490,64 @@
       "M",
       "Stage",
       "Response"
+    ]
+  },
+  "diabetes_brfss": {
+    "disease": "diabetes_brfss",
+    "label": "Type 2 diabetes (population survey)",
+    "rows": 253680,
+    "positive_rate": 0.1393,
+    "cv_folds": 3,
+    "candidates": {
+      "logistic_regression": {
+        "auc_mean": 0.8224,
+        "auc_std": 0.0026,
+        "brier": 0.177,
+        "fit_seconds": 1.6
+      },
+      "random_forest": {
+        "auc_mean": 0.8239,
+        "auc_std": 0.0016,
+        "brier": 0.1353,
+        "fit_seconds": 57.3
+      },
+      "xgboost": {
+        "auc_mean": 0.8267,
+        "auc_std": 0.0015,
+        "brier": 0.1695,
+        "fit_seconds": 14.5
+      },
+      "lightgbm": {
+        "auc_mean": 0.8291,
+        "auc_std": 0.0015,
+        "brier": 0.171,
+        "fit_seconds": 9.1
+      }
+    },
+    "selected_model": "lightgbm",
+    "selected_auc": 0.8291,
+    "features": [
+      "HighBP",
+      "HighChol",
+      "CholCheck",
+      "BMI",
+      "Smoker",
+      "Stroke",
+      "HeartDiseaseorAttack",
+      "PhysActivity",
+      "Fruits",
+      "Veggies",
+      "HvyAlcoholConsump",
+      "AnyHealthcare",
+      "NoDocbcCost",
+      "GenHlth",
+      "MentHlth",
+      "PhysHlth",
+      "DiffWalk",
+      "Sex",
+      "Age",
+      "Education",
+      "Income"
     ]
   }
 }

@@ -1,3 +1,11 @@
 
 .venv/
 
+.venv/
+.venv312/
+**/.venv/
+**/.venv312/
+__pycache__/
+*.py[cod]
+.env
+edp-backend/backend/medical_history.db

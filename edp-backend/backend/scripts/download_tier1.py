@@ -5,7 +5,7 @@ Every dataset here is pulled live from the UCI Machine Learning Repository via
 its official API. Nothing is generated locally. Each disease gets its own file
 under data/tier1/raw/<disease>.parquet plus a provenance entry.
 
-Run:  python backend/scripts/download_tier1.py            # all
+Run:  python download_tier1.py            # all
       python backend/scripts/download_tier1.py heart ckd   # subset
 """
 from __future__ import annotations

@@ -2552,7 +2552,7 @@ button:hover{
 .evidence-source-row{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055)}
 .evidence-source-row:last-child{border-bottom:0}.evidence-source-row i{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:rgba(76,216,205,.08);font-style:normal}.evidence-source-row div{flex:1}.evidence-source-row strong,.evidence-source-row span{display:block}.evidence-source-row strong{color:#e7f7f7;font-size:9px}.evidence-source-row span{margin-top:2px;color:#75939d;font-size:7px}.evidence-source-row em{color:#5edacd;font-size:6px;font-style:normal;font-weight:900}
 .clinical-center-column{min-width:0;display:flex}
-.clinical-upload-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:570px;padding:30px;border:1px solid rgba(118,224,216,.31);border-radius:24px;background:linear-gradient(145deg,rgba(11,45,58,.76),rgba(5,27,39,.65));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:inset 0 0 90px rgba(61,207,196,.045),0 25px 70px rgba(0,0,0,.20);overflow:hidden}
+.clinical-upload-card{display:none !important;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:570px;padding:30px;border:1px solid rgba(118,224,216,.31);border-radius:24px;background:linear-gradient(145deg,rgba(11,45,58,.76),rgba(5,27,39,.65));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:inset 0 0 90px rgba(61,207,196,.045),0 25px 70px rgba(0,0,0,.20);overflow:hidden}
 .clinical-upload-card::before{content:"";position:absolute;inset:16px;border:1px dashed rgba(115,226,218,.24);border-radius:18px;pointer-events:none}
 .upload-orbit{position:absolute;border:1px solid rgba(84,220,208,.12);border-radius:50%;pointer-events:none}.upload-orbit-one{width:340px;height:340px}.upload-orbit-two{width:520px;height:520px;border-color:rgba(84,220,208,.07)}
 .upload-cloud-icon{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;width:68px;height:68px;border-radius:20px;background:linear-gradient(145deg,rgba(93,226,216,.24),rgba(63,127,255,.20));border:1px solid rgba(105,225,217,.34);color:#73e6db;font-size:34px;box-shadow:0 0 40px rgba(63,219,207,.11);margin-bottom:12px}
@@ -2681,6 +2681,99 @@ button:hover{
   }
 }
 
+
+/* =========================
+   CLINICAL DEBATE ROOM
+   Orchestration visualization
+========================= */
+.debate-room{min-height:0;padding:58px clamp(18px,4vw,58px) 30px;background:radial-gradient(circle at 18% 35%,rgba(21,184,166,.12),transparent 32%),linear-gradient(145deg,#061722,#0a2431 55%,#071822);color:#effbfc}
+.debate-room::before{display:none}
+.debate-room .orchestrator-heading{margin-bottom:28px}
+.debate-room .orchestrator-heading h2{color:#f4ffff}
+.debate-room .orchestrator-heading p{color:#9db5c1}
+.debate-layout{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.8fr);gap:18px;max-width:1360px;margin:0 auto}
+.debate-main,.debate-panel{border:1px solid rgba(155,211,218,.17);border-radius:20px;background:rgba(7,29,41,.82);box-shadow:0 18px 48px rgba(0,0,0,.16);overflow:hidden}
+.debate-room-topline{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 19px;border-bottom:1px solid rgba(155,211,218,.13);color:#70e3d3;font-size:10px;font-weight:850;letter-spacing:1px}
+.debate-room-topline>div{display:flex;align-items:center;gap:9px}
+.live-pulse{width:8px;height:8px;border-radius:50%;background:#5be3b9;box-shadow:0 0 0 5px rgba(91,227,185,.1)}
+.debate-session-tag{color:#819eaa;font-size:9px;letter-spacing:.6px}
+.debate-network{height:365px;position:relative;max-width:700px;margin:0 auto;overflow:hidden}
+.debate-network-lines{position:absolute;left:50%;top:50%;width:230px;height:230px;transform:translate(-50%,-50%);border:1px dashed rgba(83,210,201,.3);border-radius:50%;box-shadow:0 0 0 40px rgba(83,210,201,.025),0 0 0 80px rgba(83,210,201,.018)}
+.debate-network-lines i{position:absolute;left:50%;top:50%;height:1px;width:150px;transform-origin:left center;background:linear-gradient(90deg,rgba(79,215,202,.65),rgba(79,215,202,.04))}
+.debate-network-lines i:nth-child(1){transform:rotate(-90deg)}.debate-network-lines i:nth-child(2){transform:rotate(-18deg)}.debate-network-lines i:nth-child(3){transform:rotate(54deg)}.debate-network-lines i:nth-child(4){transform:rotate(126deg)}.debate-network-lines i:nth-child(5){transform:rotate(198deg)}
+.debate-hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:128px;height:128px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid rgba(101,230,216,.5);background:radial-gradient(circle,#164452,#0a2633 72%);box-shadow:0 0 40px rgba(41,197,181,.12);z-index:2}
+.debate-hub span{font-size:25px;font-weight:900;letter-spacing:2px;color:#73e5d7}.debate-hub b{font-size:12px;color:#f2ffff;margin-top:4px}.debate-hub small{font-size:9px;color:#8eabb7;margin-top:4px}
+.debate-node{position:absolute;z-index:3;width:145px;min-height:88px;display:grid;grid-template-columns:34px 1fr;grid-template-rows:auto auto auto;align-content:center;column-gap:8px;text-align:left;padding:10px;border:1px solid rgba(158,207,214,.2);border-radius:14px;background:rgba(12,39,52,.97);color:#effbfc;box-shadow:0 9px 25px rgba(0,0,0,.2)}
+.debate-node:hover,.debate-node.active{border-color:#57dfd0;background:rgba(15,65,75,.98);box-shadow:0 0 0 3px rgba(87,223,208,.08)}
+.debate-node .node-icon{grid-row:1/3;align-self:center;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:rgba(91,222,209,.12);font-size:18px}
+.debate-node b{font-size:10px;align-self:end}.debate-node small{font-size:9px;color:#8eabb7;margin-top:3px}.debate-node em{grid-column:1/-1;font-style:normal;color:#7c9aa7;font-size:8px;font-weight:900;letter-spacing:1px;margin-top:8px}.debate-node.active em{color:#66e7d7}
+.node-history{left:50%;top:12px;transform:translateX(-50%)}.node-symptom{right:18px;top:100px}.node-evidence{right:34px;bottom:25px}.node-triage{left:34px;bottom:25px}.node-router{left:18px;top:100px}
+.debate-active-card{padding:20px;border-top:1px solid rgba(155,211,218,.13);background:rgba(4,21,31,.58)}
+.debate-active-head{display:flex;align-items:center;gap:13px}.debate-agent-avatar{width:49px;height:49px;flex:0 0 49px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(145deg,#d8fffa,#83dfd4);font-size:25px}
+.debate-agent-title{min-width:0;flex:1}.debate-agent-title>span,.debate-mini-label{font-size:9px;font-weight:900;letter-spacing:1.4px;color:#66dccc}.debate-agent-title h3{font-size:18px;color:#fff;margin:4px 0}.debate-agent-title p{font-size:11px;color:#91abb6;margin:0;line-height:1.5}
+.debate-badge{border:1px solid rgba(95,221,205,.25);border-radius:999px;padding:6px 8px;color:#6ee1d2;font-size:8px;font-weight:900;letter-spacing:.7px}
+.debate-argument-label{display:flex;justify-content:space-between;margin-top:20px;color:#7f9eaa;font-size:9px;font-weight:850;letter-spacing:1px}
+.debate-argument{padding:13px 15px;margin:9px 0 0;border-left:2px solid #4bd6c6;border-radius:0 10px 10px 0;background:rgba(255,255,255,.035);color:#c0d4da;font-size:12px;line-height:1.65;min-height:58px}
+.debate-side{display:grid;gap:18px;align-content:start}.debate-panel{padding:19px}
+.debate-panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.debate-panel-head h3{font-size:16px;color:#f1fbfc;margin:5px 0 0}.debate-counter{padding:6px 9px;border-radius:8px;background:rgba(94,219,205,.09);color:#76dfd2;font-size:9px;font-weight:900;white-space:nowrap}
+.debate-progress-track{height:5px;border-radius:99px;background:#183744;overflow:hidden;margin-bottom:17px}.debate-progress-track span{display:block;width:0;height:100%;background:linear-gradient(90deg,#29bba9,#6de7d7);transition:width .35s ease}
+.debate-phase-list{display:grid;gap:7px}.debate-phase{display:grid;grid-template-columns:29px minmax(0,1fr) auto;align-items:center;gap:9px;padding:10px;border:1px solid transparent;border-radius:11px;background:rgba(255,255,255,.025)}.debate-phase>span{width:27px;height:27px;border-radius:8px;display:grid;place-items:center;background:#122f3d;color:#85a5b1;font-size:9px;font-weight:900}.debate-phase b{display:block;font-size:10px;color:#c7d9df}.debate-phase small{display:block;font-size:9px;color:#7695a2;margin-top:3px}.debate-phase i{font-style:normal;font-size:8px;color:#718d99;font-weight:900;letter-spacing:.4px}.debate-phase.current{border-color:rgba(81,219,205,.25);background:rgba(51,177,166,.08)}.debate-phase.current>span,.debate-phase.done>span{background:#14564f;color:#8ff3e5}.debate-phase.current i{color:#72e4d5}.debate-phase.done i{color:#8de2b8}
+.debate-tier-list{display:grid;grid-template-columns:1fr 1fr;gap:9px}.debate-tier{display:flex;align-items:center;gap:9px;padding:11px 9px;border:1px solid rgba(155,211,218,.12);border-radius:12px;background:rgba(255,255,255,.025)}.tier-number{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border-radius:9px;background:#132f3d;color:#8db1bd;font-size:10px;font-weight:900}.debate-tier b{display:block;color:#d7e8ed;font-size:11px}.debate-tier small{display:block;color:#7e9ca7;font-size:9px;margin-top:3px}.tier-state{display:none}.debate-tier.selected{border-color:#55dfcf;background:rgba(42,181,167,.12)}.debate-tier.selected .tier-number{background:#17665d;color:#fff}.debate-tier.selected b{color:#8af0e2}
+.debate-disclaimer{font-size:10px;line-height:1.55;color:#7e9ba7;margin:14px 0 0}.debate-footer{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin:20px auto 0;color:#7796a3;font-size:10px}.debate-footer span:first-child{color:#71dfd1}
+@media(max-width:980px){.debate-layout{grid-template-columns:1fr}.debate-network{max-width:650px}}
+@media(max-width:600px){.debate-room{padding:42px 12px 25px}.debate-network{height:335px;transform:scale(.94);transform-origin:top center;margin-bottom:-18px}.debate-node{width:125px;min-height:80px;padding:8px}.node-symptom{right:0}.node-router{left:0}.node-evidence{right:2px;bottom:15px}.node-triage{left:2px;bottom:15px}.debate-hub{width:105px;height:105px}.debate-room-topline{align-items:flex-start;flex-direction:column}.debate-phase{grid-template-columns:27px minmax(0,1fr) auto;padding:8px 6px}.debate-tier-list{grid-template-columns:1fr}.debate-footer{gap:8px 14px}.debate-agent-title h3{font-size:15px}}
+
+
+/* Persistent symptom input and read-only orchestration controls */
+.symptom-entry-panel{display:none !important;margin:20px;padding:22px;border:1px solid #cfe4e5;border-radius:18px;background:#fff;box-shadow:0 10px 28px rgba(19,70,80,.06)}
+.symptom-entry-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:15px}
+.symptom-entry-head h2{margin:0;color:#142f43;font-size:20px}
+.symptom-entry-head p{margin:6px 0 0;color:#6b828c;font-size:12px;line-height:1.6}
+.readonly-tag{flex-shrink:0;padding:7px 9px;border-radius:999px;background:#f0f5f6;color:#637b84;font-size:9px;font-weight:800;letter-spacing:.5px}
+.symptom-entry-panel label{display:block;margin:13px 0 7px;color:#294655;font-size:12px;font-weight:750}
+.symptom-entry-panel textarea,.symptom-entry-panel input{width:100%;border:1px solid #cddfe2;border-radius:11px;padding:13px;background:#fbfefe;color:#173244;outline:none;font:inherit;font-size:13px;line-height:1.6}
+.symptom-entry-panel textarea{min-height:125px;resize:vertical}
+.symptom-entry-panel textarea:focus,.symptom-entry-panel input:focus{border-color:#20b6a9;box-shadow:0 0 0 3px rgba(32,182,169,.10)}
+.symptom-entry-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:13px}
+.symptom-entry-actions .primary{padding:12px 18px}
+.symptom-entry-hint{color:#718791;font-size:11px;line-height:1.5}
+.triage-explainer{margin:0 20px 18px;padding:15px 17px;border:1px solid #dce9e9;border-radius:14px;background:#f7fbfb;color:#526e78;font-size:12px;line-height:1.65}
+.triage-explainer b{color:#193b4c}
+@media(max-width:760px){.symptom-entry-panel{margin:12px;padding:16px}.symptom-entry-head{flex-direction:column}.triage-explainer{margin:0 12px 14px}}
+
+
+
+.agent-findings-panel{margin-top:16px;padding:18px;border:1px solid rgba(155,211,218,.15);border-radius:17px;background:rgba(5,22,32,.72)}
+.agent-findings-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.agent-findings-head h3{margin:5px 0 0;color:#f4ffff;font-size:16px}.agent-findings-intro{margin:10px 0 14px;color:#91aeb9;font-size:11px;line-height:1.55}
+.agent-findings-list{display:grid;gap:9px}.agent-finding{padding:12px 13px;border:1px solid rgba(143,194,202,.14);border-radius:11px;background:rgba(15,43,55,.72)}.agent-finding b{display:block;color:#7fe5d8;font-size:11px}.agent-finding p{margin:5px 0 0;color:#e0edf0;font-size:12px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}.agent-finding.waiting p{color:#91aeb9}
+.prediction-action-panel{margin:16px 20px;padding:18px;border:1px solid #cfe4e5;border-radius:15px;background:#f8fcfc}.prediction-action-panel h3{margin:0 0 7px;color:#163648}.prediction-action-panel p{font-size:12px;line-height:1.6;color:#617984}.prediction-action-panel .primary:disabled{opacity:.55;cursor:not-allowed}.prediction-detail{margin-top:14px;padding:15px;border:1px solid #d8e7e8;border-radius:12px;background:#fff}.prediction-detail h4{margin:0 0 8px;color:#193b4c}.prediction-detail pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.55;color:#294655;font-family:inherit}.prediction-detail ul{margin:8px 0;padding-left:20px;color:#294655;font-size:12px;line-height:1.7}.prediction-disclaimer{font-size:11px!important;color:#6c7f88!important}
+@media(max-width:600px){.agent-findings-panel{padding:13px}.agent-findings-head{align-items:flex-start;flex-direction:column}.prediction-action-panel{margin:12px;padding:14px}}
+
+
+/* Inputs live directly inside their corresponding clinical-room agent cards. */
+.debate-network{height:690px;max-width:980px;overflow:visible;margin:0 auto 10px}
+.debate-node{width:270px;min-height:130px;display:block;padding:13px;cursor:pointer;overflow:visible}
+.node-heading{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.node-heading .node-icon{flex:0 0 34px}
+.node-heading b{display:block;font-size:12px;color:#effbfc}
+.node-heading small{display:block;font-size:10px;color:#8eabb7;margin-top:3px}
+.node-readonly{margin:8px 0;color:#a8c1c9;font-size:10px;line-height:1.5}
+.debate-node em{display:block;margin-top:8px}
+.node-input{display:block;width:100%;box-sizing:border-box;margin:7px 0;padding:9px;border:1px solid rgba(150,205,211,.25);border-radius:8px;background:#071f2b;color:#effbfc;font:inherit;font-size:11px;line-height:1.4;position:relative;z-index:5}
+.node-input::placeholder{color:#7899a5}
+textarea.node-input{min-height:74px;resize:vertical}
+.node-file{font-size:9px;padding:7px}
+.node-action{width:100%;padding:9px;border:0;border-radius:8px;background:linear-gradient(90deg,#19b9ae,#277ff0);color:white;font-size:10px;font-weight:800;cursor:pointer;position:relative;z-index:6}
+.node-status{display:block;color:#74e1d4;font-size:9px;line-height:1.4;margin-top:6px;overflow-wrap:anywhere}
+.node-history{left:50%;top:12px;transform:translateX(-50%)}
+.node-symptom{right:12px;top:145px}
+.node-evidence{right:35px;bottom:12px}
+.node-triage{left:35px;bottom:12px}
+.node-router{left:12px;top:145px}
+.debate-hub{width:145px;height:145px}
+@media(max-width:980px){.debate-network{height:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:15px;overflow:visible}.debate-network-lines,.debate-hub{display:none}.debate-node{position:relative;inset:auto!important;transform:none!important;width:auto;min-width:0;min-height:130px}.node-history{grid-column:1/-1}.node-router{grid-column:auto}.node-symptom,.node-evidence{grid-column:auto}}
+@media(max-width:600px){.debate-network{grid-template-columns:1fr;padding:12px}.debate-node,.node-history,.node-symptom,.node-evidence,.node-triage,.node-router{grid-column:1;min-height:auto}.debate-node{width:100%}}
+
 </style></head>
 <body><div id="auth" class="auth"><div class="authbox"><h2>Universal Disease Prediction</h2><p class="muted">Research / demo decision-support platform</p><input id="name" class="field" placeholder="Name (register only)"><input id="email" class="field" placeholder="Email"><input id="password" type="password" class="field" placeholder="Password (8+ characters)"><div class="row"><button id="loginBtn" type="button" class="primary">Login</button><button id="registerBtn" type="button" class="secondary">Create account</button></div><p id="authmsg" class="small"></p></div></div>
 <div class="app"><header class="top"><div class="brand">Universal <span>Disease Prediction</span></div><div><span id="userpill" class="pill">Not signed in</span> <button class="secondary" onclick="logout()">Logout</button></div></header>
@@ -2716,36 +2809,93 @@ button:hover{
   <div class="slide-dots"><span></span><span></span><span></span><span></span></div>
 </section>
 
-<section class="orchestrator-showcase" aria-label="AI orchestrator agents">
+<section class="orchestrator-showcase debate-room" aria-label="AI orchestrator live debate room">
   <div class="orchestrator-heading">
-    <span class="eyebrow">Multi-agent intelligence</span>
-    <h2>The Orchestrator</h2>
-    <p>Specialized AI agents work together to understand the patient, evaluate evidence, triage risk, and route the case to the right prediction tier.</p>
+    <span class="eyebrow">Multi-agent intelligence · live orchestration</span>
+    <h2>Clinical Debate Room</h2>
+    <p>Follow the hand-off between specialized agents as the system gathers context, reviews evidence, checks risk and selects a prediction tier.</p>
   </div>
 
-  <div class="orbit-stage">
-    <div class="orbit-ring"></div>
-    <div id="agents" class="agent-orbit"></div>
+  <div class="debate-layout">
+    <div class="debate-main">
+      <div class="debate-room-topline">
+        <div><span class="live-pulse"></span><span id="debateRunState">SYSTEM STANDBY</span></div>
+        <span class="debate-session-tag">DECISION SUPPORT · HUMAN OVERSIGHT</span>
+      </div>
 
-    <div class="agent-center">
-      <div class="center-icon">🩺</div>
-      <div class="center-label">Agents Responsible</div>
-      <h3 id="agentCenterTitle">History Agent</h3>
-      <p id="agentCenterInfo">Retrieves longitudinal medical records, documents and prior predictions.</p>
-      <div id="agentCenterStep" class="center-step">AGENT 01 · ACTIVE</div>
+      <div class="debate-network">
+        <div class="debate-network-lines" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="debate-hub"><span>UDP</span><b>Orchestrator</b><small>Agent coordinator</small></div>
+        <div class="debate-node node-history active" onclick="setAgents(0)" aria-label="History Agent">
+          <div class="node-heading"><span class="node-icon">📋</span><div><b>History Agent</b><small>Account medical history</small></div></div>
+          <p class="node-readonly">READ ONLY · Uses records saved to this account.</p><em>ACCOUNT CONTEXT</em>
+        </div>
+        <div class="debate-node node-symptom" onclick="setAgents(1)" aria-label="Symptom Agent">
+          <div class="node-heading"><span class="node-icon">🩺</span><div><b>Symptom Agent</b><small>Enter symptoms directly</small></div></div>
+          <textarea id="symptomInput" class="node-input" placeholder="Describe symptoms, e.g. fever, headache, fatigue…" aria-label="Describe symptoms"></textarea>
+          <input id="symptomDuration" class="node-input" placeholder="Duration, e.g. 2 days (optional)" aria-label="Symptom duration">
+          <button class="node-action" type="button" onclick="event.stopPropagation();send('workspace')">Analyze symptoms →</button>
+          <small id="workspaceAnalysisStatus" class="node-status" role="status" aria-live="polite"></small>
+        </div>
+        <div class="debate-node node-evidence" onclick="setAgents(2)" aria-label="Evidence Agent">
+          <div class="node-heading"><span class="node-icon">🔬</span><div><b>Evidence Agent</b><small>Reports and lab evidence</small></div></div>
+          <input id="agentEvidenceFile" class="node-input node-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.csv" aria-label="Choose medical evidence">
+          <button class="node-action" type="button" onclick="event.stopPropagation();uploadAgentEvidence()">Upload evidence →</button>
+          <small id="agentUploadMsg" class="node-status" role="status" aria-live="polite"></small>
+        </div>
+        <div class="debate-node node-triage" onclick="setAgents(3)" aria-label="Triage Agent">
+          <div class="node-heading"><span class="node-icon">🚑</span><div><b>Triage Agent</b><small>Risk screening</small></div></div>
+          <p class="node-readonly">Reviews symptoms and context for urgency indicators. No manual knowledge-tree input.</p><em>ASSESSMENT ONLY</em>
+        </div>
+        <div class="debate-node node-router" onclick="setAgents(4)" aria-label="Tier Router">
+          <div class="node-heading"><span class="node-icon">🧠</span><div><b>Tier Router</b><small>Routing decision</small></div></div>
+          <p id="nodeTierResult" class="node-readonly">Read only · Tier appears here after analysis.</p><em>BACKEND CONTROLLED</em>
+        </div>
+      </div>
+
+      <div class="debate-active-card">
+        <div class="debate-active-head">
+          <div class="debate-agent-avatar" id="debateAvatar">📋</div>
+          <div class="debate-agent-title"><span>ACTIVE AGENT</span><h3 id="debateActiveName">History Agent</h3><p id="debateActiveRole">Retrieves longitudinal medical records, documents and prior predictions.</p></div>
+          <span id="debateAgentBadge" class="debate-badge">READY</span>
+        </div>
+        <div class="debate-argument-label"><span>AGENT NOTE</span><span id="debateStepLabel">PHASE 01 / 05</span></div>
+        <p id="debateArgument" class="debate-argument">No analysis is running yet. Enter symptoms in the Symptom Agent box and select Analyze symptoms to start the workflow.</p>
+      </div>
+
+      <section class="agent-findings-panel" aria-live="polite" aria-labelledby="agentFindingsTitle">
+        <div class="agent-findings-head"><div><span class="debate-mini-label">VISIBLE AGENT HAND-OFF</span><h3 id="agentFindingsTitle">What each agent reported</h3></div><span id="agentFindingsStatus" class="debate-counter">WAITING</span></div>
+        <p class="agent-findings-intro">These notes summarize the backend response and available pipeline fields. They are not independent AI debate messages unless the backend explicitly supplies them.</p>
+        <div id="agentFindingsList" class="agent-findings-list"><div class="agent-finding waiting"><b>History Agent</b><p>No analysis running yet. History is read-only and loads from the signed-in account when the backend supplies it.</p></div><div class="agent-finding waiting"><b>Symptom Agent</b><p>Enter symptoms in the Symptom Agent box to begin.</p></div><div class="agent-finding waiting"><b>Evidence Agent</b><p>Optional: upload a report in the Evidence Agent box.</p></div><div class="agent-finding waiting"><b>Triage Agent</b><p>Reviews urgency indicators after symptoms are submitted.</p></div><div class="agent-finding waiting"><b>Tier Router</b><p>Displays the backend-selected tier after analysis.</p></div></div>
+      </section>
     </div>
-  </div>
 
-  <div class="orchestrator-footer">
-    <span>Continuous agent handoff</span>
-    <span>Evidence-driven routing</span>
-    <span>Deterministic tier selection</span>
-  </div>
+    <aside class="debate-side">
+      <div class="debate-panel">
+        <div class="debate-panel-head"><div><span class="debate-mini-label">WORKFLOW</span><h3>Orchestration phases</h3></div><span class="debate-counter" id="debateProgressText">0 / 5</span></div>
+        <div class="debate-progress-track"><span id="debateProgressBar"></span></div>
+        <div class="debate-phase-list" id="debatePhaseList">
+          <div class="debate-phase current"><span>01</span><div><b>History context</b><small>Review available patient context</small></div><i>WAITING</i></div>
+          <div class="debate-phase"><span>02</span><div><b>Symptom normalization</b><small>Structure reported symptoms</small></div><i>WAITING</i></div>
+          <div class="debate-phase"><span>03</span><div><b>Evidence review</b><small>Consider supplied findings</small></div><i>WAITING</i></div>
+          <div class="debate-phase"><span>04</span><div><b>Risk triage</b><small>Check urgency indicators</small></div><i>WAITING</i></div>
+          <div class="debate-phase"><span>05</span><div><b>Tier routing</b><small>Apply available routing rules</small></div><i>WAITING</i></div>
+        </div>
+      </div>
 
-  <div class="orchestrator-status">
-    <b>System status</b>
-    <div id="status" class="small" style="margin-top:8px">Sign in to load status.</div>
+      <div class="debate-panel tier-panel">
+        <div class="debate-panel-head"><div><span class="debate-mini-label">ROUTING OUTPUT</span><h3>Prediction tiers</h3></div><span class="debate-counter" id="debateTierStatus">PENDING</span></div>
+        <div class="debate-tier-list">
+          <div class="debate-tier" data-tier="1"><span class="tier-number">01</span><div><b>Tier 1</b><small>Initial assessment</small></div><span class="tier-state">AVAILABLE</span></div>
+          <div class="debate-tier" data-tier="2"><span class="tier-number">02</span><div><b>Tier 2</b><small>Expanded assessment</small></div><span class="tier-state">AVAILABLE</span></div>
+          <div class="debate-tier" data-tier="3"><span class="tier-number">03</span><div><b>Tier 3</b><small>Advanced assessment</small></div><span class="tier-state">AVAILABLE</span></div>
+          <div class="debate-tier" data-tier="4"><span class="tier-number">04</span><div><b>Tier 4</b><small>Specialist assessment</small></div><span class="tier-state">AVAILABLE</span></div>
+        </div>
+        <p class="debate-disclaimer">Routing is decision support only. It is not a diagnosis and does not replace a qualified clinician.</p>
+      </div>
+    </aside>
   </div>
+  <div class="debate-footer"><span>● Agent hand-off visualization</span><span>● Backend routing shown after response</span><span>● Human clinical review remains essential</span></div>
 </section>
 
 
@@ -2808,7 +2958,7 @@ button:hover{
           <div class="upload-cloud-icon">☁</div>
           <span class="clinical-kicker upload-kicker">EVIDENCE INGESTION</span>
           <h3>Upload Medical Evidence</h3>
-          <p>Drop a report, X-ray, CT/MRI scan or diagnostic file into the patient record.</p>
+          <p>Upload a lab report, clinical description, X-ray or other supported medical evidence. The Evidence Agent can use files stored with the patient record.</p>
 
           <div class="upload-type-grid">
             <div><span>📄</span><b>PDF</b><small>Reports</small></div>
@@ -2901,7 +3051,35 @@ button:hover{
       <span>01 INPUT</span><i>→</i><span>02 EXTRACT</span><i>→</i><span>03 COMBINE HISTORY</span><i>→</i><span>04 CLASSIFY</span><i>→</i><span>05 UPDATE TIER</span>
     </div>
 
+    <section class="symptom-entry-panel" aria-labelledby="symptomEntryTitle">
+      <div class="symptom-entry-head">
+        <div>
+          <h2 id="symptomEntryTitle">Symptom Agent · Patient input</h2>
+          <p>Enter the patient's symptoms, how long they have been present, and any relevant details. This input is sent to the existing backend consultation endpoint.</p>
+        </div>
+        <span class="readonly-tag">HISTORY IS READ-ONLY</span>
+      </div>
+      <label for="symptomInput">Describe symptoms</label>
+      <textarea id="symptomInput" placeholder="Example: Fever around 101°F for two days, headache, body aches, and fatigue..."></textarea>
+      <label for="symptomDuration">Duration or onset (optional)</label>
+      <input id="symptomDuration" type="text" placeholder="Example: started 2 days ago">
+      <div class="symptom-entry-actions">
+        <button class="primary" type="button" id="analyzeSymptomsBtn" onclick="send('workspace')">Analyze symptoms →</button>
+        <span class="symptom-entry-hint">Your text stays here after analysis so you can review or edit it.</span>
+      </div>
+      <p id="workspaceAnalysisStatus" class="small" role="status" aria-live="polite"></p>
+    </section>
+
     <div id="result" class="result hide"></div>
+    <section id="predictionActionPanel" class="prediction-action-panel hide" aria-live="polite">
+      <h3>Tier selected · Ready for prediction review</h3>
+      <p id="predictionActionIntro">Review the backend model output before opening the possible-conditions summary.</p>
+      <button id="predictDiseaseBtn" class="primary" type="button" onclick="showPredictionReview()" disabled>Review possible conditions & next steps →</button>
+      <div id="predictionReview" class="prediction-detail hide"></div>
+      <p class="prediction-disclaimer">Decision-support only. Model outputs are possibilities, not a diagnosis. Do not start, stop, or change medication based on this screen. Seek a qualified clinician for interpretation.</p>
+    </section>
+
+    <div class="triage-explainer"><b>What does the Triage Agent do?</b> It reviews the reported symptoms and available context for urgency indicators and helps classify the situation. It does not accept a separate knowledge-tree input. The <b>Tier Router</b> is read-only: it uses the backend's routing rules and model availability to select a tier; users cannot directly edit its decision.</div>
 
     <div class="consultation-empty-state">
       <div class="consultation-ai-orb">✦</div>
@@ -2934,7 +3112,7 @@ button:hover{
     <div class="composer">
       <textarea id="message" placeholder="Example: I have been feeling unusually tired and thirsty for 3 weeks..."></textarea>
       <div class="row">
-        <button class="primary" onclick="send()">Run AI analysis</button>
+        <button class="primary" onclick="send('chat')">Run AI analysis</button>
         <button class="secondary" onclick="document.getElementById('message').value=''">Clear</button>
       </div>
     </div>
@@ -2943,9 +3121,56 @@ button:hover{
 <script>
 const API=location.protocol==='file:'?'http://localhost:8000/api':(localStorage.getItem('udp_api')||'http://localhost:8000/api');let token=localStorage.getItem('udp_token')||'';let user=null;
 let lastChatTier=null;
+let lastPredictionResponse=null;
 const agents=[['History Agent','Retrieves longitudinal medical records, documents and prior predictions.','📋'],['Symptom Agent','Normalizes symptoms, onset, duration and patient context.','🩺'],['Evidence Agent','Combines structured findings from reports and uploaded evidence.','🔬'],['Triage Agent','Checks red flags, acute/chronic patterns and evidence strength.','🚑'],['Tier Router','Selects the applicable prediction tier using deterministic rules.','🧠']];
 let orbitIndex=0;
 let orbitDecision=null;
+
+function renderAgentFindings(activeIndex){
+  const list=document.getElementById('agentFindingsList');
+  const status=document.getElementById('agentFindingsStatus');
+  if(!list)return;
+  const names=['History Agent','Symptom Agent','Evidence Agent','Triage Agent','Tier Router'];
+  const trace=window.liveAgentTrace;
+  list.replaceChildren();
+  names.forEach((name,i)=>{
+    const card=document.createElement('div');
+    card.className='agent-finding'+(trace?'':' waiting');
+    const heading=document.createElement('b');heading.textContent=name;
+    const body=document.createElement('p');
+    body.textContent=trace&&trace[i]?trace[i].message:(i===0?'No analysis running yet. History is read-only and loads from the signed-in account when the backend supplies it.':i===1?'Enter symptoms in the Symptom Agent box to begin.':i===2?'Waiting for available evidence and model output.':i===3?'Waiting for the returned urgency classification.':'Displays the backend-selected tier after analysis.');
+    card.append(heading,body);list.appendChild(card);
+  });
+  if(status)status.textContent=trace?'BACKEND TRACE READY':'WAITING';
+}
+
+function showPredictionReview(){
+  const panel=document.getElementById('predictionReview');
+  if(!panel||!lastPredictionResponse)return;
+  panel.replaceChildren();
+  panel.classList.remove('hide');
+  const result=lastPredictionResponse.result||{};
+  const routing=result.routing||{};
+  const tier=routing.primary_tier;
+  const tierResults=result.tier_results||{};
+  const selected=tier!==undefined?tierResults[String(tier)]:null;
+  const title=document.createElement('h4');title.textContent='Model output for '+(tier!==undefined?'Tier '+tier:'the selected tier');panel.appendChild(title);
+  const output=document.createElement('pre');
+  output.textContent=selected!==undefined&&selected!==null?JSON.stringify(selected,null,2):JSON.stringify(tierResults,null,2);
+  panel.appendChild(output);
+  const nextTitle=document.createElement('h4');nextTitle.textContent='Safe next steps';panel.appendChild(nextTitle);
+  const list=document.createElement('ul');
+  [
+    'Discuss the reported symptoms and model output with a qualified healthcare professional; the appropriate specialist depends on the symptoms and confirmed clinical assessment.',
+    'Keep hydrated and eat regular, balanced meals if you can tolerate them; follow any fluid or diet restrictions already given by your clinician.',
+    'Rest and choose gentle activity only if it does not worsen symptoms. Avoid strenuous exercise when feverish, dizzy, breathless, or acutely unwell.',
+    'Do not start medicines or supplements from this prediction screen. Ask a clinician or pharmacist about treatment options.',
+    'Seek urgent medical help for severe or rapidly worsening symptoms, including chest pain, difficulty breathing, fainting, confusion, or signs of stroke.'
+  ].forEach(text=>{const li=document.createElement('li');li.textContent=text;list.appendChild(li)});
+  panel.appendChild(list);
+  const note=document.createElement('p');note.className='prediction-disclaimer';note.textContent='The displayed model output is reproduced from the backend; this interface does not independently verify the prediction or calculate disease probabilities.';panel.appendChild(note);
+}
+
 function renderAgents(){
   let box=document.getElementById('agents');
   if(!box)return;
@@ -2954,22 +3179,50 @@ function renderAgents(){
 function setAgents(active=0,decision){
   orbitIndex=active;
   if(decision)orbitDecision=decision;
-  let cards=document.querySelectorAll('#agents .agent-card');
-  cards.forEach((card,i)=>{
-    card.classList.toggle('active',i===active);
-    let status=card.querySelector('.agent-status');
-    if(status)status.textContent=i===active?'ACTIVE':'READY';
-  });
-  let title=document.getElementById('agentCenterTitle');
-  let info=document.getElementById('agentCenterInfo');
-  let step=document.getElementById('agentCenterStep');
+  const cards=document.querySelectorAll('#agents .agent-card');
+  cards.forEach((card,i)=>{card.classList.toggle('active',i===active);const status=card.querySelector('.agent-status');if(status)status.textContent=i===active?'ACTIVE':'READY';});
+  const title=document.getElementById('agentCenterTitle');
+  const info=document.getElementById('agentCenterInfo');
+  const step=document.getElementById('agentCenterStep');
   if(title)title.textContent=agents[active][0];
   if(info)info.textContent=(orbitDecision&&active===4)?('Primary Tier: '+(orbitDecision.primary_tier??'?')+' · Secondary: '+((orbitDecision.secondary_tiers||[]).join(', ')||'none')):agents[active][1];
   if(step)step.textContent='AGENT '+String(active+1).padStart(2,'0')+' · ACTIVE';
+
+  const names=['History Agent','Symptom Agent','Evidence Agent','Triage Agent','Tier Router'];
+  const trace=window.liveAgentTrace;
+  const fallbackNotes=[
+    'Waiting for backend history information.',
+    'Waiting for backend symptom information.',
+    'Waiting for backend evidence information.',
+    'Waiting for backend triage information.',
+    decision ? ('Routing response received. Primary tier: '+(decision.primary_tier??'not specified')+'. Secondary tiers: '+((decision.secondary_tiers||[]).join(', ')||'none returned')+'.') : 'Waiting for the backend routing response.'
+  ];
+  const notes=(trace&&trace.length===5)?trace.map(entry=>entry.message):fallbackNotes;
+  const avatar=document.getElementById('debateAvatar'), activeName=document.getElementById('debateActiveName'), role=document.getElementById('debateActiveRole'), argument=document.getElementById('debateArgument'), badge=document.getElementById('debateAgentBadge'), stepLabel=document.getElementById('debateStepLabel');
+  if(activeName)activeName.textContent=names[active];
+  if(avatar)avatar.textContent=agents[active][2];
+  if(role)role.textContent=agents[active][1];
+  if(argument)argument.textContent=notes[active];
+  if(badge)badge.textContent=decision&&active===4?'ROUTED':'IN PROGRESS';
+  if(stepLabel)stepLabel.textContent='PHASE '+String(active+1).padStart(2,'0')+' / 05';
+  document.querySelectorAll('.debate-node').forEach((node,i)=>{node.classList.toggle('active',i===active);const em=node.querySelector('em');if(em)em.textContent=i<active?'COMPLETE':i===active?'ACTIVE':'READY';});
+  document.querySelectorAll('.debate-phase').forEach((phase,i)=>{phase.classList.toggle('done',i<active);phase.classList.toggle('current',i===active);const state=phase.querySelector('i');if(state)state.textContent=i<active?'DONE':i===active?'ACTIVE':'WAITING';});
+  const progress=document.getElementById('debateProgressBar'), progressText=document.getElementById('debateProgressText');
+  if(progress)progress.style.width=((active+1)/5*100)+'%';
+  if(progressText)progressText.textContent=(active+1)+' / 5';
+  const runState=document.getElementById('debateRunState');
+  if(runState)runState.textContent=decision&&active===4?'ROUTING RESPONSE RECEIVED':'ORCHESTRATION IN PROGRESS';
+  const tierStatus=document.getElementById('debateTierStatus');
+  if(tierStatus)tierStatus.textContent=decision&&decision.primary_tier!==undefined?'TIER '+decision.primary_tier:'PENDING';
+  document.querySelectorAll('.debate-tier').forEach(el=>el.classList.toggle('selected',!!decision&&String(el.dataset.tier)===String(decision.primary_tier)));
+  renderAgentFindings(active);
 }
 renderAgents();
 setAgents(0);
-setInterval(()=>{orbitIndex=(orbitIndex+1)%agents.length;setAgents(orbitIndex);},6400);
+renderAgentFindings(0);
+const debateRunStateInitial=document.getElementById('debateRunState');
+if(debateRunStateInitial)debateRunStateInitial.textContent='SYSTEM STANDBY';
+
 async function req(path,opt={}){let h={...(opt.headers||{})};if(token)h.Authorization='Bearer '+token;let r=await fetch(API+path,{...opt,headers:h});let d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.detail||'Request failed');return d}
 async function handleAuth(mode){
   const nameEl=document.getElementById('name');
@@ -3024,7 +3277,93 @@ const registerBtnEl=document.getElementById('registerBtn');
 if(loginBtnEl) loginBtnEl.addEventListener('click',()=>handleAuth('login'));
 if(registerBtnEl) registerBtnEl.addEventListener('click',()=>handleAuth('register'));
 function logout(){localStorage.removeItem('udp_token');location.reload()}
-async function send(){let m=message.value.trim();if(!m)return;add(m,'user');message.value='';setAgents(0);await pause(250);setAgents(1);await pause(250);setAgents(2);try{setAgents(3);let d=await req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});let routing=d.result?.routing||{};await pause(300);setAgents(4,routing);add(d.message||'Analysis complete.','bot');addRoutingCard(routing,d.result);showResult(d.result)}catch(e){add('Backend error: '+e.message,'bot')} }
+function buildAgentTrace(result){
+  const routing=result?.routing||{};
+  const tier=routing.primary_tier;
+  const payload=(routing.payloads&&tier!==undefined)?(routing.payloads[String(tier)]||{}):{};
+  const tierResult=(result?.tier_results&&tier!==undefined)?result.tier_results[String(tier)]:null;
+  const reasons=(routing.reasons&&tier!==undefined)?(routing.reasons[String(tier)]||[]):[];
+  const situation=routing.patient_situation||{};
+  const symptoms=Array.isArray(payload.symptoms)?payload.symptoms:[];
+  const evidenceAvailable=!!(tierResult&&tierResult.available!==false);
+  const inputText=String(window.lastPatientInput||'').trim();
+  const evidenceCount=Number(result?.evidence_count||result?.documents_used||0);
+  return [
+    {name:'History Agent',message:result?.medical_history_used?'Backend confirms medical-history context was included in the prediction request.':'The response does not confirm that saved medical-history context was used; the History Agent remains read-only.'},
+    {name:'Symptom Agent',message:symptoms.length?'Backend routing payload contains normalized symptoms: '+symptoms.join(', ')+'.':(inputText?'Patient-reported symptoms were submitted: '+inputText:'No patient symptom text was available in this request.')},
+    {name:'Evidence Agent',message:evidenceCount?'Backend reports '+evidenceCount+' evidence item(s) used.':(evidenceAvailable?'The selected tier returned a model-result payload, but the response does not confirm document analysis.':'No usable result payload was returned for the selected tier. Uploaded files are not assumed to have been analyzed unless the backend confirms it.')},
+    {name:'Triage Agent',message:situation.situation?'Backend patient-situation classification: '+String(situation.situation)+'. '+(situation.reason||''):'The backend did not return a patient-situation classification. Urgency should be reviewed by a clinician when symptoms are concerning.'},
+    {name:'Tier Router',message:tier!==undefined?'Backend selected Tier '+tier+'. '+(reasons.join(' ')||routing.reason||'No detailed routing rationale was returned.'):'The backend response did not include a primary tier.'}
+  ];
+}
+async function send(source='chat'){
+  const isWorkspace=source==='workspace';
+  const input=document.getElementById(isWorkspace?'symptomInput':'message');
+  const durationInput=document.getElementById('symptomDuration');
+  const status=document.getElementById(isWorkspace?'workspaceAnalysisStatus':'debateRunState');
+  let m=(input?.value||'').trim();
+  if(isWorkspace && durationInput?.value.trim()){
+    m += (m?'\n\n':'')+'Symptom duration/onset: '+durationInput.value.trim();
+  }
+  if(!m){
+    if(status)status.textContent='Please enter symptoms before running the analysis.';
+    input?.focus();
+    return;
+  }
+  window.lastPatientInput=m;
+  window.liveAgentTrace=null;
+  if(!isWorkspace){
+    add(m,'user');
+    input.value='';
+  }
+  if(status)status.textContent='Sending symptoms to the backend…';
+  const analyzeButton=document.getElementById('analyzeSymptomsBtn');
+  if(analyzeButton)analyzeButton.disabled=true;
+  setAgents(0);
+  try{
+    const request=req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});
+    for(let i=0;i<4;i++){
+      setAgents(i);
+      await pause(180);
+    }
+    const d=await request;
+    const resultData=d.result||{};
+    const routing=resultData.routing||{};
+    const nodeTierResult=document.getElementById('nodeTierResult');
+    if(nodeTierResult)nodeTierResult.textContent=routing.primary_tier!==undefined?'Backend selected Tier '+routing.primary_tier+'. '+(((routing.reasons||{})[String(routing.primary_tier)]||[]).join(' ')||routing.reason||'Review the returned routing details below.'):'No primary tier was returned by the backend.';
+    lastPredictionResponse=d;
+    window.liveAgentTrace=buildAgentTrace(resultData);
+    const findingsStatus=document.getElementById('agentFindingsStatus');
+    if(findingsStatus)findingsStatus.textContent='PROCESSING';
+    for(let i=0;i<5;i++){
+      setAgents(i,routing);
+      await pause(250);
+    }
+    setAgents(4,routing);
+    renderAgentFindings(4);
+    const actionPanel=document.getElementById('predictionActionPanel');
+    const predictBtn=document.getElementById('predictDiseaseBtn');
+    const actionIntro=document.getElementById('predictionActionIntro');
+    if(actionPanel)actionPanel.classList.remove('hide');
+    if(predictBtn)predictBtn.disabled=!(resultData.tier_results&&Object.keys(resultData.tier_results).length);
+    if(actionIntro)actionIntro.textContent='The backend selected '+(routing.primary_tier!==undefined?'Tier '+routing.primary_tier:'a routing outcome')+'. Review the model output below before discussing possible conditions with a clinician.';
+    if(status)status.textContent='Analysis complete. Your symptom text is still available above.';
+    if(!isWorkspace)add(d.message||'Analysis complete.','bot');
+    addRoutingCard(routing,resultData);
+    showResult(resultData);
+    const resultEl=document.getElementById('result');
+    if(resultEl)resultEl.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }catch(e){
+    window.liveAgentTrace=null;
+    renderAgentFindings(0);
+    if(status)status.textContent='Analysis failed: '+e.message+'. Your symptom text has been kept so you can retry.';
+    const argument=document.getElementById('debateArgument');
+    if(argument)argument.textContent='The backend request failed: '+e.message+'. No successful routing result was received.';
+    if(!isWorkspace)add('Backend error: '+e.message,'bot');
+  }finally{
+    if(analyzeButton)analyzeButton.disabled=false;
+  }
+}
 function add(t,c){let x=document.createElement('div');x.className='msg '+c;x.textContent=t;chat.appendChild(x);chat.scrollTop=chat.scrollHeight}
 function addRoutingCard(rt,result){
   rt=rt||{};
@@ -3073,8 +3412,17 @@ function addRoutingCard(rt,result){
 }
 
 function formatRoutingText(v){return String(v).replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase())}
-function showResult(r){result.classList.remove('hide');let rt=r?.routing||{};result.innerHTML='<span class="tier">TIER '+(rt.primary_tier??'?')+'</span><h3 style="margin:10px 0 5px">Orchestration complete</h3><div class="muted">'+(rt.patient_situation?.reason||'Routing decision returned by the orchestration layer.')+'</div><pre style="white-space:pre-wrap;font-size:11px;color:#9db1c9;margin-bottom:0">'+JSON.stringify(r?.tier_results||{},null,2)+'</pre>'}
-async function upload(){let f=document.getElementById('file').files[0];if(!f)return;try{let fd=new FormData();fd.append('file',f);let d=await req('/documents',{method:'POST',body:fd});uploadmsg.textContent='Stored: '+d.filename+' ('+d.document_type+')';add('Medical evidence uploaded and added to longitudinal history: '+d.filename,'bot')}catch(e){uploadmsg.textContent=e.message}}
+function showResult(r){
+  const el=document.getElementById('result');if(!el)return;
+  el.replaceChildren();el.classList.remove('hide');
+  const routing=r?.routing||{};
+  const tier=document.createElement('span');tier.className='tier';tier.textContent='TIER '+(routing.primary_tier??'?');el.appendChild(tier);
+  const heading=document.createElement('h3');heading.style.margin='10px 0 5px';heading.textContent='Orchestration complete';el.appendChild(heading);
+  const reason=document.createElement('div');reason.className='muted';reason.textContent=routing.patient_situation?.reason||'The backend returned a routing decision. Review the agent findings and model output before interpreting it.';el.appendChild(reason);
+  const summary=document.createElement('p');summary.className='muted';summary.textContent='The tier is a routing level, not a disease diagnosis. Use the button below to inspect the selected tier output and safe next steps.';el.appendChild(summary);
+}
+async function uploadAgentEvidence(){const input=document.getElementById('agentEvidenceFile');const status=document.getElementById('agentUploadMsg');const f=input&&input.files&&input.files[0];if(!f){if(status)status.textContent='Choose a report or image first.';return;}try{if(status)status.textContent='Uploading evidence…';const fd=new FormData();fd.append('file',f);const d=await req('/documents',{method:'POST',body:fd});if(status)status.textContent='Stored: '+d.filename+' ('+d.document_type+')';}catch(e){if(status)status.textContent='Upload failed: '+e.message;}}
+async function upload(){return uploadAgentEvidence()}
 async function loadHistory(){try{let d=await req('/history');add('History loaded: '+d.records.length+' records, '+d.documents.length+' documents, '+d.predictions.length+' predictions.','bot')}catch(e){add(e.message,'bot')}}
 async function loadStatus(){try{let d=await req('/status');status.innerHTML=Object.entries(d.tiers||{}).map(([k,v])=>'Tier '+k+': '+(v.ready?'ready':'not ready')).join('<br>')+'<br>Groq: '+(d.groq_enabled?'enabled':'not configured')}catch(e){status.textContent=e.message}}
 function pause(ms){return new Promise(r=>setTimeout(r,ms))}
