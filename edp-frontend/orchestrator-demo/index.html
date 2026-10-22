@@ -3153,7 +3153,21 @@ function renderAgentFindings(activeIndex){
     const heading=document.createElement('b');heading.textContent=name;
     const body=document.createElement('p');
     body.textContent=trace&&trace[i]?trace[i].message:(i===0?'No analysis running yet. History is read-only and loads from the signed-in account when the backend supplies it.':i===1?'Enter symptoms in the Symptom Agent box to begin.':i===2?'Waiting for available evidence and model output.':i===3?'Waiting for the returned urgency classification.':'Displays the backend-selected tier after analysis.');
-    card.append(heading,body);list.appendChild(card);
+    card.append(heading,body);
+    if(trace&&trace[i]){
+      const state=document.createElement('small');
+      state.className='agent-trace-state';
+      state.textContent=String(trace[i].status||'completed').replaceAll('_',' ').toUpperCase();
+      card.appendChild(state);
+      if(trace[i].findings&&Object.keys(trace[i].findings).length){
+        const details=document.createElement('details');
+        const summary=document.createElement('summary');summary.textContent='View structured findings';
+        const pre=document.createElement('pre');pre.textContent=JSON.stringify(trace[i].findings,null,2);
+        pre.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto;font-size:11px;padding:10px;border-radius:8px;background:#f6f8fa';
+        details.append(summary,pre);card.appendChild(details);
+      }
+    }
+    list.appendChild(card);
   });
   if(status)status.textContent=trace?'BACKEND TRACE READY':'WAITING';
 }
