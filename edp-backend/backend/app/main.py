@@ -70,7 +70,7 @@ def route_with_agents(user: User, intake: dict, session: Session) -> dict:
     decision["evidence_summary"] = {
         "documents_reviewed": len(evidence.get("documents", [])),
         "records_reviewed": len(evidence.get("records", [])),
-        "needs_review": sum(1 for d in evidence.get("documents", []) if d.get("processing_status") == "needs_review")
+        "needs_review": sum(1 for d in evidence.get("documents", []) if d.get("processing_status") in ("needs_review", "processed_with_review"))
     }
     decision["message"] = "Orchestration completed through tier routing. Disease prediction models were not executed."
     return decision
