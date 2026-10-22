@@ -78,10 +78,30 @@ def health():
 
 @app.post("/api/orchestrator/classify")
 def orchestrator_classify(intake: dict):
-    """Demo endpoint: classify patient situation and show the downstream tier recommendation.
-    No authentication and no patient data is persisted. Use only with local/demo data."""
+    """Local/demo endpoint for routing without running prediction models."""
     return classify(intake)
 
+
+@app.post("/api/orchestrator/route")
+def orchestrator_route(intake: dict, user: User = Depends(current_user), session: Session = Depends(db)):
+    """Run orchestration through tier selection using the authenticated patient history."""
+    enriched = dict(intake)
+    enriched["medical_history"] = history_for(user, session)
+    decision = classify(enriched)
+    return {
+        "status": "routed" if decision.get("primary_tier") is not None else "needs_more_information",
+        "patient_situation": decision.get("patient_situation"),
+        "primary_tier": decision.get("primary_tier"),
+        "recommended_tier": decision.get("recommended_tier"),
+        "secondary_tiers": decision.get("secondary_tiers", []),
+        "emergency": decision.get("emergency", False),
+        "scores": decision.get("scores", {}),
+        "reasons": decision.get("reasons", {}),
+        "steps": decision.get("steps", []),
+        "request_id": decision.get("request_id"),
+        "medical_history_used": bool(enriched["medical_history"]),
+        "message": "Routing only; disease prediction models were not executed."
+    }
 @app.post("/api/auth/register")
 def register(req: RegisterRequest, session: Session = Depends(db)):
     email = req.email.strip().lower()
@@ -117,27 +137,46 @@ async def upload_document(file: UploadFile = File(...), document_type: str = For
     path.write_bytes(data)
     try:
         extracted = extract_document_text(path, file.content_type or "")
+        dtype = document_type if document_type != "auto" else infer_document_type(file.filename or "", extracted)
+        analysis = extract_record(extracted, dtype) if extracted.strip() else {
+            "document_type": dtype,
+            "summary": "No readable text was extracted. Check image quality or OCR setup; findings were not inferred.",
+            "conditions": [], "medications": [], "labs": [], "symptoms": [],
+            "dates": [], "important_history": [], "processing_status": "needs_review"
+        }
+        analysis.setdefault("document_type", dtype)
+        analysis.setdefault("processing_status", "needs_review" if not extracted.strip() else "processed")
+        # Persist structured evidence only; the uploaded source is temporary.
+        doc = MedicalDocument(
+            user_id=user.id,
+            original_name=file.filename or path.name,
+            stored_path="",
+            mime_type=file.content_type or "",
+            document_type=dtype,
+            extracted_text="",
+            analysis_json=json.dumps(analysis, default=str),
+        )
+        session.add(doc)
+        session.flush()
+        session.add(MedicalRecord(
+            user_id=user.id,
+            record_type=dtype,
+            title=doc.original_name,
+            content=json.dumps(analysis, default=str),
+            source_document_id=doc.id,
+        ))
+        session.commit()
+        session.refresh(doc)
+        return {"id": doc.id, "filename": doc.original_name, "document_type": dtype, "analysis": analysis}
+    except HTTPException:
+        session.rollback()
+        raise
     except Exception as exc:
+        session.rollback()
+        raise HTTPException(422, f"Could not process or save the uploaded document: {str(exc)[:250]}")
+    finally:
         path.unlink(missing_ok=True)
-        raise HTTPException(422, f"Could not process the uploaded document: {str(exc)[:250]}")
-    dtype = document_type if document_type != "auto" else infer_document_type(file.filename or "", extracted)
-    analysis = extract_record(extracted, dtype) if extracted.strip() else {
-        "document_type": dtype,
-        "summary": "No readable text was extracted. Check image quality or OCR setup; findings were not inferred.",
-        "conditions": [], "medications": [], "labs": [], "symptoms": [],
-        "dates": [], "important_history": [], "processing_status": "needs_review"
-    }
-    analysis.setdefault("processing_status", "needs_review" if not extracted.strip() else "processed")
-    doc = MedicalDocument(user_id=user.id, original_name=file.filename or path.name, stored_path=str(path),
-                          mime_type=file.content_type or "", document_type=dtype,
-                          extracted_text=extracted, analysis_json=analysis)
-    session.add(doc)
-    session.commit()
-    session.refresh(doc)
-    session.add(MedicalRecord(user_id=user.id, record_type=dtype, title=doc.original_name,
-                              content=json.dumps(analysis, default=str), source_document_id=doc.id))
-    session.commit()
-    return {"id": doc.id, "filename": doc.original_name, "document_type": dtype, "analysis": analysis}
+
 
 @app.get("/api/history")
 def history(user: User = Depends(current_user), session: Session = Depends(db)):
