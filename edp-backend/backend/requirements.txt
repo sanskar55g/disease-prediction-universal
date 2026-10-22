@@ -17,3 +17,5 @@ PyJWT>=2.8
 python-multipart>=0.0.9
 pypdf>=4.0
 Pillow>=10.0
+pytesseract>=0.3.10
+PyMuPDF>=1.24
