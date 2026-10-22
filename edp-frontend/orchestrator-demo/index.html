@@ -2774,6 +2774,25 @@ textarea.node-input{min-height:74px;resize:vertical}
 @media(max-width:980px){.debate-network{height:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:15px;overflow:visible}.debate-network-lines,.debate-hub{display:none}.debate-node{position:relative;inset:auto!important;transform:none!important;width:auto;min-width:0;min-height:130px}.node-history{grid-column:1/-1}.node-router{grid-column:auto}.node-symptom,.node-evidence{grid-column:auto}}
 @media(max-width:600px){.debate-network{grid-template-columns:1fr;padding:12px}.debate-node,.node-history,.node-symptom,.node-evidence,.node-triage,.node-router{grid-column:1;min-height:auto}.debate-node{width:100%}}
 
+/* ---- Symptom Agent UI refresh ---- */
+.debate-node.node-symptom{width:300px;z-index:6;cursor:default}
+.symptom-chips{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 2px}
+.chip{border:1px solid rgba(110,225,210,.35);background:rgba(110,225,210,.08);color:#a9f0e7;border-radius:999px;padding:4px 9px;font-size:10px;font-weight:700;cursor:pointer;transition:background .15s,transform .15s,border-color .15s}
+.chip:hover{background:rgba(110,225,210,.2);border-color:#6ee1d2;transform:translateY(-1px)}
+.chip.added{background:rgba(110,225,210,.28);border-color:#6ee1d2;color:#fff}
+.chip.added::before{content:"✓ "}
+.node-symptom textarea.node-input{min-height:96px}
+.node-input:focus{outline:none;border-color:#57dfd0;box-shadow:0 0 0 3px rgba(87,223,208,.15)}
+.node-meta{display:flex;justify-content:space-between;color:#7899a5;font-size:9px;margin:-2px 2px 2px}
+.node-btn-row{display:flex;gap:7px;margin-top:4px}
+.node-btn-row .node-action{flex:1}
+.node-clear{padding:9px 12px;border:1px solid rgba(150,205,211,.3);border-radius:8px;background:transparent;color:#a8c1c9;font-size:10px;font-weight:700;cursor:pointer;position:relative;z-index:6}
+.node-clear:hover{background:rgba(255,255,255,.06)}
+.node-hint{display:block;color:#6f8f9b;font-size:9px;margin-top:6px}
+.node-action:disabled{opacity:.65;cursor:progress}
+.node-action.loading::after{content:"";display:inline-block;width:10px;height:10px;margin-left:8px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;vertical-align:-1px;animation:udpspin .7s linear infinite}
+@keyframes udpspin{to{transform:rotate(360deg)}}
+@media(max-width:980px){.debate-node.node-symptom{width:auto}}
 </style></head>
 <body><div id="auth" class="auth"><div class="authbox"><h2>Universal Disease Prediction</h2><p class="muted">Research / demo decision-support platform</p><input id="name" class="field" placeholder="Name (register only)"><input id="email" class="field" placeholder="Email"><input id="password" type="password" class="field" placeholder="Password (8+ characters)"><div class="row"><button id="loginBtn" type="button" class="primary">Login</button><button id="registerBtn" type="button" class="secondary">Create account</button></div><p id="authmsg" class="small"></p></div></div>
 <div class="app"><header class="top"><div class="brand">Universal <span>Disease Prediction</span></div><div><span id="userpill" class="pill">Not signed in</span> <button class="secondary" onclick="logout()">Logout</button></div></header>
@@ -2832,9 +2851,22 @@ textarea.node-input{min-height:74px;resize:vertical}
         </div>
         <div class="debate-node node-symptom" onclick="setAgents(1)" aria-label="Symptom Agent">
           <div class="node-heading"><span class="node-icon">🩺</span><div><b>Symptom Agent</b><small>Enter symptoms directly</small></div></div>
-          <textarea id="symptomInput" class="node-input" placeholder="Describe symptoms, e.g. fever, headache, fatigue…" aria-label="Describe symptoms"></textarea>
-          <input id="symptomDuration" class="node-input" placeholder="Duration, e.g. 2 days (optional)" aria-label="Symptom duration">
-          <button class="node-action" type="button" onclick="event.stopPropagation();send('workspace')">Analyze symptoms →</button>
+          <div class="symptom-chips" role="group" aria-label="Quick add common symptoms">
+            <button type="button" class="chip" data-symptom="fever">+ Fever</button>
+            <button type="button" class="chip" data-symptom="headache">+ Headache</button>
+            <button type="button" class="chip" data-symptom="cough">+ Cough</button>
+            <button type="button" class="chip" data-symptom="fatigue">+ Fatigue</button>
+            <button type="button" class="chip" data-symptom="sore throat">+ Sore throat</button>
+            <button type="button" class="chip" data-symptom="nausea">+ Nausea</button>
+          </div>
+          <textarea id="symptomInput" class="node-input" maxlength="2000" autocomplete="off" placeholder="Describe symptoms, e.g. fever, headache, fatigue…" aria-label="Describe symptoms"></textarea>
+          <div class="node-meta"><span id="symptomDraftState">Draft auto-saved</span><span id="symptomCount">0 / 2000</span></div>
+          <input id="symptomDuration" class="node-input" type="text" autocomplete="off" placeholder="Duration, e.g. 2 days (optional)" aria-label="Symptom duration">
+          <div class="node-btn-row">
+            <button class="node-action" id="analyzeSymptomsBtn" type="button" onclick="event.stopPropagation();send('workspace')">Analyze symptoms →</button>
+            <button class="node-clear" id="clearSymptomsBtn" type="button" title="Clear symptoms" aria-label="Clear symptoms">Clear</button>
+          </div>
+          <small class="node-hint">Tip: Ctrl/⌘ + Enter to analyze</small>
           <small id="workspaceAnalysisStatus" class="node-status" role="status" aria-live="polite"></small>
         </div>
         <div class="debate-node node-evidence" onclick="setAgents(2)" aria-label="Evidence Agent">
@@ -3051,24 +3083,6 @@ textarea.node-input{min-height:74px;resize:vertical}
       <span>01 INPUT</span><i>→</i><span>02 EXTRACT</span><i>→</i><span>03 COMBINE HISTORY</span><i>→</i><span>04 CLASSIFY</span><i>→</i><span>05 UPDATE TIER</span>
     </div>
 
-    <section class="symptom-entry-panel" aria-labelledby="symptomEntryTitle">
-      <div class="symptom-entry-head">
-        <div>
-          <h2 id="symptomEntryTitle">Symptom Agent · Patient input</h2>
-          <p>Enter the patient's symptoms, how long they have been present, and any relevant details. This input is sent to the existing backend consultation endpoint.</p>
-        </div>
-        <span class="readonly-tag">HISTORY IS READ-ONLY</span>
-      </div>
-      <label for="symptomInput">Describe symptoms</label>
-      <textarea id="symptomInput" placeholder="Example: Fever around 101°F for two days, headache, body aches, and fatigue..."></textarea>
-      <label for="symptomDuration">Duration or onset (optional)</label>
-      <input id="symptomDuration" type="text" placeholder="Example: started 2 days ago">
-      <div class="symptom-entry-actions">
-        <button class="primary" type="button" id="analyzeSymptomsBtn" onclick="send('workspace')">Analyze symptoms →</button>
-        <span class="symptom-entry-hint">Your text stays here after analysis so you can review or edit it.</span>
-      </div>
-      <p id="workspaceAnalysisStatus" class="small" role="status" aria-live="polite"></p>
-    </section>
 
     <div id="result" class="result hide"></div>
     <section id="predictionActionPanel" class="prediction-action-panel hide" aria-live="polite">
@@ -3223,7 +3237,7 @@ renderAgentFindings(0);
 const debateRunStateInitial=document.getElementById('debateRunState');
 if(debateRunStateInitial)debateRunStateInitial.textContent='SYSTEM STANDBY';
 
-async function req(path,opt={}){let h={...(opt.headers||{})};if(token)h.Authorization='Bearer '+token;let r=await fetch(API+path,{...opt,headers:h});let d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.detail||'Request failed');return d}
+async function req(path,opt={}){let h={...(opt.headers||{})};if(token)h.Authorization='Bearer '+token;let r;try{r=await fetch(API+path,{...opt,headers:h})}catch(_){throw Error('Cannot reach the backend at '+API+'. Is it running?')}let d=await r.json().catch(()=>({}));if(!r.ok){const err=Error(typeof d.detail==='string'?d.detail:'Request failed');err.status=r.status;throw err}return d}
 async function handleAuth(mode){
   const nameEl=document.getElementById('name');
   const emailEl=document.getElementById('email');
@@ -3296,6 +3310,34 @@ function buildAgentTrace(result){
     {name:'Tier Router',message:tier!==undefined?'Backend selected Tier '+tier+'. '+(reasons.join(' ')||routing.reason||'No detailed routing rationale was returned.'):'The backend response did not include a primary tier.'}
   ];
 }
+
+async function applyAnalysis(d,inputText,animate=true){
+    const resultData=d.result||{};
+    const routing=resultData.routing||{};
+    window.lastPatientInput=inputText||window.lastPatientInput||'';
+    const nodeTierResult=document.getElementById('nodeTierResult');
+    if(nodeTierResult)nodeTierResult.textContent=routing.primary_tier!==undefined?'Backend selected Tier '+routing.primary_tier+'. '+(((routing.reasons||{})[String(routing.primary_tier)]||[]).join(' ')||routing.reason||'Review the returned routing details below.'):'No primary tier was returned by the backend.';
+    lastPredictionResponse=d;
+    window.liveAgentTrace=buildAgentTrace(resultData);
+    const findingsStatus=document.getElementById('agentFindingsStatus');
+    if(findingsStatus)findingsStatus.textContent='PROCESSING';
+    if(animate){
+      for(let i=0;i<5;i++){
+        setAgents(i,routing);
+        await pause(250);
+      }
+    }
+    setAgents(4,routing);
+    renderAgentFindings(4);
+    const actionPanel=document.getElementById('predictionActionPanel');
+    const predictBtn=document.getElementById('predictDiseaseBtn');
+    const actionIntro=document.getElementById('predictionActionIntro');
+    if(actionPanel)actionPanel.classList.remove('hide');
+    if(predictBtn)predictBtn.disabled=!(resultData.tier_results&&Object.keys(resultData.tier_results).length);
+    if(actionIntro)actionIntro.textContent='The backend selected '+(routing.primary_tier!==undefined?'Tier '+routing.primary_tier:'a routing outcome')+'. Review the model output below before discussing possible conditions with a clinician.';
+    showResult(resultData);
+    try{sessionStorage.setItem('udp_last_analysis',JSON.stringify({input:window.lastPatientInput,response:d}))}catch(_){}
+}
 async function send(source='chat'){
   const isWorkspace=source==='workspace';
   const input=document.getElementById(isWorkspace?'symptomInput':'message');
@@ -3318,7 +3360,7 @@ async function send(source='chat'){
   }
   if(status)status.textContent='Sending symptoms to the backend…';
   const analyzeButton=document.getElementById('analyzeSymptomsBtn');
-  if(analyzeButton)analyzeButton.disabled=true;
+  if(analyzeButton){analyzeButton.disabled=true;analyzeButton.classList.add('loading')}
   setAgents(0);
   try{
     const request=req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});
@@ -3329,28 +3371,10 @@ async function send(source='chat'){
     const d=await request;
     const resultData=d.result||{};
     const routing=resultData.routing||{};
-    const nodeTierResult=document.getElementById('nodeTierResult');
-    if(nodeTierResult)nodeTierResult.textContent=routing.primary_tier!==undefined?'Backend selected Tier '+routing.primary_tier+'. '+(((routing.reasons||{})[String(routing.primary_tier)]||[]).join(' ')||routing.reason||'Review the returned routing details below.'):'No primary tier was returned by the backend.';
-    lastPredictionResponse=d;
-    window.liveAgentTrace=buildAgentTrace(resultData);
-    const findingsStatus=document.getElementById('agentFindingsStatus');
-    if(findingsStatus)findingsStatus.textContent='PROCESSING';
-    for(let i=0;i<5;i++){
-      setAgents(i,routing);
-      await pause(250);
-    }
-    setAgents(4,routing);
-    renderAgentFindings(4);
-    const actionPanel=document.getElementById('predictionActionPanel');
-    const predictBtn=document.getElementById('predictDiseaseBtn');
-    const actionIntro=document.getElementById('predictionActionIntro');
-    if(actionPanel)actionPanel.classList.remove('hide');
-    if(predictBtn)predictBtn.disabled=!(resultData.tier_results&&Object.keys(resultData.tier_results).length);
-    if(actionIntro)actionIntro.textContent='The backend selected '+(routing.primary_tier!==undefined?'Tier '+routing.primary_tier:'a routing outcome')+'. Review the model output below before discussing possible conditions with a clinician.';
+    await applyAnalysis(d,m);
     if(status)status.textContent='Analysis complete. Your symptom text is still available above.';
     if(!isWorkspace)add(d.message||'Analysis complete.','bot');
     addRoutingCard(routing,resultData);
-    showResult(resultData);
     const resultEl=document.getElementById('result');
     if(resultEl)resultEl.scrollIntoView({behavior:'smooth',block:'nearest'});
   }catch(e){
@@ -3361,7 +3385,7 @@ async function send(source='chat'){
     if(argument)argument.textContent='The backend request failed: '+e.message+'. No successful routing result was received.';
     if(!isWorkspace)add('Backend error: '+e.message,'bot');
   }finally{
-    if(analyzeButton)analyzeButton.disabled=false;
+    if(analyzeButton){analyzeButton.disabled=false;analyzeButton.classList.remove('loading')}
   }
 }
 function add(t,c){let x=document.createElement('div');x.className='msg '+c;x.textContent=t;chat.appendChild(x);chat.scrollTop=chat.scrollHeight}
@@ -3427,5 +3451,60 @@ async function loadHistory(){try{let d=await req('/history');add('History loaded
 async function loadStatus(){try{let d=await req('/status');status.innerHTML=Object.entries(d.tiers||{}).map(([k,v])=>'Tier '+k+': '+(v.ready?'ready':'not ready')).join('<br>')+'<br>Groq: '+(d.groq_enabled?'enabled':'not configured')}catch(e){status.textContent=e.message}}
 function pause(ms){return new Promise(r=>setTimeout(r,ms))}
 function toggleChat(){document.getElementById('chatWindow').classList.toggle('open')}
-if(token){req('/me').then(d=>{user=d;document.getElementById('auth').classList.add('hide');document.getElementById('userpill').textContent=d.name||d.email;loadStatus()}).catch(()=>logout())}
+if(token){req('/me').then(d=>{user=d;document.getElementById('auth').classList.add('hide');document.getElementById('userpill').textContent=d.name||d.email;loadStatus()}).catch(e=>{if(e&&(e.status===401||e.status===403))logout()})}
+/* ---- Symptom draft: survives accidental reloads (e.g. dev-server live reload) ---- */
+(function(){
+  const KEY='udp_symptom_draft';
+  const txt=document.getElementById('symptomInput');
+  const dur=document.getElementById('symptomDuration');
+  const count=document.getElementById('symptomCount');
+  const state=document.getElementById('symptomDraftState');
+  if(!txt||!dur)return;
+  let timer=null;
+  const syncChips=()=>{
+    const v=txt.value.toLowerCase();
+    document.querySelectorAll('.chip[data-symptom]').forEach(c=>c.classList.toggle('added',v.includes(c.dataset.symptom)));
+  };
+  const refresh=()=>{if(count)count.textContent=txt.value.length+' / '+(txt.maxLength>0?txt.maxLength:2000);syncChips()};
+  const save=()=>{
+    try{localStorage.setItem(KEY,JSON.stringify({symptoms:txt.value,duration:dur.value}));if(state)state.textContent='Draft saved'}
+    catch(_){if(state)state.textContent=''}
+  };
+  const onInput=()=>{refresh();if(state)state.textContent='Saving…';clearTimeout(timer);timer=setTimeout(save,200)};
+  try{
+    const d=JSON.parse(localStorage.getItem(KEY)||'null');
+    if(d){txt.value=d.symptoms||'';dur.value=d.duration||'';if((d.symptoms||d.duration)&&state)state.textContent='Draft restored'}
+  }catch(_){}
+  refresh();
+  txt.addEventListener('input',onInput);
+  dur.addEventListener('input',onInput);
+  // flush on any unload so nothing typed in the last 200ms is lost
+  window.addEventListener('pagehide',()=>{clearTimeout(timer);save()});
+  // keep clicks/typing inside the card from triggering the card's own onclick
+  ['symptomInput','symptomDuration'].forEach(id=>document.getElementById(id).addEventListener('click',e=>e.stopPropagation()));
+  const analyze=()=>{const b=document.getElementById('analyzeSymptomsBtn');if(b&&!b.disabled)send('workspace')};
+  txt.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();analyze()}});
+  dur.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();analyze()}});
+  document.querySelectorAll('.chip[data-symptom]').forEach(c=>c.addEventListener('click',e=>{
+    e.stopPropagation();
+    const sym=c.dataset.symptom;
+    if(!txt.value.toLowerCase().includes(sym)){txt.value=(txt.value.trim()?txt.value.trim().replace(/[,\s]+$/,'')+', ':'')+sym}
+    txt.focus();onInput();
+  }));
+  document.getElementById('clearSymptomsBtn').addEventListener('click',e=>{
+    e.stopPropagation();
+    txt.value='';dur.value='';
+    try{localStorage.removeItem(KEY)}catch(_){}
+    refresh();if(state)state.textContent='Cleared';txt.focus();
+  });
+  // restore the last analysis result so a reload doesn't wipe the agent findings either
+  try{
+    const last=JSON.parse(sessionStorage.getItem('udp_last_analysis')||'null');
+    if(last&&last.response){
+      applyAnalysis(last.response,last.input,false);
+      const st=document.getElementById('workspaceAnalysisStatus');
+      if(st)st.textContent='Restored your previous analysis.';
+    }
+  }catch(_){}
+})();
 </script></body></html>
