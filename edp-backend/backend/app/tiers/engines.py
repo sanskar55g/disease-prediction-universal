@@ -27,7 +27,17 @@ class Tier1:
         self.bench = json.loads((MODELS / "tier1" / "benchmark.json").read_text()) if (MODELS / "tier1" / "benchmark.json").exists() else {}
 
     def available(self) -> list[str]:
-        return [k for k in TIER1_DISEASES if (MODELS / "tier1" / f"{k}.joblib").exists()]
+        ready = []
+        for key in TIER1_DISEASES:
+            path = MODELS / "tier1" / f"{key}.joblib"
+            if not path.exists():
+                continue
+            try:
+                require(path, f"python backend/scripts/train_tier1.py {key}")
+            except MissingDataError:
+                continue
+            ready.append(key)
+        return ready
 
     def _model(self, key: str) -> dict:
         if key not in self._models:
@@ -82,8 +92,26 @@ class Tier1:
             return []
 
     def status(self) -> dict:
-        return {"ready": bool(self.available()), "diseases": self.available(),
-                "benchmark": {k: {"model": v["selected_model"], "auc": v["selected_auc"], "rows": v["rows"]} for k, v in self.bench.items()}}
+        ready, errors = [], {}
+        for key in TIER1_DISEASES:
+            path = MODELS / "tier1" / f"{key}.joblib"
+            if not path.exists():
+                continue
+            try:
+                model = self._model(key)
+                if not isinstance(model, dict) or not {"pipeline", "features", "dtypes"}.issubset(model):
+                    raise ValueError("model artifact is missing required keys")
+                ready.append(key)
+            except Exception as exc:
+                errors[key] = str(exc)[:300]
+        result = {
+            "ready": bool(ready),
+            "diseases": ready,
+            "benchmark": {k: {"model": v["selected_model"], "auc": v["selected_auc"], "rows": v["rows"]} for k, v in self.bench.items()},
+        }
+        if errors:
+            result["artifact_errors"] = errors
+        return result
 
 
 # ----------------------------------------------------------------- Tier 2 ---
@@ -145,7 +173,23 @@ class Tier2:
 
     def status(self) -> dict:
         p = MODELS / "tier2" / "benchmark.json"
-        return {"ready": (MODELS / "tier2" / "tier2_model.joblib").exists(), "benchmark": json.loads(p.read_text()) if p.exists() else None}
+        try:
+            art = self._load()
+            required = {"model", "vectorizer", "label_encoder", "conditions", "evidences"}
+            missing = required - set(art)
+            if missing:
+                raise ValueError(f"model artifact is missing required keys: {sorted(missing)}")
+            result = {
+                "ready": True,
+                "benchmark": json.loads(p.read_text()) if p.exists() else None,
+            }
+        except Exception as exc:
+            result = {
+                "ready": False,
+                "error": str(exc)[:500],
+                "benchmark": json.loads(p.read_text()) if p.exists() else None,
+            }
+        return result
 
 
 # ----------------------------------------------------------------- Tier 3 ---

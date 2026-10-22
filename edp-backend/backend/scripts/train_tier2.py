@@ -34,7 +34,7 @@ from sklearn.preprocessing import LabelEncoder
 
 warnings.filterwarnings("ignore")
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.data_guard import MODELS, require, tier_dir  # noqa: E402
+from app.data_guard import MODELS, record_provenance, require, tier_dir  # noqa: E402
 
 RAW = tier_dir(2, "raw")
 OUT = MODELS / "tier2"
@@ -100,10 +100,26 @@ if __name__ == "__main__":
     best = max(results, key=lambda k: results[k]["macro_f1"])
     conditions = json.loads(require(RAW / "release_conditions.json", HINT).read_text())
     evidences = json.loads(require(RAW / "release_evidences.json", HINT).read_text())
+    model_path = OUT / "tier2_model.joblib"
     joblib.dump({"model": fitted[best], "vectorizer": vec, "label_encoder": le,
-                 "conditions": conditions, "evidences": evidences}, OUT / "tier2_model.joblib")
+                 "conditions": conditions, "evidences": evidences}, model_path)
+    record_provenance(
+        model_path,
+        source="Derived model trained from DDXPlus (figshare article 22687585)",
+        url="https://api.figshare.com/v2/articles/22687585",
+        rows=len(tr),
+        note=f"train_split={train_name}; selected_model={best}; test_rows={len(te)}; seed={SEED}",
+    )
     bench = {"train_split": train_name, "train_rows": len(tr), "test_rows": len(te),
              "n_conditions": int(len(le.classes_)), "candidates": results, "selected_model": best,
              "conditions": sorted(le.classes_.tolist())}
-    (OUT / "benchmark.json").write_text(json.dumps(bench, indent=2))
-    print(f"  -> selected {best}; saved {OUT / 'tier2_model.joblib'}")
+    bench_path = OUT / "benchmark.json"
+    bench_path.write_text(json.dumps(bench, indent=2))
+    record_provenance(
+        bench_path,
+        source="DDXPlus model benchmark",
+        url="https://api.figshare.com/v2/articles/22687585",
+        rows=len(te),
+        note=f"selected_model={best}; train_split={train_name}; seed={SEED}",
+    )
+    print(f"  -> selected {best}; saved {model_path}")

@@ -39,7 +39,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 warnings.filterwarnings("ignore")
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.data_guard import MODELS, require, tier_dir  # noqa: E402
+from app.data_guard import MODELS, record_provenance, require, tier_dir  # noqa: E402
 from app.tiers.tier1_registry import TIER1_DISEASES  # noqa: E402
 
 RAW = tier_dir(1, "raw")
@@ -109,8 +109,17 @@ def train_one(key: str) -> dict:
     best = sorted(results, key=lambda k: (-results[k]["auc_mean"], results[k]["brier"]))[0]
 
     final = Pipeline([("prep", preprocessor(X)), ("clf", candidates(n, pos)[best])]).fit(X, y)
+    model_path = OUT / f"{key}.joblib"
     joblib.dump({"pipeline": final, "features": X.columns.tolist(),
-                 "dtypes": {c: str(t) for c, t in X.dtypes.items()}}, OUT / f"{key}.joblib")
+                 "dtypes": {c: str(t) for c, t in X.dtypes.items()}}, model_path)
+    spec = TIER1_DISEASES[key]
+    record_provenance(
+        model_path,
+        source=f"Derived model trained from UCI ML Repository #{spec['uci_id']}",
+        url=f"https://archive.ics.uci.edu/dataset/{spec['uci_id']}",
+        rows=n,
+        note=f"selected_model={best}; cv_auc={results[best]['auc_mean']}; cv_folds={folds}; seed={SEED}",
+    )
     return {"disease": key, "label": TIER1_DISEASES[key]["label"], "rows": n, "positive_rate": round(pos, 4),
             "cv_folds": folds, "candidates": results, "selected_model": best,
             "selected_auc": results[best]["auc_mean"], "features": X.columns.tolist()}
