@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 DB_URL = os.getenv("DATABASE_URL", "sqlite:///./medical_history.db")
 connect_args = {"check_same_thread": False} if DB_URL.startswith("sqlite") else {}
 engine = create_engine(DB_URL, connect_args=connect_args)

@@ -8,6 +8,18 @@ from uuid import uuid4
 import httpx
 from pypdf import PdfReader
 
+try:
+    import fitz
+except ImportError:
+    fitz = None
+
+try:
+    import pytesseract
+    from PIL import Image
+except ImportError:
+    pytesseract = None
+    Image = None
+
 UPLOAD_ROOT = Path(os.getenv("UPLOAD_ROOT", "./uploads")).resolve()
 UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
 
@@ -30,6 +42,41 @@ def save_upload(user_id: int, filename: str, mime_type: str, content: bytes) -> 
 def extract_pdf_text(path: Path) -> str:
     reader = PdfReader(str(path))
     return "\n".join((page.extract_text() or "") for page in reader.pages).strip()
+
+
+def _ocr_image(image) -> str:
+    if pytesseract is None or Image is None:
+        return ""
+    try:
+        return pytesseract.image_to_string(image).strip()
+    except Exception:
+        return ""
+
+
+def extract_document_text(path: Path, mime_type: str) -> str:
+    """Extract embedded PDF text first, then use local Tesseract OCR when available."""
+    if mime_type == "application/pdf":
+        text = extract_pdf_text(path)
+        if text:
+            return text
+        if fitz is None:
+            return ""
+        from io import BytesIO
+        chunks = []
+        with fitz.open(path) as pdf:
+            for page in pdf:
+                pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
+                image = Image.open(BytesIO(pix.tobytes("png"))) if Image else None
+                if image is not None:
+                    page_text = _ocr_image(image)
+                    if page_text:
+                        chunks.append(page_text)
+        return "\\n".join(chunks).strip()
+
+    if mime_type.startswith("image/") and Image is not None:
+        with Image.open(path) as image:
+            return _ocr_image(image)
+    return ""
 
 
 def infer_document_type(filename: str, text: str = "") -> str:
@@ -99,7 +146,13 @@ def build_history_context(records: list, documents: list, messages: list, max_ch
         chunks.append(f"[{r.record_type}] {r.title}: {r.content}")
     for d in documents:
         if d.analysis_json:
-            chunks.append(f"[document:{d.document_type}] {d.original_name}: {d.analysis_json}")
+            analysis = d.analysis_json
+            if isinstance(analysis, str):
+                try:
+                    analysis = json.loads(analysis)
+                except (TypeError, json.JSONDecodeError):
+                    pass
+            chunks.append(f"[document:{d.document_type}] {d.original_name}: {json.dumps(analysis, default=str)}")
         elif d.extracted_text:
             chunks.append(f"[document:{d.document_type}] {d.original_name}: {d.extracted_text[:3000]}")
     for m in messages[-30:]:
