@@ -27,7 +27,17 @@ class Tier1:
         self.bench = json.loads((MODELS / "tier1" / "benchmark.json").read_text()) if (MODELS / "tier1" / "benchmark.json").exists() else {}
 
     def available(self) -> list[str]:
-        return [k for k in TIER1_DISEASES if (MODELS / "tier1" / f"{k}.joblib").exists()]
+        ready = []
+        for key in TIER1_DISEASES:
+            path = MODELS / "tier1" / f"{key}.joblib"
+            if not path.exists():
+                continue
+            try:
+                require(path, f"python backend/scripts/train_tier1.py {key}")
+            except MissingDataError:
+                continue
+            ready.append(key)
+        return ready
 
     def _model(self, key: str) -> dict:
         if key not in self._models:
@@ -144,8 +154,20 @@ class Tier2:
                  "values": e.get("value_meaning", {})} for c, e in art["evidences"].items()]
 
     def status(self) -> dict:
+        model_path = MODELS / "tier2" / "tier2_model.joblib"
         p = MODELS / "tier2" / "benchmark.json"
-        return {"ready": (MODELS / "tier2" / "tier2_model.joblib").exists(), "benchmark": json.loads(p.read_text()) if p.exists() else None}
+        try:
+            require(model_path, "python backend/scripts/train_tier2.py")
+            ready, error = True, None
+        except MissingDataError as exc:
+            ready, error = False, str(exc)
+        result = {
+            "ready": ready,
+            "benchmark": json.loads(p.read_text()) if p.exists() else None,
+        }
+        if error:
+            result["error"] = error[:500]
+        return result
 
 
 # ----------------------------------------------------------------- Tier 3 ---
