@@ -98,7 +98,13 @@ def run_agent_pipeline(intake: dict, evidence: dict, decision: dict) -> tuple[di
         "duration_days": duration,
         "onset": intake.get("onset"),
         "fever_reported": intake.get("fever"),
-        "note": "These are patient-reported symptoms, not confirmed conditions."
+        "note": "These are patient-reported symptoms, not confirmed conditions.",
+        "context_from_history_agent": {
+            "known_conditions": facts["conditions"],
+            "medications": facts["medications"],
+            "prior_symptoms": facts["symptoms"],
+            "important_history": facts["important_history"]
+        }
     }
     evidence_findings = {
         "documents_reviewed": [
@@ -108,7 +114,9 @@ def run_agent_pipeline(intake: dict, evidence: dict, decision: dict) -> tuple[di
             for x in evidence.get("documents", [])
         ],
         "extractable_facts": {k: facts[k] for k in ("conditions", "medications", "labs", "symptoms", "dates")},
-        "processing_note": "PDF text and image OCR can extract readable text. Radiology pixels are not interpreted as imaging findings; unreadable files remain needs_review."
+        "processing_note": "PDF text and image OCR can extract readable text. Radiology pixels are not interpreted as imaging findings; unreadable files remain needs_review.",
+        "context_from_history_agent": history_findings,
+        "context_from_symptom_agent": symptom_findings
     }
     triage = {
         "emergency_flag": bool(decision.get("emergency")),
@@ -117,6 +125,9 @@ def run_agent_pipeline(intake: dict, evidence: dict, decision: dict) -> tuple[di
         "instruction": ("Urgent clinical assessment may be needed based on the red-flag screen; do not wait for this demo."
                         if decision.get("emergency") else
                         "No configured red-flag trigger was detected. This does not rule out an emergency."),
+        "context_from_history_agent": history_findings,
+        "context_from_symptom_agent": symptom_findings,
+        "context_from_evidence_agent": evidence_findings
     }
     tier = {
         "primary_tier": decision.get("primary_tier"),
@@ -124,7 +135,13 @@ def run_agent_pipeline(intake: dict, evidence: dict, decision: dict) -> tuple[di
         "secondary_tiers": decision.get("secondary_tiers", []),
         "scores": decision.get("scores", {}),
         "reasons": decision.get("reasons", {}),
-        "decision_basis": "Deterministic routing rules; prediction/classification models were not executed."
+        "decision_basis": "Deterministic routing rules; prediction/classification models were not executed.",
+        "context_from_previous_agents": {
+            "history": history_findings,
+            "symptoms": symptom_findings,
+            "evidence": evidence_findings,
+            "triage": triage
+        }
     }
     trace = [
         {"agent": "History Agent", "status": "completed", "message": f"Reviewed {history_findings['saved_document_count']} saved documents and {history_findings['saved_record_count']} saved records. Found {len(facts['medications'])} medication entries, {len(facts['labs'])} lab entries and {len(facts['conditions'])} condition entries.", "findings": history_findings, "consumed": []},
