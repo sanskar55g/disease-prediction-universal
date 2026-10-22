@@ -64,8 +64,16 @@ def _facts(evidence: dict) -> dict:
                 value = obj.get(key, [])
                 if isinstance(value, list):
                     target.extend(value)
-    return {"conditions": conditions, "medications": medications, "labs": labs,
-            "symptoms": symptoms, "dates": dates, "important_history": history}
+    def unique(items):
+        seen, result = set(), []
+        for item in items:
+            marker = json.dumps(item, sort_keys=True, default=str)
+            if marker not in seen:
+                seen.add(marker)
+                result.append(item)
+        return result
+    return {"conditions": unique(conditions), "medications": unique(medications), "labs": unique(labs),
+            "symptoms": unique(symptoms), "dates": unique(dates), "important_history": unique(history)}
 
 
 def run_agent_pipeline(intake: dict, evidence: dict, decision: dict) -> tuple[dict, list[dict]]:
@@ -121,7 +129,7 @@ def run_agent_pipeline(intake: dict, evidence: dict, decision: dict) -> tuple[di
     trace = [
         {"agent": "History Agent", "status": "completed", "message": f"Reviewed {history_findings['saved_document_count']} saved documents and {history_findings['saved_record_count']} saved records. Found {len(facts['medications'])} medication entries, {len(facts['labs'])} lab entries and {len(facts['conditions'])} condition entries.", "findings": history_findings, "consumed": []},
         {"agent": "Symptom Agent", "status": "completed", "message": f"Reviewed {len(symptoms)} structured patient-reported symptoms and the latest statement{f'; duration {duration} day(s)' if duration is not None else '; duration not specified'}.", "findings": symptom_findings, "consumed": ["History Agent"]},
-        {"agent": "Evidence Agent", "status": "completed" if all(x.get("processing_status") != "needs_review" for x in evidence.get("documents", [])) else "needs_review", "message": f"Reviewed {len(evidence.get('documents', []))} persisted document analyses and extracted structured facts. Documents requiring review: {sum(1 for x in evidence.get('documents', []) if x.get('processing_status') == 'needs_review')}.", "findings": evidence_findings, "consumed": ["History Agent", "Symptom Agent"]},
+        {"agent": "Evidence Agent", "status": "needs_review" if any(x.get("processing_status") in ("needs_review", "processed_with_review") for x in evidence.get("documents", [])) else "completed", "message": f"Reviewed {len(evidence.get('documents', []))} persisted document analyses and extracted structured facts. Documents requiring review: {sum(1 for x in evidence.get('documents', []) if x.get('processing_status') == 'needs_review')}.", "findings": evidence_findings, "consumed": ["History Agent", "Symptom Agent"]},
         {"agent": "Triage Agent", "status": "completed", "message": triage["instruction"], "findings": triage, "consumed": ["History Agent", "Symptom Agent", "Evidence Agent"]},
         {"agent": "Tier Router", "status": "completed" if tier["primary_tier"] is not None else "needs_more_information", "message": (f"Selected Tier {tier['primary_tier']} using deterministic routing rules." if tier["primary_tier"] is not None else "Insufficient evidence to select a tier; more information is needed."), "findings": tier, "consumed": ["History Agent", "Symptom Agent", "Evidence Agent", "Triage Agent"]},
     ]
