@@ -235,7 +235,10 @@ def chat(req: ChatRequest, user: User = Depends(current_user), session: Session 
     # Save the routing/agent trace for longitudinal audit, but do not run tier engines here.
     session.add(Prediction(user_id=user.id, request_json=json.dumps(intake, default=str),
                            result_json=json.dumps({"routing": result, "tier_results": {}}, default=str)))
-    reply = {"message": result.get("message", "Orchestration completed through tier routing."), "result": result}
+    reply = {"message": result.get("message", "Orchestration completed through tier routing."),
+             "result": {"routing": result, "tier_results": {}, "agent_trace": result.get("agent_trace", []),
+                        "medical_history_used": result.get("medical_history_used", False),
+                        "evidence_summary": result.get("evidence_summary", {})}}
     session.add(ChatMessage(user_id=user.id, role="assistant", content=json.dumps(reply, default=str)))
     session.commit()
     return reply
