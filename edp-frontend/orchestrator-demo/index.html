@@ -807,6 +807,40 @@ button:hover{
   line-height:1.5;
 }
 
+.agent-trace-detail{
+  margin-top:9px;
+  padding:9px 10px;
+  border-radius:9px;
+  background:#f6fafb;
+  border:1px solid #e3edf0;
+  color:#526879;
+  font-size:11px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+.agent-trace-detail strong{
+  display:block;
+  margin-bottom:4px;
+  color:#244653;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.45px;
+}
+.agent-trace-detail div{
+  white-space:pre-wrap;
+}
+.agent-trace-status{
+  display:inline-block;
+  margin-top:9px;
+  padding:4px 7px;
+  border-radius:6px;
+  background:#e5f7f3;
+  color:#087d70;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.4px;
+}
+
 .right > div:first-child{
   padding:18px !important;
   background:#fbfcfd;
@@ -3145,8 +3179,10 @@ function renderAgentFindings(activeIndex){
   const status=document.getElementById('agentFindingsStatus');
   if(!list)return;
   const names=['History Agent','Symptom Agent','Evidence Agent','Triage Agent','Tier Router'];
-  const trace=window.liveAgentTrace;
+  const trace=Array.isArray(window.liveAgentTrace)?window.liveAgentTrace:null;
   list.replaceChildren();
+<<<<<<< HEAD
+=======
   names.forEach((name,i)=>{
     const card=document.createElement('div');
     card.className='agent-finding'+(trace?'':' waiting');
@@ -3171,7 +3207,45 @@ function renderAgentFindings(activeIndex){
   });
   if(status)status.textContent=trace?'BACKEND TRACE READY':'WAITING';
 }
+>>>>>>> origin/main
 
+  names.forEach((name,i)=>{
+    const item=trace&&trace.find(x=>String(x.name||'').toLowerCase()===name.toLowerCase());
+    const card=document.createElement('div');
+    card.className='agent-finding'+(item?'':' waiting');
+    const heading=document.createElement('b');
+    heading.textContent=name;
+    const body=document.createElement('p');
+    body.textContent=item?(item.findings||item.message||'The backend returned a trace entry without a findings summary.'):(i===0?'Waiting for backend history-context status.':i===1?'Enter symptoms and run an analysis to see the submitted symptom data.':i===2?'Waiting for the backend evidence inventory.':i===3?'Waiting for the backend red-flag screen.':'Waiting for the backend tier-routing decision.');
+    card.append(heading,body);
+
+    if(item){
+      const addField=(label,value)=>{
+        if(value===undefined||value===null||value===''||(Array.isArray(value)&&!value.length))return;
+        const section=document.createElement('div');
+        section.className='agent-trace-detail';
+        const labelEl=document.createElement('strong');
+        labelEl.textContent=label;
+        const valueEl=document.createElement('div');
+        valueEl.textContent=Array.isArray(value)?value.map(x=>typeof x==='string'?x:JSON.stringify(x)).join(' · '):(typeof value==='object'?JSON.stringify(value,null,2):String(value));
+        section.append(labelEl,valueEl);
+        card.append(section);
+      };
+      addField('Inputs',item.inputs);
+      addField('Evidence',item.evidence);
+      addField('Uncertainty',item.uncertainty);
+      addField('Impact on decision',item.decision_impact);
+      if(item.status){
+        const statusEl=document.createElement('span');
+        statusEl.className='agent-trace-status';
+        statusEl.textContent=String(item.status).replace(/[_-]/g,' ').toUpperCase();
+        card.append(statusEl);
+      }
+    }
+    list.appendChild(card);
+  });
+  if(status)status.textContent=trace?'BACKEND TRACE LOADED':'WAITING FOR BACKEND TRACE';
+}
 function showPredictionReview(){
   const panel=document.getElementById('predictionReview');
   if(!panel||!lastPredictionResponse)return;
@@ -3182,10 +3256,23 @@ function showPredictionReview(){
   const tier=routing.primary_tier;
   const tierResults=result.tier_results||{};
   const selected=tier!==undefined?tierResults[String(tier)]:null;
-  const title=document.createElement('h4');title.textContent='Model output for '+(tier!==undefined?'Tier '+tier:'the selected tier');panel.appendChild(title);
+  const title=document.createElement('h4');
+  title.textContent=(result.routing_only||Object.keys(tierResults).length===0)
+    ?'Tier '+(tier!==undefined?tier:'not selected')+' · Routing review'
+    :'Model output for '+(tier!==undefined?'Tier '+tier:'the selected tier');
+  panel.appendChild(title);
   const output=document.createElement('pre');
-  output.textContent=selected!==undefined&&selected!==null?JSON.stringify(selected,null,2):JSON.stringify(tierResults,null,2);
+  output.textContent=(result.routing_only||Object.keys(tierResults).length===0)
+    ?JSON.stringify({patient_situation:routing.patient_situation,scores:routing.scores,reasons:routing.reasons,routing_steps:routing.steps},null,2)
+    :(selected!==undefined&&selected!==null?JSON.stringify(selected,null,2):JSON.stringify(tierResults,null,2));
   panel.appendChild(output);
+  if(result.routing_only||Object.keys(tierResults).length===0){
+    const note=document.createElement('p');
+    note.className='prediction-disclaimer';
+    note.textContent='Routing only: the orchestrator selected a tier, but disease-prediction models were not executed. No disease prediction is available yet.';
+    panel.appendChild(note);
+    return;
+  }
   const nextTitle=document.createElement('h4');nextTitle.textContent='Safe next steps';panel.appendChild(nextTitle);
   const list=document.createElement('ul');
   [
@@ -3306,6 +3393,35 @@ if(loginBtnEl) loginBtnEl.addEventListener('click',()=>handleAuth('login'));
 if(registerBtnEl) registerBtnEl.addEventListener('click',()=>handleAuth('register'));
 function logout(){localStorage.removeItem('udp_token');location.reload()}
 function buildAgentTrace(result){
+<<<<<<< HEAD
+  const routing=result?.routing||{};
+  const backendTrace=Array.isArray(result?.agent_trace)?result.agent_trace:
+    (Array.isArray(routing.agent_trace)?routing.agent_trace:null);
+  if(backendTrace){
+    return backendTrace.map(item=>({
+      name:String(item?.name||'Agent'),
+      status:item?.status||'recorded',
+      inputs:item?.input??item?.inputs??null,
+      findings:JSON.stringify(item?.output??item?.findings??item?.message??{},null,2),
+      evidence:item?.evidence??[],
+      uncertainty:item?.uncertainty||'No uncertainty note was returned for this stage.',
+      decision_impact:item?.decision_impact||'No decision-impact note was returned for this stage.'
+    }));
+  }
+
+  const tier=routing.primary_tier;
+  const payload=(routing.payloads&&tier!==undefined)?(routing.payloads[String(tier)]||{}):{};
+  const reasons=(routing.reasons&&tier!==undefined)?(routing.reasons[String(tier)]||[]):[];
+  const situation=routing.patient_situation||{};
+  const symptoms=Array.isArray(payload.symptoms)?payload.symptoms:[];
+  const inputText=String(window.lastPatientInput||'').trim();
+  return [
+    {name:'History Agent',findings:result?.medical_history_used?'Backend confirms medical-history context was included.':'The backend did not confirm saved medical-history context was included.',uncertainty:'No structured history-agent trace was returned.',decision_impact:'History may affect routing only when passed into the routing engine.'},
+    {name:'Symptom Agent',findings:symptoms.length?'Routing payload symptoms: '+symptoms.join(', '):(inputText?'Submitted symptom text: '+inputText:'No symptom text was available.'),uncertainty:'No structured symptom-agent trace was returned.',decision_impact:'Symptoms may affect tier routing.'},
+    {name:'Evidence Agent',findings:'No structured evidence-agent trace was returned by the backend.',uncertainty:'Uploaded documents are not assumed to affect routing unless their extracted fields are supplied to the routing engine.',decision_impact:'Only evidence actually supplied to the routing engine can affect its decision.'},
+    {name:'Triage Agent',findings:situation.situation?'Patient situation: '+String(situation.situation)+'. '+(situation.reason||''):'No patient-situation classification was returned.',uncertainty:'A rule-based screen cannot rule out an emergency.',decision_impact:'Urgent symptoms need appropriate professional care.'},
+    {name:'Tier Router',findings:tier!==undefined?'Backend selected Tier '+tier+'. '+(reasons.join(' ')||''):'No primary tier was returned.',uncertainty:'A tier is a routing decision, not a diagnosis.',decision_impact:tier!==undefined?'Primary tier: '+tier+'.':'No tier decision was returned.'}
+=======
   const actual=Array.isArray(result?.agent_trace)?result.agent_trace:[];
   if(actual.length){
     return actual.map(entry=>({
@@ -3322,9 +3438,9 @@ function buildAgentTrace(result){
     {name:'Evidence Agent',message:'No completed backend Evidence Agent trace was returned.',status:'missing'},
     {name:'Triage Agent',message:'No completed backend Triage Agent trace was returned.',status:'missing'},
     {name:'Tier Router',message:'No completed backend Tier Router trace was returned.',status:'missing'}
+>>>>>>> origin/main
   ];
 }
-
 async function applyAnalysis(d,inputText,animate=true){
     const resultData=d.result||{};
     const routing=resultData.routing||{};
@@ -3347,8 +3463,8 @@ async function applyAnalysis(d,inputText,animate=true){
     const predictBtn=document.getElementById('predictDiseaseBtn');
     const actionIntro=document.getElementById('predictionActionIntro');
     if(actionPanel)actionPanel.classList.remove('hide');
-    if(predictBtn)predictBtn.disabled=!(resultData.tier_results&&Object.keys(resultData.tier_results).length);
-    if(actionIntro)actionIntro.textContent='The backend selected '+(routing.primary_tier!==undefined?'Tier '+routing.primary_tier:'a routing outcome')+'. Review the model output below before discussing possible conditions with a clinician.';
+    if(predictBtn)predictBtn.disabled=routing.primary_tier===undefined||routing.primary_tier===null;
+    if(actionIntro)actionIntro.textContent=(resultData.routing_only||!Object.keys(resultData.tier_results||{}).length)?'The backend selected '+(routing.primary_tier!==undefined?'Tier '+routing.primary_tier:'a routing outcome')+'. Review the routing evidence below; disease-prediction models have not run yet.':'The backend selected '+(routing.primary_tier!==undefined?'Tier '+routing.primary_tier:'a routing outcome')+'. Review the returned model output before discussing it with a clinician.';
     showResult(resultData);
     try{sessionStorage.setItem('udp_last_analysis',JSON.stringify({input:window.lastPatientInput,response:d}))}catch(_){}
 }
@@ -3377,7 +3493,27 @@ async function send(source='chat'){
   if(analyzeButton){analyzeButton.disabled=true;analyzeButton.classList.add('loading')}
   setAgents(0);
   try{
+<<<<<<< HEAD
+    const durationText=isWorkspace?(durationInput?.value||'').trim():'';
+    const durationMatch=durationText.match(/(\d+(?:\.\d+)?)\s*(day|days|d|week|weeks|w|month|months|year|years)\b/i);
+    let durationDays=null;
+    if(durationMatch){
+      const value=Number(durationMatch[1]);
+      const unit=durationMatch[2].toLowerCase();
+      const multiplier=unit.startsWith('w')?7:unit.startsWith('month')?30:unit.startsWith('year')?365:1;
+      durationDays=Math.round(value*multiplier);
+    }
+    const requestBody={message:m};
+    if(durationDays!==null)requestBody.symptom_duration_days=durationDays;
+    const request=req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(requestBody)});
+    for(let i=0;i<4;i++){
+      setAgents(i);
+      await pause(180);
+    }
+    const d=await request;
+=======
     const d=await req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});
+>>>>>>> origin/main
     const resultData=d.result||{};
     const routing=resultData.routing||{};
     await applyAnalysis(d,m);
