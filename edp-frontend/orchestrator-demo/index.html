@@ -3153,7 +3153,21 @@ function renderAgentFindings(activeIndex){
     const heading=document.createElement('b');heading.textContent=name;
     const body=document.createElement('p');
     body.textContent=trace&&trace[i]?trace[i].message:(i===0?'No analysis running yet. History is read-only and loads from the signed-in account when the backend supplies it.':i===1?'Enter symptoms in the Symptom Agent box to begin.':i===2?'Waiting for available evidence and model output.':i===3?'Waiting for the returned urgency classification.':'Displays the backend-selected tier after analysis.');
-    card.append(heading,body);list.appendChild(card);
+    card.append(heading,body);
+    if(trace&&trace[i]){
+      const state=document.createElement('small');
+      state.className='agent-trace-state';
+      state.textContent=String(trace[i].status||'completed').replaceAll('_',' ').toUpperCase();
+      card.appendChild(state);
+      if(trace[i].findings&&Object.keys(trace[i].findings).length){
+        const details=document.createElement('details');
+        const summary=document.createElement('summary');summary.textContent='View structured findings';
+        const pre=document.createElement('pre');pre.textContent=JSON.stringify(trace[i].findings,null,2);
+        pre.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto;font-size:11px;padding:10px;border-radius:8px;background:#f6f8fa';
+        details.append(summary,pre);card.appendChild(details);
+      }
+    }
+    list.appendChild(card);
   });
   if(status)status.textContent=trace?'BACKEND TRACE READY':'WAITING';
 }
@@ -3292,22 +3306,22 @@ if(loginBtnEl) loginBtnEl.addEventListener('click',()=>handleAuth('login'));
 if(registerBtnEl) registerBtnEl.addEventListener('click',()=>handleAuth('register'));
 function logout(){localStorage.removeItem('udp_token');location.reload()}
 function buildAgentTrace(result){
-  const routing=result?.routing||{};
-  const tier=routing.primary_tier;
-  const payload=(routing.payloads&&tier!==undefined)?(routing.payloads[String(tier)]||{}):{};
-  const tierResult=(result?.tier_results&&tier!==undefined)?result.tier_results[String(tier)]:null;
-  const reasons=(routing.reasons&&tier!==undefined)?(routing.reasons[String(tier)]||[]):[];
-  const situation=routing.patient_situation||{};
-  const symptoms=Array.isArray(payload.symptoms)?payload.symptoms:[];
-  const evidenceAvailable=!!(tierResult&&tierResult.available!==false);
-  const inputText=String(window.lastPatientInput||'').trim();
-  const evidenceCount=Number(result?.evidence_count||result?.documents_used||0);
+  const actual=Array.isArray(result?.agent_trace)?result.agent_trace:[];
+  if(actual.length){
+    return actual.map(entry=>({
+      name:entry.agent||entry.name||'Agent',
+      message:entry.message||JSON.stringify(entry.findings||{}),
+      findings:entry.findings||{},
+      status:entry.status||'completed',
+      consumed:entry.consumed||[]
+    }));
+  }
   return [
-    {name:'History Agent',message:result?.medical_history_used?'Backend confirms medical-history context was included in the prediction request.':'The response does not confirm that saved medical-history context was used; the History Agent remains read-only.'},
-    {name:'Symptom Agent',message:symptoms.length?'Backend routing payload contains normalized symptoms: '+symptoms.join(', ')+'.':(inputText?'Patient-reported symptoms were submitted: '+inputText:'No patient symptom text was available in this request.')},
-    {name:'Evidence Agent',message:evidenceCount?'Backend reports '+evidenceCount+' evidence item(s) used.':(evidenceAvailable?'The selected tier returned a model-result payload, but the response does not confirm document analysis.':'No usable result payload was returned for the selected tier. Uploaded files are not assumed to have been analyzed unless the backend confirms it.')},
-    {name:'Triage Agent',message:situation.situation?'Backend patient-situation classification: '+String(situation.situation)+'. '+(situation.reason||''):'The backend did not return a patient-situation classification. Urgency should be reviewed by a clinician when symptoms are concerning.'},
-    {name:'Tier Router',message:tier!==undefined?'Backend selected Tier '+tier+'. '+(reasons.join(' ')||routing.reason||'No detailed routing rationale was returned.'):'The backend response did not include a primary tier.'}
+    {name:'History Agent',message:'No completed backend History Agent trace was returned.',status:'missing'},
+    {name:'Symptom Agent',message:'No completed backend Symptom Agent trace was returned.',status:'missing'},
+    {name:'Evidence Agent',message:'No completed backend Evidence Agent trace was returned.',status:'missing'},
+    {name:'Triage Agent',message:'No completed backend Triage Agent trace was returned.',status:'missing'},
+    {name:'Tier Router',message:'No completed backend Tier Router trace was returned.',status:'missing'}
   ];
 }
 
@@ -3363,12 +3377,7 @@ async function send(source='chat'){
   if(analyzeButton){analyzeButton.disabled=true;analyzeButton.classList.add('loading')}
   setAgents(0);
   try{
-    const request=req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});
-    for(let i=0;i<4;i++){
-      setAgents(i);
-      await pause(180);
-    }
-    const d=await request;
+    const d=await req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});
     const resultData=d.result||{};
     const routing=resultData.routing||{};
     await applyAnalysis(d,m);
