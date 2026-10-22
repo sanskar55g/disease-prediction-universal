@@ -71,7 +71,7 @@ def extract_document_text(path: Path, mime_type: str) -> str:
                     page_text = _ocr_image(image)
                     if page_text:
                         chunks.append(page_text)
-        return "\\n".join(chunks).strip()
+        return "\n".join(chunks).strip()
 
     if mime_type.startswith("image/") and Image is not None:
         with Image.open(path) as image:
@@ -119,6 +119,35 @@ def groq_chat(prompt: str, max_tokens: int = 900) -> str | None:
         return None
 
 
+def _offline_extract_record(text: str, document_type: str) -> dict:
+    """Conservative local fallback: capture literal text and obvious lab/value pairs without diagnosing."""
+    normalized = " ".join(text.split())
+    lines = [line.strip(" •-*\t") for line in text.splitlines() if line.strip()]
+    medications = []
+    labs = []
+    # Preserve medication-like lines only when dosage/administration language is explicit.
+    for line in lines:
+        if re.search(r"\b(\d+(?:\.\d+)?\s?(?:mg|mcg|g|ml|iu)\b|tablet|capsule|take once|twice daily|daily dose)\b", line, re.I):
+            medications.append({"text": line[:300], "source": "literal_document_text"})
+        lab_match = re.search(r"([A-Za-z][A-Za-z0-9 /()-]{1,45})\s*[:=]\s*(-?\d+(?:\.\d+)?)\s*(mg/dl|mmol/l|g/dl|%|mmhg|10\^?\d*/?ul|iu/l|u/l|ng/ml)?", line, re.I)
+        if lab_match:
+            labs.append({"name": lab_match.group(1).strip(), "value": lab_match.group(2),
+                         "unit": lab_match.group(3) or "", "source_text": line[:300]})
+    return {
+        "document_type": document_type,
+        "summary": normalized[:2000],
+        "conditions": [],
+        "medications": medications[:50],
+        "labs": labs[:100],
+        "symptoms": [],
+        "dates": list(dict.fromkeys(re.findall(r"\b(?:\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\d{4}-\d{2}-\d{2})\b", text)))[:50],
+        "important_history": [],
+        "extraction_method": "local_text_fallback",
+        "processing_status": "processed_with_review" if medications or labs else "needs_review",
+        "review_note": "Local fallback extracts literal lines and possible lab/value pairs only. Verify against the source; no diagnosis is inferred."
+    }
+
+
 def extract_record(text: str, document_type: str) -> dict:
     if not text.strip():
         return {"document_type": document_type, "summary": "", "conditions": [], "medications": [], "labs": [], "symptoms": []}
@@ -130,14 +159,22 @@ TEXT:
 {text[:12000]}"""
     raw = groq_chat(prompt)
     if not raw:
-        return {"document_type": document_type, "summary": text[:2000], "conditions": [], "medications": [], "labs": [], "symptoms": [], "dates": [], "important_history": []}
+        return _offline_extract_record(text, document_type)
     try:
         clean = raw[raw.find("{"):raw.rfind("}") + 1]
         out = json.loads(clean)
         out["document_type"] = document_type
+        out["extraction_method"] = "groq_structured_extraction"
+        out["processing_status"] = "processed"
+        out.setdefault("conditions", [])
+        out.setdefault("medications", [])
+        out.setdefault("labs", [])
+        out.setdefault("symptoms", [])
+        out.setdefault("dates", [])
+        out.setdefault("important_history", [])
         return out
     except Exception:
-        return {"document_type": document_type, "summary": raw[:4000], "conditions": [], "medications": [], "labs": [], "symptoms": [], "dates": [], "important_history": []}
+        return _offline_extract_record(text, document_type)
 
 
 def build_history_context(records: list, documents: list, messages: list, max_chars: int = 24000) -> str:
