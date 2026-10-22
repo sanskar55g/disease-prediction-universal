@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from .database import ChatMessage, MedicalDocument, MedicalRecord, Prediction, SessionLocal, User, init_db
-from .medical import build_history_context, extract_pdf_text, extract_record, infer_document_type, save_upload
+from .medical import build_history_context, extract_document_text, extract_record, infer_document_type, save_upload
 from .orchestrator import classify
 from .schemas import ChatRequest, LoginRequest, PredictionRequest, RegisterRequest
 from .security import create_token, hash_password, user_id_from_token, verify_password
@@ -115,16 +115,22 @@ async def upload_document(file: UploadFile = File(...), document_type: str = For
     except ValueError as exc:
         raise HTTPException(400, str(exc))
     path.write_bytes(data)
-    extracted = extract_pdf_text(path) if file.content_type == "application/pdf" else ""
+    try:
+        extracted = extract_document_text(path, file.content_type or "")
+    except Exception as exc:
+        path.unlink(missing_ok=True)
+        raise HTTPException(422, f"Could not process the uploaded document: {str(exc)[:250]}")
     dtype = document_type if document_type != "auto" else infer_document_type(file.filename or "", extracted)
-    analysis = extract_record(extracted, dtype) if extracted else {
+    analysis = extract_record(extracted, dtype) if extracted.strip() else {
         "document_type": dtype,
-        "summary": "Image stored. Connect a vision-capable model to extract image findings.",
-        "conditions": [], "medications": [], "labs": [], "symptoms": []
+        "summary": "No readable text was extracted. Check image quality or OCR setup; findings were not inferred.",
+        "conditions": [], "medications": [], "labs": [], "symptoms": [],
+        "dates": [], "important_history": [], "processing_status": "needs_review"
     }
+    analysis.setdefault("processing_status", "needs_review" if not extracted.strip() else "processed")
     doc = MedicalDocument(user_id=user.id, original_name=file.filename or path.name, stored_path=str(path),
                           mime_type=file.content_type or "", document_type=dtype,
-                          extracted_text=extracted, analysis_json=json.dumps(analysis, default=str))
+                          extracted_text=extracted, analysis_json=analysis)
     session.add(doc)
     session.commit()
     session.refresh(doc)
