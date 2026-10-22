@@ -68,10 +68,29 @@ def require(path: Path, download_hint: str) -> Path:
             f"Missing real data file: {path}\n"
             f"No synthetic fallback exists by design. Run:  {download_hint}"
         )
-    if not prov_file.exists() or path.name not in json.loads(prov_file.read_text()):
+    if not prov_file.exists():
         raise MissingDataError(
             f"{path} exists but has no provenance record. Files placed by hand are not accepted.\n"
             f"Re-fetch it with:  {download_hint}"
+        )
+    records = json.loads(prov_file.read_text())
+    entry = records.get(path.name)
+    if not entry:
+        raise MissingDataError(
+            f"{path} exists but has no provenance record. Files placed by hand are not accepted.\n"
+            f"Re-fetch it with:  {download_hint}"
+        )
+    expected_hash = entry.get("sha256")
+    if not expected_hash:
+        raise MissingDataError(
+            f"{path} has a provenance record without a SHA-256 checksum.\n"
+            f"Re-fetch or rebuild it with:  {download_hint}"
+        )
+    actual_hash = sha256_of(path)
+    if actual_hash != expected_hash:
+        raise MissingDataError(
+            f"{path} does not match its provenance SHA-256 checksum.\n"
+            f"Re-fetch or rebuild it with:  {download_hint}"
         )
     return path
 
