@@ -22,6 +22,7 @@ from .schemas import ChatRequest, LoginRequest, PredictionRequest, RegisterReque
 from .security import create_token, hash_password, user_id_from_token, verify_password
 from .tiers.engines import engines
 from .guidance import generate_guidance
+from .prediction_inputs import build_prediction_engine_input
 
 app = FastAPI(title="Universal Disease Prediction API", version="1.0.0")
 
@@ -84,30 +85,6 @@ def route_with_agents(user: User, intake: dict, session: Session) -> dict:
     return decision
 
 
-def _prediction_engine_input(tier: int, intake: dict, payload: dict, symptoms: list[str], hpo_terms: list[str]) -> dict:
-    """Adapt router hand-off data to the input contract each engine actually expects."""
-    model_input = {**intake, **payload}
-    if tier == 1:
-        original = intake.get("tier1") or {}
-        model_input["tier1"] = {
-            **original,
-            "disease": payload.get("disease") or original.get("disease"),
-            "features": payload.get("features") or intake.get("structured") or original.get("features") or {},
-        }
-    elif tier == 2:
-        original = intake.get("tier2") or {}
-        model_input["tier2"] = {
-            **original,
-            "evidence_codes": payload.get("evidence_codes") or original.get("evidence_codes") or [],
-        }
-    elif tier == 3:
-        model_input["symptoms"] = payload.get("symptoms") or symptoms
-    elif tier == 4:
-        model_input["symptoms"] = payload.get("symptoms") or symptoms
-        model_input["hpo_terms"] = payload.get("hpo_terms") or hpo_terms
-    return model_input
-
-
 def run_prediction(user: User, intake: dict, session: Session, history: str) -> dict:
     intake = dict(intake)
     intake["medical_history"] = history
@@ -143,7 +120,7 @@ def run_prediction(user: User, intake: dict, session: Session, history: str) -> 
                     "reason": "Tier 2 requires DDXPlus evidence codes. Free-text symptoms are not automatically converted into those model features yet, so this tier was skipped rather than returning a misleading result.",
                 }
                 continue
-            model_input = _prediction_engine_input(tier, intake, payload, symptoms, hpo_terms)
+            model_input = build_prediction_engine_input(tier, intake, payload, symptoms, hpo_terms)
             results[str(tier)] = engine.run(model_input)
         except Exception as exc:
             results[str(tier)] = {"available": False, "error": str(exc)[:500]}
