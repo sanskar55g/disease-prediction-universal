@@ -8,13 +8,13 @@
       "accuracy": 0.9972,
       "macro_f1": 0.9963,
       "top3_accuracy": 1.0,
-      "fit_seconds": 16.7
+      "fit_seconds": 10.9
     },
     "lightgbm": {
       "accuracy": 0.0661,
       "macro_f1": 0.0223,
       "top3_accuracy": 0.0977,
-      "fit_seconds": 127.6
+      "fit_seconds": 108.9
     }
   },
   "selected_model": "logistic_regression",

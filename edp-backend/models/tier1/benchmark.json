@@ -10,25 +10,25 @@
         "auc_mean": 0.911,
         "auc_std": 0.0178,
         "brier": 0.1195,
-        "fit_seconds": 0.3
+        "fit_seconds": 0.2
       },
       "random_forest": {
         "auc_mean": 0.9122,
         "auc_std": 0.0208,
         "brier": 0.1217,
-        "fit_seconds": 5.1
+        "fit_seconds": 4.5
       },
       "xgboost": {
         "auc_mean": 0.8931,
         "auc_std": 0.0167,
         "brier": 0.137,
-        "fit_seconds": 2.2
+        "fit_seconds": 2.1
       },
       "lightgbm": {
         "auc_mean": 0.8946,
         "auc_std": 0.0228,
         "brier": 0.1455,
-        "fit_seconds": 0.5
+        "fit_seconds": 0.4
       }
     },
     "selected_model": "random_forest",
@@ -66,7 +66,7 @@
         "auc_mean": 0.9104,
         "auc_std": 0.0201,
         "brier": 0.1172,
-        "fit_seconds": 5.7
+        "fit_seconds": 6.4
       },
       "xgboost": {
         "auc_mean": 0.901,
@@ -78,7 +78,7 @@
         "auc_mean": 0.8924,
         "auc_std": 0.0208,
         "brier": 0.1338,
-        "fit_seconds": 0.6
+        "fit_seconds": 0.4
       }
     },
     "selected_model": "random_forest",
@@ -109,25 +109,25 @@
         "auc_mean": 0.9754,
         "auc_std": 0.0091,
         "brier": 0.0605,
-        "fit_seconds": 0.6
+        "fit_seconds": 0.5
       },
       "random_forest": {
         "auc_mean": 0.9977,
         "auc_std": 0.002,
         "brier": 0.0282,
-        "fit_seconds": 6.6
+        "fit_seconds": 5.7
       },
       "xgboost": {
         "auc_mean": 0.9962,
         "auc_std": 0.003,
         "brier": 0.0248,
-        "fit_seconds": 3.5
+        "fit_seconds": 3.3
       },
       "lightgbm": {
         "auc_mean": 0.9966,
         "auc_std": 0.0026,
         "brier": 0.0196,
-        "fit_seconds": 0.9
+        "fit_seconds": 1.0
       }
     },
     "selected_model": "random_forest",
@@ -162,25 +162,25 @@
         "auc_mean": 1.0,
         "auc_std": 0.0,
         "brier": 0.0104,
-        "fit_seconds": 0.5
+        "fit_seconds": 0.7
       },
       "random_forest": {
         "auc_mean": 0.9999,
         "auc_std": 0.0003,
         "brier": 0.009,
-        "fit_seconds": 6.3
+        "fit_seconds": 7.6
       },
       "xgboost": {
         "auc_mean": 0.9981,
         "auc_std": 0.002,
         "brier": 0.0116,
-        "fit_seconds": 3.7
+        "fit_seconds": 3.6
       },
       "lightgbm": {
         "auc_mean": 0.9996,
         "auc_std": 0.0008,
         "brier": 0.0049,
-        "fit_seconds": 1.4
+        "fit_seconds": 1.0
       }
     },
     "selected_model": "logistic_regression",
@@ -229,19 +229,19 @@
         "auc_mean": 0.7638,
         "auc_std": 0.0246,
         "brier": 0.1719,
-        "fit_seconds": 6.6
+        "fit_seconds": 6.3
       },
       "xgboost": {
         "auc_mean": 0.7503,
         "auc_std": 0.0314,
         "brier": 0.1951,
-        "fit_seconds": 3.4
+        "fit_seconds": 3.5
       },
       "lightgbm": {
         "auc_mean": 0.7402,
         "auc_std": 0.0223,
         "brier": 0.2006,
-        "fit_seconds": 1.0
+        "fit_seconds": 0.8
       }
     },
     "selected_model": "random_forest",
@@ -270,19 +270,19 @@
         "auc_mean": 0.8244,
         "auc_std": 0.0316,
         "brier": 0.1713,
-        "fit_seconds": 0.6
+        "fit_seconds": 0.4
       },
       "random_forest": {
         "auc_mean": 0.8325,
         "auc_std": 0.0362,
         "brier": 0.1824,
-        "fit_seconds": 6.6
+        "fit_seconds": 6.1
       },
       "xgboost": {
         "auc_mean": 0.8308,
         "auc_std": 0.0449,
         "brier": 0.1711,
-        "fit_seconds": 5.0
+        "fit_seconds": 5.3
       },
       "lightgbm": {
         "auc_mean": 0.8313,
@@ -330,19 +330,19 @@
         "auc_mean": 0.954,
         "auc_std": 0.0418,
         "brier": 0.0779,
-        "fit_seconds": 6.3
+        "fit_seconds": 5.9
       },
       "xgboost": {
         "auc_mean": 0.9629,
         "auc_std": 0.0158,
         "brier": 0.0673,
-        "fit_seconds": 3.4
+        "fit_seconds": 3.6
       },
       "lightgbm": {
         "auc_mean": 0.976,
         "auc_std": 0.008,
         "brier": 0.068,
-        "fit_seconds": 0.8
+        "fit_seconds": 0.6
       }
     },
     "selected_model": "lightgbm",
@@ -389,7 +389,7 @@
         "auc_mean": 0.9915,
         "auc_std": 0.0049,
         "brier": 0.0337,
-        "fit_seconds": 6.4
+        "fit_seconds": 6.1
       },
       "xgboost": {
         "auc_mean": 0.9942,
@@ -450,13 +450,13 @@
         "auc_mean": 0.9828,
         "auc_std": 0.0102,
         "brier": 0.0424,
-        "fit_seconds": 0.6
+        "fit_seconds": 0.5
       },
       "random_forest": {
         "auc_mean": 0.9891,
         "auc_std": 0.0075,
         "brier": 0.0393,
-        "fit_seconds": 6.5
+        "fit_seconds": 5.9
       },
       "xgboost": {
         "auc_mean": 0.9876,
@@ -468,7 +468,7 @@
         "auc_mean": 0.9859,
         "auc_std": 0.0077,
         "brier": 0.0403,
-        "fit_seconds": 1.0
+        "fit_seconds": 0.9
       }
     },
     "selected_model": "random_forest",
@@ -503,25 +503,25 @@
         "auc_mean": 0.8224,
         "auc_std": 0.0026,
         "brier": 0.177,
-        "fit_seconds": 3.1
+        "fit_seconds": 4.7
       },
       "random_forest": {
         "auc_mean": 0.8239,
         "auc_std": 0.0015,
         "brier": 0.1353,
-        "fit_seconds": 98.2
+        "fit_seconds": 105.9
       },
       "xgboost": {
         "auc_mean": 0.8267,
         "auc_std": 0.0014,
         "brier": 0.1695,
-        "fit_seconds": 34.1
+        "fit_seconds": 33.3
       },
       "lightgbm": {
         "auc_mean": 0.8291,
         "auc_std": 0.0015,
         "brier": 0.171,
-        "fit_seconds": 21.1
+        "fit_seconds": 21.4
       }
     },
     "selected_model": "lightgbm",

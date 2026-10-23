@@ -5,7 +5,7 @@
     "sha256": "281c78b044ae60514e28ecc9052d08a8225dd3e2db3f00f8788b99c47b05e0c0",
     "bytes": 120263,
     "rows": null,
-    "fetched_at": "2026-10-22T20:44:57+00:00",
+    "fetched_at": "2026-10-23T07:35:34+00:00",
     "note": ""
   },
   "release_test_patients.parquet": {
@@ -14,7 +14,7 @@
     "sha256": "85679f72db8ec4173cc9c807a2cd05aee55e2499910cb35e845b9a2b559a012e",
     "bytes": 30862192,
     "rows": 134529,
-    "fetched_at": "2026-10-22T20:45:12+00:00",
+    "fetched_at": "2026-10-23T07:36:07+00:00",
     "note": ""
   },
   "release_validate_patients.parquet": {
@@ -23,7 +23,7 @@
     "sha256": "c369fbddf9d5b59837bb4e66c21cc6b81d1d012c2b9b2ef58cfb77128827315d",
     "bytes": 30394215,
     "rows": 132448,
-    "fetched_at": "2026-10-22T20:47:02+00:00",
+    "fetched_at": "2026-10-23T07:38:21+00:00",
     "note": ""
   },
   "release_conditions.json": {
@@ -32,7 +32,7 @@
     "sha256": "56edf4682d8e86a4209fc3a33932e50ce03d1cc1fecc326c26d5ef8fa5c24890",
     "bytes": 20889,
     "rows": null,
-    "fetched_at": "2026-10-22T20:47:03+00:00",
+    "fetched_at": "2026-10-23T07:38:23+00:00",
     "note": ""
   },
   "release_train_patients.parquet": {
@@ -41,7 +41,7 @@
     "sha256": "ecf6c9b264071663ad9697a465c0298cc0204fac5c04c8719e5228da6a3d3ac3",
     "bytes": 230596497,
     "rows": 1025602,
-    "fetched_at": "2026-10-22T20:46:45+00:00",
+    "fetched_at": "2026-10-23T07:37:54+00:00",
     "note": ""
   }
 }

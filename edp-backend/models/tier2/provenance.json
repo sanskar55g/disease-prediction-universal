@@ -2,19 +2,19 @@
   "tier2_model.joblib": {
     "source": "Derived model trained from DDXPlus (figshare article 22687585)",
     "url": "https://api.figshare.com/v2/articles/22687585",
-    "sha256": "276c5892b02a100cb9dabb6fe2f8967d2780cc06ec45140f179ad9bb753572cd",
+    "sha256": "214e63b4831a6c544d85c73afcf6725c615b3f6fda23fabcd5b30a5c9bf134a7",
     "bytes": 313611,
     "rows": 300000,
-    "fetched_at": "2026-10-22T20:58:37+00:00",
+    "fetched_at": "2026-10-23T07:53:48+00:00",
     "note": "train_split=train; selected_model=logistic_regression; test_rows=134529; seed=42"
   },
   "benchmark.json": {
     "source": "DDXPlus model benchmark",
     "url": "https://api.figshare.com/v2/articles/22687585",
-    "sha256": "ff25c2d9635c8d2da08a11173458160a5bbeac6fbab2cd3a7748c564ec5f9457",
+    "sha256": "b4463cef6b381a3eb7588f77c0a1403e83c667945355885d7f911e7126875c88",
     "bytes": 1673,
     "rows": 134529,
-    "fetched_at": "2026-10-22T20:58:37+00:00",
+    "fetched_at": "2026-10-23T07:53:48+00:00",
     "note": "selected_model=logistic_regression; train_split=train; seed=42"
   }
 }
