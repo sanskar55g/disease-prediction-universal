@@ -2,6 +2,13 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+except ImportError:
+    pass
 
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +21,7 @@ from .orchestrator.agents import collect_saved_evidence, run_agent_pipeline
 from .schemas import ChatRequest, LoginRequest, PredictionRequest, RegisterRequest
 from .security import create_token, hash_password, user_id_from_token, verify_password
 from .tiers.engines import engines
+from .guidance import generate_guidance
 
 app = FastAPI(title="Universal Disease Prediction API", version="1.0.0")
 
@@ -81,15 +89,21 @@ def run_prediction(user: User, intake: dict, session: Session, history: str) -> 
     intake["medical_history"] = history
     decision = classify(intake)
     results = {}
-    for tier in [decision.get("primary_tier"), *(decision.get("secondary_tiers") or [])]:
-        if not tier:
-            continue
+    available_engines = engines()
+    # Run each configured tier once so results can be compared across tiers.
+    # A tier failure is captured without preventing the remaining tiers from running.
+    for tier, engine in available_engines.items():
         try:
             payload = decision.get("payloads", {}).get(str(tier), {})
-            results[str(tier)] = engines()[tier].run({**intake, **payload})
+            results[str(tier)] = engine.run({**intake, **payload})
         except Exception as exc:
             results[str(tier)] = {"available": False, "error": str(exc)[:500]}
-    result = {"routing": decision, "tier_results": results, "medical_history_used": bool(history)}
+    result = {
+        "routing": decision,
+        "tier_results": results,
+        "all_tiers_evaluated": True,
+        "medical_history_used": bool(history),
+    }
     session.add(Prediction(user_id=user.id, request_json=json.dumps(intake, default=str), result_json=json.dumps(result, default=str)))
     session.commit()
     return result
@@ -231,125 +245,6 @@ def chat(req: ChatRequest, user: User = Depends(current_user), session: Session 
     intake["conversation_context"] = previous_chat
     intake["medical_history"] = medical_history
 
-<<<<<<< HEAD
-    # Run routing only. Do not execute any tier prediction models.
-    routing = classify(intake)
-
-    steps = routing.get("steps", [])
-    payloads = routing.get("payloads", {})
-    scores = routing.get("scores", {})
-    reasons = routing.get("reasons", {})
-
-    # Find the actual evidence-inventory and red-flag steps.
-    evidence_step = next(
-        (step for step in steps if step.get("name") == "Evidence inventory"),
-        {},
-    )
-    red_flag_step = next(
-        (step for step in steps if step.get("name") == "Red-flag screen"),
-        {},
-    )
-
-    evidence_data = evidence_step.get("data", {})
-    red_flag_data = red_flag_step.get("data", {})
-
-    # These entries expose real routing information under the five UI stages.
-    # They are not fabricated conversations between independent AI agents.
-    agent_trace = [
-        {
-            "name": "History Agent",
-            "status": "completed",
-            "input": {
-                "medical_history_available": bool(medical_history),
-                "previous_conversation_available": bool(previous_chat),
-            },
-            "output": {
-                "history_included": bool(medical_history),
-                "history_characters": len(medical_history or ""),
-            },
-        },
-        {
-            "name": "Symptom Agent",
-            "status": "completed",
-            "input": {
-                "current_message": req.message,
-                "provided_symptoms": intake.get("symptoms", []),
-            },
-            "output": {
-                "tier_payloads_prepared": list(payloads.keys()),
-                "enrichment": routing.get("llm_enrichment", {}),
-            },
-        },
-        {
-            "name": "Evidence Agent",
-            "status": "completed",
-            "input": {
-                "structured_fields": evidence_data.get("structured_fields", []),
-                "tier1_signal_fields": evidence_data.get("tier1_signal_fields", []),
-            },
-            "output": evidence_data,
-        },
-        {
-            "name": "Triage Agent",
-            "status": "completed",
-            "input": {
-                "red_flag_screen": red_flag_data,
-            },
-            "output": {
-                "emergency": routing.get("emergency", False),
-                "patient_situation": routing.get("patient_situation"),
-            },
-        },
-        {
-            "name": "Tier Router",
-            "status": "completed",
-            "input": {
-                "scores": scores,
-                "reasons": reasons,
-            },
-            "output": {
-                "primary_tier": routing.get("primary_tier"),
-                "recommended_tier": routing.get("recommended_tier"),
-                "secondary_tiers": routing.get("secondary_tiers", []),
-                "routing_steps": steps,
-            },
-        },
-    ]
-
-    result = {
-        "routing": routing,
-        "tier_results": {},
-        "medical_history_used": bool(medical_history),
-        "agent_trace": agent_trace,
-        "routing_only": True,
-    }
-
-    reply = {
-        "message": (
-            "Your message was processed by the orchestration and tier-routing "
-            "pipeline. Tier prediction models were not executed. This output "
-            "is not a diagnosis."
-        ),
-        "result": result,
-    }
-
-    # Save the routing result for the patient's longitudinal history.
-    session.add(
-        Prediction(
-            user_id=user.id,
-            request_json=json.dumps(intake, default=str),
-            result_json=json.dumps(result, default=str),
-        )
-    )
-
-    session.add(
-        ChatMessage(
-            user_id=user.id,
-            role="assistant",
-            content=json.dumps(reply, default=str),
-        )
-    )
-=======
     # Do not replace a structured symptom list supplied by the client.
     # The orchestrator's enrichment layer will extract/merge symptoms from
     # both the current message and previous patient messages.
@@ -362,10 +257,28 @@ def chat(req: ChatRequest, user: User = Depends(current_user), session: Session 
                         "medical_history_used": result.get("medical_history_used", False),
                         "evidence_summary": result.get("evidence_summary", {})}}
     session.add(ChatMessage(user_id=user.id, role="assistant", content=json.dumps(reply, default=str)))
->>>>>>> origin/main
+
     session.commit()
 
     return reply
+
+
+@app.post("/api/guidance")
+def prevention_guidance(payload: dict, user: User = Depends(current_user)):
+    """Generate patient-friendly prevention guidance from completed model output."""
+    prediction = payload.get("prediction")
+    if not isinstance(prediction, dict) or not prediction:
+        raise HTTPException(400, "A completed prediction result is required")
+    try:
+        return generate_guidance(
+            prediction=prediction,
+            symptoms=str(payload.get("symptoms", ""))[:4000],
+            relevant_history=str(payload.get("relevant_history", ""))[:4000],
+        )
+    except RuntimeError as exc:
+        raise HTTPException(503, str(exc))
+    except Exception as exc:
+        raise HTTPException(502, f"Guidance generation failed: {str(exc)[:250]}")
 
 @app.get("/api/orchestrator/history")
 def orchestrator_history(limit: int = 20, user: User = Depends(current_user), session: Session = Depends(db)):

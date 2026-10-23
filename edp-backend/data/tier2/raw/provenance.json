@@ -5,25 +5,25 @@
     "sha256": "281c78b044ae60514e28ecc9052d08a8225dd3e2db3f00f8788b99c47b05e0c0",
     "bytes": 120263,
     "rows": null,
-    "fetched_at": "2026-10-21T21:18:55+00:00",
+    "fetched_at": "2026-10-22T20:44:57+00:00",
     "note": ""
   },
   "release_test_patients.parquet": {
     "source": "DDXPlus (figshare article 22687585)",
     "url": "https://ndownloader.figshare.com/files/40278016",
-    "sha256": "f723f441da06966eea2f891f8517b6f2731da5f3cf1f0c011bf09c3ff79cbacb",
-    "bytes": 31292640,
+    "sha256": "85679f72db8ec4173cc9c807a2cd05aee55e2499910cb35e845b9a2b559a012e",
+    "bytes": 30862192,
     "rows": 134529,
-    "fetched_at": "2026-10-21T21:19:07+00:00",
+    "fetched_at": "2026-10-22T20:45:12+00:00",
     "note": ""
   },
   "release_validate_patients.parquet": {
     "source": "DDXPlus (figshare article 22687585)",
     "url": "https://ndownloader.figshare.com/files/40278022",
-    "sha256": "d9738d367bea871aeab28c5866d70f7e627daf931ae0a3b71a4cde3f947bc2c8",
-    "bytes": 30817701,
+    "sha256": "c369fbddf9d5b59837bb4e66c21cc6b81d1d012c2b9b2ef58cfb77128827315d",
+    "bytes": 30394215,
     "rows": 132448,
-    "fetched_at": "2026-10-21T21:20:51+00:00",
+    "fetched_at": "2026-10-22T20:47:02+00:00",
     "note": ""
   },
   "release_conditions.json": {
@@ -32,16 +32,16 @@
     "sha256": "56edf4682d8e86a4209fc3a33932e50ce03d1cc1fecc326c26d5ef8fa5c24890",
     "bytes": 20889,
     "rows": null,
-    "fetched_at": "2026-10-21T21:20:53+00:00",
+    "fetched_at": "2026-10-22T20:47:03+00:00",
     "note": ""
   },
   "release_train_patients.parquet": {
     "source": "DDXPlus (figshare article 22687585)",
     "url": "https://ndownloader.figshare.com/files/40278019",
-    "sha256": "751fec5a62c9bf9747cbfc927c2a6dfaaac1133e2e3692b590a54d28bc371279",
-    "bytes": 233785626,
+    "sha256": "ecf6c9b264071663ad9697a465c0298cc0204fac5c04c8719e5228da6a3d3ac3",
+    "bytes": 230596497,
     "rows": 1025602,
-    "fetched_at": "2026-10-21T21:20:30+00:00",
+    "fetched_at": "2026-10-22T20:46:45+00:00",
     "note": ""
   }
 }

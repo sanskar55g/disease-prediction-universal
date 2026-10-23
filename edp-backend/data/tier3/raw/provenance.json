@@ -5,7 +5,7 @@
     "sha256": "93dace952fcb3ec4728818857f6ba76bc2d5312f4d83266519b8694b8e798f22",
     "bytes": 10863613,
     "rows": null,
-    "fetched_at": "2026-10-21T21:21:24+00:00",
+    "fetched_at": "2026-10-22T20:49:01+00:00",
     "note": ""
   },
   "phenotype.hpoa": {
@@ -14,7 +14,7 @@
     "sha256": "e89aa39c8f97bf5a52c5d160f9250a603681d630ade8ec2679d84ac5aece1f72",
     "bytes": 35816037,
     "rows": 286652,
-    "fetched_at": "2026-10-21T21:21:41+00:00",
+    "fetched_at": "2026-10-22T20:49:20+00:00",
     "note": ""
   },
   "mondo.obo": {
@@ -23,7 +23,7 @@
     "sha256": "2631e8e165d41def1a46749adb1ce0a336c8aba7f6bc0978729592cee8fed60b",
     "bytes": 53320617,
     "rows": null,
-    "fetched_at": "2026-10-21T21:22:04+00:00",
+    "fetched_at": "2026-10-22T20:49:54+00:00",
     "note": ""
   }
 }

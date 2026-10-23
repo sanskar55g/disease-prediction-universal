@@ -1,0 +1,92 @@
+{
+  "heart_disease.joblib": {
+    "source": "Derived model trained from UCI ML Repository #45",
+    "url": "https://archive.ics.uci.edu/dataset/45",
+    "sha256": "47be4905a927409d6000594ec7ed1c9e69d169f014b4b143a9589457abff833b",
+    "bytes": 2779020,
+    "rows": 303,
+    "fetched_at": "2026-10-22T20:51:16+00:00",
+    "note": "selected_model=random_forest; cv_auc=0.9122; cv_folds=5; seed=42"
+  },
+  "heart_failure_death.joblib": {
+    "source": "Derived model trained from UCI ML Repository #519",
+    "url": "https://archive.ics.uci.edu/dataset/519",
+    "sha256": "c3b73d15718007d775ac85733a00338390525e0f1091de96f97d575ec0e5da9c",
+    "bytes": 2473064,
+    "rows": 299,
+    "fetched_at": "2026-10-22T20:51:26+00:00",
+    "note": "selected_model=random_forest; cv_auc=0.9104; cv_folds=5; seed=42"
+  },
+  "diabetes_brfss.joblib": {
+    "source": "Derived model trained from UCI ML Repository #891",
+    "url": "https://archive.ics.uci.edu/dataset/891",
+    "sha256": "5a226e6f983f8cf37e89dce23e4a4a6ab1f248d65af1ca8dde3f55cd73bd983c",
+    "bytes": 2118146,
+    "rows": 253680,
+    "fetched_at": "2026-10-22T20:54:10+00:00",
+    "note": "selected_model=lightgbm; cv_auc=0.8291; cv_folds=3; seed=42"
+  },
+  "diabetes_early.joblib": {
+    "source": "Derived model trained from UCI ML Repository #529",
+    "url": "https://archive.ics.uci.edu/dataset/529",
+    "sha256": "0e9c558c146e362ca835c6a0ae2c50772fce1212ee46e0a17ca7c8895d225877",
+    "bytes": 2452836,
+    "rows": 520,
+    "fetched_at": "2026-10-22T20:54:23+00:00",
+    "note": "selected_model=random_forest; cv_auc=0.9977; cv_folds=5; seed=42"
+  },
+  "chronic_kidney.joblib": {
+    "source": "Derived model trained from UCI ML Repository #336",
+    "url": "https://archive.ics.uci.edu/dataset/336",
+    "sha256": "de4f2e866ff0f969eada0d53f296fcf5ccbd7819bb821413c5ae2608f0fd99df",
+    "bytes": 7468,
+    "rows": 400,
+    "fetched_at": "2026-10-22T20:54:35+00:00",
+    "note": "selected_model=logistic_regression; cv_auc=1.0; cv_folds=5; seed=42"
+  },
+  "liver_disease.joblib": {
+    "source": "Derived model trained from UCI ML Repository #225",
+    "url": "https://archive.ics.uci.edu/dataset/225",
+    "sha256": "3cba11ba27e9f7067fe8cefab85c00801c1fd7683b6f07038c7d71f4d7e7cf35",
+    "bytes": 5606608,
+    "rows": 583,
+    "fetched_at": "2026-10-22T20:54:48+00:00",
+    "note": "selected_model=random_forest; cv_auc=0.7638; cv_folds=5; seed=42"
+  },
+  "cirrhosis_death.joblib": {
+    "source": "Derived model trained from UCI ML Repository #878",
+    "url": "https://archive.ics.uci.edu/dataset/878",
+    "sha256": "26ca8c0eecd23ce5486eadef389c1f031cf2a7ff1b05efd8757e9d7586ff24dc",
+    "bytes": 1379213,
+    "rows": 418,
+    "fetched_at": "2026-10-22T20:55:03+00:00",
+    "note": "selected_model=random_forest; cv_auc=0.8325; cv_folds=5; seed=42"
+  },
+  "parkinsons.joblib": {
+    "source": "Derived model trained from UCI ML Repository #174",
+    "url": "https://archive.ics.uci.edu/dataset/174",
+    "sha256": "0db004be4efcd3d84912d7921fbf18db419cbd3a32638216645453b50c61c95c",
+    "bytes": 283128,
+    "rows": 195,
+    "fetched_at": "2026-10-22T20:55:14+00:00",
+    "note": "selected_model=lightgbm; cv_auc=0.976; cv_folds=5; seed=42"
+  },
+  "breast_cancer.joblib": {
+    "source": "Derived model trained from UCI ML Repository #17",
+    "url": "https://archive.ics.uci.edu/dataset/17",
+    "sha256": "e85ea0b6a072921789f27f8b1c7119f23f532672b63076fd6738b0d68e78ab7a",
+    "bytes": 6573,
+    "rows": 569,
+    "fetched_at": "2026-10-22T20:55:25+00:00",
+    "note": "selected_model=logistic_regression; cv_auc=0.9953; cv_folds=5; seed=42"
+  },
+  "thyroid_cancer_recurrence.joblib": {
+    "source": "Derived model trained from UCI ML Repository #915",
+    "url": "https://archive.ics.uci.edu/dataset/915",
+    "sha256": "c95286473f85d723a78f7a2e856cf076882f94bb5c5d6650b73697d930c3a1eb",
+    "bytes": 1803160,
+    "rows": 383,
+    "fetched_at": "2026-10-22T20:55:39+00:00",
+    "note": "selected_model=random_forest; cv_auc=0.9891; cv_folds=5; seed=42"
+  }
+}

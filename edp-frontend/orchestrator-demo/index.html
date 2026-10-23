@@ -2897,16 +2897,16 @@ textarea.node-input{min-height:74px;resize:vertical}
           <div class="node-meta"><span id="symptomDraftState">Draft auto-saved</span><span id="symptomCount">0 / 2000</span></div>
           <input id="symptomDuration" class="node-input" type="text" autocomplete="off" placeholder="Duration, e.g. 2 days (optional)" aria-label="Symptom duration">
           <div class="node-btn-row">
-            <button class="node-action" id="analyzeSymptomsBtn" type="button" onclick="event.stopPropagation();send('workspace')">Analyze symptoms →</button>
+            <button class="node-action" id="analyzeSymptomsBtn" type="button" onclick="event.stopPropagation();orchestrateWorkflow('workspace')">Start Orchestration →</button>
             <button class="node-clear" id="clearSymptomsBtn" type="button" title="Clear symptoms" aria-label="Clear symptoms">Clear</button>
           </div>
-          <small class="node-hint">Tip: Ctrl/⌘ + Enter to analyze</small>
+          <small class="node-hint">Tip: Ctrl/⌘ + Enter to start orchestration</small>
           <small id="workspaceAnalysisStatus" class="node-status" role="status" aria-live="polite"></small>
         </div>
         <div class="debate-node node-evidence" onclick="setAgents(2)" aria-label="Evidence Agent">
           <div class="node-heading"><span class="node-icon">🔬</span><div><b>Evidence Agent</b><small>Reports and lab evidence</small></div></div>
           <input id="agentEvidenceFile" class="node-input node-file" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.csv" aria-label="Choose medical evidence">
-          <button class="node-action" type="button" onclick="event.stopPropagation();uploadAgentEvidence()">Upload evidence →</button>
+          <small class="node-hint">Choose a file here, then press Start Orchestration once.</small>
           <small id="agentUploadMsg" class="node-status" role="status" aria-live="polite"></small>
         </div>
         <div class="debate-node node-triage" onclick="setAgents(3)" aria-label="Triage Agent">
@@ -2926,7 +2926,7 @@ textarea.node-input{min-height:74px;resize:vertical}
           <span id="debateAgentBadge" class="debate-badge">READY</span>
         </div>
         <div class="debate-argument-label"><span>AGENT NOTE</span><span id="debateStepLabel">PHASE 01 / 05</span></div>
-        <p id="debateArgument" class="debate-argument">No analysis is running yet. Enter symptoms in the Symptom Agent box and select Analyze symptoms to start the workflow.</p>
+        <p id="debateArgument" class="debate-argument">No analysis is running yet. Enter symptoms, optionally choose evidence, then select Start Orchestration.</p>
       </div>
 
       <section class="agent-findings-panel" aria-live="polite" aria-labelledby="agentFindingsTitle">
@@ -3041,7 +3041,7 @@ textarea.node-input{min-height:74px;resize:vertical}
             <strong>Choose clinical evidence</strong>
             <small>PDF · PNG · JPG · WEBP · CT/MRI image formats</small>
           </label>
-          <button class="clinical-upload-button" type="button" onclick="upload()">Upload & store evidence <span>→</span></button>
+          <p class="clinical-upload-message">Choose your evidence here, then press Start Orchestration in the agent workspace.</p>
           <p id="uploadmsg" class="clinical-upload-message"></p>
 
           <div class="upload-security"><span>●</span> Evidence is attached to the current longitudinal patient record</div>
@@ -3122,7 +3122,7 @@ textarea.node-input{min-height:74px;resize:vertical}
     <section id="predictionActionPanel" class="prediction-action-panel hide" aria-live="polite">
       <h3>Tier selected · Ready for prediction review</h3>
       <p id="predictionActionIntro">Review the backend model output before opening the possible-conditions summary.</p>
-      <button id="predictDiseaseBtn" class="primary" type="button" onclick="showPredictionReview()" disabled>Review possible conditions & next steps →</button>
+      <button id="predictDiseaseBtn" class="primary" type="button" onclick="predictDisease()" disabled>Predict My Disease →</button>
       <div id="predictionReview" class="prediction-detail hide"></div>
       <p class="prediction-disclaimer">Decision-support only. Model outputs are possibilities, not a diagnosis. Do not start, stop, or change medication based on this screen. Seek a qualified clinician for interpretation.</p>
     </section>
@@ -3160,7 +3160,7 @@ textarea.node-input{min-height:74px;resize:vertical}
     <div class="composer">
       <textarea id="message" placeholder="Example: I have been feeling unusually tired and thirsty for 3 weeks..."></textarea>
       <div class="row">
-        <button class="primary" onclick="send('chat')">Run AI analysis</button>
+        <button class="primary" onclick="orchestrateWorkflow('chat')">Start Orchestration</button>
         <button class="secondary" onclick="document.getElementById('message').value=''">Clear</button>
       </div>
     </div>
@@ -3174,6 +3174,36 @@ const agents=[['History Agent','Retrieves longitudinal medical records, document
 let orbitIndex=0;
 let orbitDecision=null;
 
+function humanizeAgentValue(value){
+  if(value===null||value===undefined||value==='')return '';
+  if(typeof value==='string')return value.replaceAll('_',' ');
+  if(typeof value==='number'||typeof value==='boolean')return String(value);
+  if(Array.isArray(value))return value.map(humanizeAgentValue).filter(Boolean).join('; ');
+  if(typeof value==='object'){
+    return Object.entries(value).map(([k,v])=>{
+      const readable=k.replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase());
+      const detail=humanizeAgentValue(v);
+      return detail?readable+': '+detail:'';
+    }).filter(Boolean).join('. ');
+  }
+  return String(value);
+}
+function agentConversationLine(name,item,index){
+  const findings=humanizeAgentValue(item?.findings||item?.output||item?.message||'');
+  const inputs=humanizeAgentValue(item?.inputs||item?.consumed||item?.input||'');
+  const fallback=[
+    'I am checking the patient’s saved medical history and previous records.',
+    'I am organizing the symptoms and their duration into a structured summary.',
+    'I am reviewing uploaded reports and the extracted findings. I will flag missing or unreadable evidence rather than guess.',
+    'I am checking the combined symptoms and evidence for urgency indicators.',
+    'I am comparing the available routing signals and selecting the applicable prediction tiers.'
+  ][index];
+  let line=findings||fallback;
+  if(name==='History Agent'&&item?.history_summary)line=humanizeAgentValue(item.history_summary);
+  if(item?.decision_impact)line+=' My contribution: '+humanizeAgentValue(item.decision_impact);
+  if(!findings&&inputs)line+=' Information received: '+inputs;
+  return line;
+}
 function renderAgentFindings(activeIndex){
   const list=document.getElementById('agentFindingsList');
   const status=document.getElementById('agentFindingsStatus');
@@ -3181,71 +3211,84 @@ function renderAgentFindings(activeIndex){
   const names=['History Agent','Symptom Agent','Evidence Agent','Triage Agent','Tier Router'];
   const trace=Array.isArray(window.liveAgentTrace)?window.liveAgentTrace:null;
   list.replaceChildren();
-<<<<<<< HEAD
-=======
-  names.forEach((name,i)=>{
-    const card=document.createElement('div');
-    card.className='agent-finding'+(trace?'':' waiting');
-    const heading=document.createElement('b');heading.textContent=name;
-    const body=document.createElement('p');
-    body.textContent=trace&&trace[i]?trace[i].message:(i===0?'No analysis running yet. History is read-only and loads from the signed-in account when the backend supplies it.':i===1?'Enter symptoms in the Symptom Agent box to begin.':i===2?'Waiting for available evidence and model output.':i===3?'Waiting for the returned urgency classification.':'Displays the backend-selected tier after analysis.');
-    card.append(heading,body);
-    if(trace&&trace[i]){
-      const state=document.createElement('small');
-      state.className='agent-trace-state';
-      state.textContent=String(trace[i].status||'completed').replaceAll('_',' ').toUpperCase();
-      card.appendChild(state);
-      if(trace[i].findings&&Object.keys(trace[i].findings).length){
-        const details=document.createElement('details');
-        const summary=document.createElement('summary');summary.textContent='View structured findings';
-        const pre=document.createElement('pre');pre.textContent=JSON.stringify(trace[i].findings,null,2);
-        pre.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto;font-size:11px;padding:10px;border-radius:8px;background:#f6f8fa';
-        details.append(summary,pre);card.appendChild(details);
-      }
-    }
-    list.appendChild(card);
-  });
-  if(status)status.textContent=trace?'BACKEND TRACE READY':'WAITING';
-}
->>>>>>> origin/main
-
   names.forEach((name,i)=>{
     const item=trace&&trace.find(x=>String(x.name||'').toLowerCase()===name.toLowerCase());
     const card=document.createElement('div');
-    card.className='agent-finding'+(item?'':' waiting');
-    const heading=document.createElement('b');
-    heading.textContent=name;
-    const body=document.createElement('p');
-    body.textContent=item?(item.findings||item.message||'The backend returned a trace entry without a findings summary.'):(i===0?'Waiting for backend history-context status.':i===1?'Enter symptoms and run an analysis to see the submitted symptom data.':i===2?'Waiting for the backend evidence inventory.':i===3?'Waiting for the backend red-flag screen.':'Waiting for the backend tier-routing decision.');
+    card.className='agent-finding conversation-message'+(item?'':' waiting');
+    const heading=document.createElement('b');heading.textContent=name;
+    const body=document.createElement('p');body.textContent=item?agentConversationLine(name,item,i):(i===0?'I will first review the saved patient history.':i===1?'I will structure the symptoms after you submit them.':i===2?'I will inspect any uploaded evidence and its extraction status.':i===3?'I will review warning signs and urgency.':'I will explain the routing decision after the earlier stages finish.');
     card.append(heading,body);
-
-    if(item){
-      const addField=(label,value)=>{
-        if(value===undefined||value===null||value===''||(Array.isArray(value)&&!value.length))return;
-        const section=document.createElement('div');
-        section.className='agent-trace-detail';
-        const labelEl=document.createElement('strong');
-        labelEl.textContent=label;
-        const valueEl=document.createElement('div');
-        valueEl.textContent=Array.isArray(value)?value.map(x=>typeof x==='string'?x:JSON.stringify(x)).join(' · '):(typeof value==='object'?JSON.stringify(value,null,2):String(value));
-        section.append(labelEl,valueEl);
-        card.append(section);
-      };
-      addField('Inputs',item.inputs);
-      addField('Evidence',item.evidence);
-      addField('Uncertainty',item.uncertainty);
-      addField('Impact on decision',item.decision_impact);
-      if(item.status){
-        const statusEl=document.createElement('span');
-        statusEl.className='agent-trace-status';
-        statusEl.textContent=String(item.status).replace(/[_-]/g,' ').toUpperCase();
-        card.append(statusEl);
-      }
-    }
+    if(item?.status){const badge=document.createElement('span');badge.className='agent-trace-status';badge.textContent=String(item.status).replace(/[_-]/g,' ').toUpperCase();card.append(badge)}
     list.appendChild(card);
   });
-  if(status)status.textContent=trace?'BACKEND TRACE LOADED':'WAITING FOR BACKEND TRACE';
+  if(status)status.textContent=trace?'LIVE BACKEND AGENT TRACE':'WAITING FOR BACKEND TRACE';
 }
+
+function collectPredictionCandidates(tierResults){
+  const candidates=[];
+  const add=(tier,obj)=>{
+    if(!obj||typeof obj!=='object')return;
+    const list=obj.predictions||obj.top_predictions||obj.conditions||obj.results||obj.diseases;
+    if(Array.isArray(list)){
+      list.forEach(item=>{
+        if(!item||typeof item!=='object')return;
+        const name=item.disease||item.condition||item.label||item.name||item.class_name||item.prediction;
+        const score=Number(item.confidence??item.probability??item.score??item.prob??item.prediction_probability);
+        if(name)candidates.push({tier:String(tier),name:String(name),confidence:Number.isFinite(score)?score:null,detail:humanizeAgentValue(item)});
+      });
+    } else {
+      const name=obj.predicted_disease||obj.disease||obj.condition||obj.prediction||obj.label;
+      const raw=obj.confidence??obj.probability??obj.score;
+      const score=Number(raw);
+      if(name)candidates.push({tier:String(tier),name:String(name),confidence:raw!==undefined&&Number.isFinite(score)?score:null,detail:humanizeAgentValue(obj)});
+    }
+  };
+  Object.entries(tierResults||{}).forEach(([tier,obj])=>add(tier,obj));
+  candidates.sort((a,b)=>(b.confidence??-1)-(a.confidence??-1));
+  const seen=new Set();
+  return candidates.filter(x=>{const k=x.tier+'|'+x.name;if(seen.has(k))return false;seen.add(k);return true}).slice(0,3);
+}
+function renderPredictionCandidates(panel,prediction){
+  const title=document.createElement('h4');title.textContent='Top model findings across available tiers';panel.appendChild(title);
+  const candidates=collectPredictionCandidates(prediction.tier_results||{});
+  if(!candidates.length){const p=document.createElement('p');p.textContent='The tier engines returned results, but their output format did not expose a standard disease name and confidence field. Check the developer view or engine output schema; no probabilities have been inferred.';panel.appendChild(p);}
+  else candidates.forEach((item,i)=>{const card=document.createElement('div');card.className='agent-finding';const b=document.createElement('b');b.textContent=(i+1)+'. '+item.name+' · Tier '+item.tier;const p=document.createElement('p');p.textContent=item.confidence===null?'Confidence not supplied by model.':('Model score: '+(item.confidence<=1?(item.confidence*100).toFixed(1)+'%':item.confidence.toFixed(2))+' (as returned by the model).');card.append(b,p);panel.appendChild(card)});
+  const disclaimer=document.createElement('p');disclaimer.className='prediction-disclaimer';disclaimer.textContent='These are model outputs, not confirmed diagnoses. Scores from different models may not be calibrated or directly comparable.';panel.appendChild(disclaimer);
+}
+async function requestCareGuidance(prediction,panel,button){
+  button.disabled=true;button.textContent='Generating guidance…';
+  try{
+    const data=await req('/guidance',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prediction,symptoms:String(window.lastPatientInput||''),relevant_history:''})});
+    const section=document.createElement('section');section.className='guidance-result';
+    const heading=document.createElement('h4');heading.textContent='Prevention & Care Guidance';section.appendChild(heading);
+    const condition=document.createElement('p');condition.textContent='Most likely model finding: '+(data.most_likely_condition||'Not established');section.appendChild(condition);
+    const renderList=(label,items)=>{if(!Array.isArray(items)||!items.length)return;const h=document.createElement('h5');h.textContent=label;section.appendChild(h);const ul=document.createElement('ul');items.forEach(v=>{const li=document.createElement('li');li.textContent=v;ul.appendChild(li)});section.appendChild(ul)};
+    renderList('Suggested specialists',data.specialists);renderList('Prevention measures',data.prevention_measures);renderList('Diet suggestions',data.diet_suggestions);renderList('Activity and exercise',data.activity_suggestions);renderList('Warning signs',data.warning_signs);
+    if(data.when_to_seek_care){const p=document.createElement('p');p.textContent='When to seek care: '+data.when_to_seek_care;section.appendChild(p)}
+    const note=document.createElement('p');note.className='prediction-disclaimer';note.textContent=data.disclaimer||'This is general information, not a diagnosis or personalised treatment plan.';section.appendChild(note);
+    panel.appendChild(section);button.textContent='Guidance generated';
+  }catch(e){const p=document.createElement('p');p.textContent='Could not generate Grok guidance: '+e.message+'. Check XAI_API_KEY and backend logs.';panel.appendChild(p);button.disabled=false;button.textContent='Retry prevention & care guidance';}
+}
+async function predictDisease(){
+  const btn=document.getElementById('predictDiseaseBtn');const panel=document.getElementById('predictionReview');
+  if(!btn||!panel)return;
+  const routing=lastPredictionResponse?.result?.routing||{};
+  if(routing.primary_tier===undefined||routing.primary_tier===null){panel.classList.remove('hide');panel.textContent='Run orchestration first so the router can review the available information.';return;}
+  btn.disabled=true;btn.textContent='Running all configured tiers…';panel.classList.remove('hide');panel.replaceChildren();
+  const waiting=document.createElement('p');waiting.textContent='Running each configured tier engine. This may take a moment…';panel.appendChild(waiting);
+  try{
+    const input=String(window.lastPatientInput||'').trim();const body={free_text:input,message:input};
+    const durationMatch=input.match(/(?:duration|for)\s*: ?\s*(\d+(?:\.\d+)?)\s*(day|days|d|week|weeks|w|month|months|year|years)\b/i);
+    if(durationMatch){const v=Number(durationMatch[1]);const u=durationMatch[2].toLowerCase();body.symptom_duration_days=Math.round(v*(u.startsWith('w')?7:u.startsWith('month')?30:u.startsWith('year')?365:1));}
+    const prediction=await req('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    lastPredictionResponse={...lastPredictionResponse,result:{...(lastPredictionResponse.result||{}),...prediction,routing:prediction.routing||routing,routing_only:false}};
+    panel.replaceChildren();renderPredictionCandidates(panel,prediction);
+    const guidance=document.createElement('button');guidance.type='button';guidance.className='primary';guidance.textContent='Generate Prevention & Care Report';guidance.onclick=()=>requestCareGuidance(prediction,panel,guidance);panel.appendChild(guidance);
+    showResult({routing:prediction.routing||routing,tier_results:prediction.tier_results||{}});
+  }catch(e){panel.replaceChildren();panel.textContent='Prediction failed: '+e.message+'. Check /api/status and tier engine logs.';}
+  finally{btn.disabled=false;btn.textContent='Predict My Disease →';}
+}
+
 function showPredictionReview(){
   const panel=document.getElementById('predictionReview');
   if(!panel||!lastPredictionResponse)return;
@@ -3261,10 +3304,10 @@ function showPredictionReview(){
     ?'Tier '+(tier!==undefined?tier:'not selected')+' · Routing review'
     :'Model output for '+(tier!==undefined?'Tier '+tier:'the selected tier');
   panel.appendChild(title);
-  const output=document.createElement('pre');
+  const output=document.createElement('p');
   output.textContent=(result.routing_only||Object.keys(tierResults).length===0)
-    ?JSON.stringify({patient_situation:routing.patient_situation,scores:routing.scores,reasons:routing.reasons,routing_steps:routing.steps},null,2)
-    :(selected!==undefined&&selected!==null?JSON.stringify(selected,null,2):JSON.stringify(tierResults,null,2));
+    ?'Routing summary: '+humanizeAgentValue({patient_situation:routing.patient_situation, reasons:routing.reasons, routing_steps:routing.steps})
+    :'Model summary: '+humanizeAgentValue(selected!==undefined&&selected!==null?selected:tierResults);
   panel.appendChild(output);
   if(result.routing_only||Object.keys(tierResults).length===0){
     const note=document.createElement('p');
@@ -3393,52 +3436,27 @@ if(loginBtnEl) loginBtnEl.addEventListener('click',()=>handleAuth('login'));
 if(registerBtnEl) registerBtnEl.addEventListener('click',()=>handleAuth('register'));
 function logout(){localStorage.removeItem('udp_token');location.reload()}
 function buildAgentTrace(result){
-<<<<<<< HEAD
   const routing=result?.routing||{};
-  const backendTrace=Array.isArray(result?.agent_trace)?result.agent_trace:
-    (Array.isArray(routing.agent_trace)?routing.agent_trace:null);
-  if(backendTrace){
-    return backendTrace.map(item=>({
-      name:String(item?.name||'Agent'),
-      status:item?.status||'recorded',
-      inputs:item?.input??item?.inputs??null,
-      findings:JSON.stringify(item?.output??item?.findings??item?.message??{},null,2),
-      evidence:item?.evidence??[],
-      uncertainty:item?.uncertainty||'No uncertainty note was returned for this stage.',
-      decision_impact:item?.decision_impact||'No decision-impact note was returned for this stage.'
-    }));
-  }
-
-  const tier=routing.primary_tier;
-  const payload=(routing.payloads&&tier!==undefined)?(routing.payloads[String(tier)]||{}):{};
-  const reasons=(routing.reasons&&tier!==undefined)?(routing.reasons[String(tier)]||[]):[];
-  const situation=routing.patient_situation||{};
-  const symptoms=Array.isArray(payload.symptoms)?payload.symptoms:[];
-  const inputText=String(window.lastPatientInput||'').trim();
-  return [
-    {name:'History Agent',findings:result?.medical_history_used?'Backend confirms medical-history context was included.':'The backend did not confirm saved medical-history context was included.',uncertainty:'No structured history-agent trace was returned.',decision_impact:'History may affect routing only when passed into the routing engine.'},
-    {name:'Symptom Agent',findings:symptoms.length?'Routing payload symptoms: '+symptoms.join(', '):(inputText?'Submitted symptom text: '+inputText:'No symptom text was available.'),uncertainty:'No structured symptom-agent trace was returned.',decision_impact:'Symptoms may affect tier routing.'},
-    {name:'Evidence Agent',findings:'No structured evidence-agent trace was returned by the backend.',uncertainty:'Uploaded documents are not assumed to affect routing unless their extracted fields are supplied to the routing engine.',decision_impact:'Only evidence actually supplied to the routing engine can affect its decision.'},
-    {name:'Triage Agent',findings:situation.situation?'Patient situation: '+String(situation.situation)+'. '+(situation.reason||''):'No patient-situation classification was returned.',uncertainty:'A rule-based screen cannot rule out an emergency.',decision_impact:'Urgent symptoms need appropriate professional care.'},
-    {name:'Tier Router',findings:tier!==undefined?'Backend selected Tier '+tier+'. '+(reasons.join(' ')||''):'No primary tier was returned.',uncertainty:'A tier is a routing decision, not a diagnosis.',decision_impact:tier!==undefined?'Primary tier: '+tier+'.':'No tier decision was returned.'}
-=======
-  const actual=Array.isArray(result?.agent_trace)?result.agent_trace:[];
+  const actual=Array.isArray(result?.agent_trace)?result.agent_trace:
+    (Array.isArray(routing.agent_trace)?routing.agent_trace:[]);
   if(actual.length){
     return actual.map(entry=>({
-      name:entry.agent||entry.name||'Agent',
-      message:entry.message||JSON.stringify(entry.findings||{}),
-      findings:entry.findings||{},
-      status:entry.status||'completed',
-      consumed:entry.consumed||[]
+      name:String(entry?.agent||entry?.name||'Agent'),
+      message:String(entry?.message||''),
+      findings:entry?.findings??entry?.output??{},
+      inputs:entry?.consumed??entry?.input??entry?.inputs??null,
+      evidence:entry?.evidence??[],
+      uncertainty:entry?.uncertainty||'No explicit uncertainty note was returned by this stage.',
+      decision_impact:entry?.decision_impact||'See the structured findings for this stage.',
+      status:entry?.status||'completed'
     }));
   }
   return [
-    {name:'History Agent',message:'No completed backend History Agent trace was returned.',status:'missing'},
-    {name:'Symptom Agent',message:'No completed backend Symptom Agent trace was returned.',status:'missing'},
-    {name:'Evidence Agent',message:'No completed backend Evidence Agent trace was returned.',status:'missing'},
-    {name:'Triage Agent',message:'No completed backend Triage Agent trace was returned.',status:'missing'},
-    {name:'Tier Router',message:'No completed backend Tier Router trace was returned.',status:'missing'}
->>>>>>> origin/main
+    {name:'History Agent',message:'No backend History Agent trace was returned.',status:'missing'},
+    {name:'Symptom Agent',message:'No backend Symptom Agent trace was returned.',status:'missing'},
+    {name:'Evidence Agent',message:'No backend Evidence Agent trace was returned.',status:'missing'},
+    {name:'Triage Agent',message:'No backend Triage Agent trace was returned.',status:'missing'},
+    {name:'Tier Router',message:'No backend Tier Router trace was returned.',status:'missing'}
   ];
 }
 async function applyAnalysis(d,inputText,animate=true){
@@ -3468,6 +3486,23 @@ async function applyAnalysis(d,inputText,animate=true){
     showResult(resultData);
     try{sessionStorage.setItem('udp_last_analysis',JSON.stringify({input:window.lastPatientInput,response:d}))}catch(_){}
 }
+async function orchestrateWorkflow(source='workspace'){
+  const status=document.getElementById(source==='workspace'?'workspaceAnalysisStatus':'debateRunState');
+  const fileInputs=[document.getElementById('agentEvidenceFile'),document.getElementById('file')];
+  const selected=fileInputs.map(el=>el&&el.files&&el.files[0]).find(Boolean);
+  if(status)status.textContent='Step 1/2: synchronizing medical history and processing selected evidence…';
+  if(selected){
+    try{
+      const fd=new FormData();fd.append('file',selected);
+      const uploaded=await req('/documents',{method:'POST',body:fd});
+      const msg=document.getElementById('agentUploadMsg');if(msg)msg.textContent='Processed and saved: '+uploaded.filename+' ('+uploaded.document_type+').';
+      const uploadMsg=document.getElementById('uploadmsg');if(uploadMsg)uploadMsg.textContent='Processed and saved: '+uploaded.filename+'.';
+    }catch(e){if(status)status.textContent='Evidence upload failed: '+e.message;return;}
+  }
+  if(status)status.textContent='Step 2/2: running History → Symptoms → Evidence → Triage → Tier Router…';
+  await send(source);
+}
+
 async function send(source='chat'){
   const isWorkspace=source==='workspace';
   const input=document.getElementById(isWorkspace?'symptomInput':'message');
@@ -3493,8 +3528,7 @@ async function send(source='chat'){
   if(analyzeButton){analyzeButton.disabled=true;analyzeButton.classList.add('loading')}
   setAgents(0);
   try{
-<<<<<<< HEAD
-    const durationText=isWorkspace?(durationInput?.value||'').trim():'';
+    const durationText=(durationInput?.value||'').trim();
     const durationMatch=durationText.match(/(\d+(?:\.\d+)?)\s*(day|days|d|week|weeks|w|month|months|year|years)\b/i);
     let durationDays=null;
     if(durationMatch){
@@ -3511,9 +3545,6 @@ async function send(source='chat'){
       await pause(180);
     }
     const d=await request;
-=======
-    const d=await req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});
->>>>>>> origin/main
     const resultData=d.result||{};
     const routing=resultData.routing||{};
     await applyAnalysis(d,m);
