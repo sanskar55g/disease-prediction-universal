@@ -2829,7 +2829,7 @@ textarea.node-input{min-height:74px;resize:vertical}
 @media(max-width:980px){.debate-node.node-symptom{width:auto}}
 
 /* Structured tier inputs, session controls and prediction follow-up */
-.session-tools{display:flex;gap:10px;justify-content:flex-end;align-items:center;margin:12px 0;flex-wrap:wrap}
+.session-tools{display:flex;gap:10px;justify-content:flex-end;align-items:center;margin:12px 0;flex-wrap:wrap}.header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .session-tools button{font-size:12px}
 .structured-prediction{margin:16px 0;padding:16px;border:1px solid #dce8ed;border-radius:14px;background:#f8fbfc}
 .structured-prediction h4{margin:0 0 10px;color:#173347}
@@ -2854,7 +2854,7 @@ textarea.node-input{min-height:74px;resize:vertical}
 @media(max-width:700px){.structured-grid{grid-template-columns:1fr}.evidence-answer-row{grid-template-columns:1fr}.session-tools{justify-content:flex-start}}
 </style></head>
 <body><div id="auth" class="auth"><div class="authbox"><h2>Universal Disease Prediction</h2><p class="muted">Research / demo decision-support platform</p><input id="name" class="field" placeholder="Name (register only)"><input id="email" class="field" placeholder="Email"><input id="password" type="password" class="field" placeholder="Password (8+ characters)"><div class="row"><button id="loginBtn" type="button" class="primary">Login</button><button id="registerBtn" type="button" class="secondary">Create account</button></div><p id="authmsg" class="small"></p></div></div>
-<div class="app"><header class="top"><div class="brand">Universal <span>Disease Prediction</span></div><div><span id="userpill" class="pill">Not signed in</span> <button class="secondary" onclick="logout()">Logout</button></div></header>
+<div class="app"><header class="top"><div class="brand">Universal <span>Disease Prediction</span></div><div class="header-actions"><button id="newSessionBtn" class="secondary" type="button" onclick="startNewSession()">＋ New session</button> <span id="userpill" class="pill">Not signed in</span> <button class="secondary" onclick="logout()">Logout</button></div></header>
 <section class="slideshow" aria-label="Healthcare platform slideshow">
   <div class="slide">
     <div class="slide-content">
@@ -3145,7 +3145,6 @@ textarea.node-input{min-height:74px;resize:vertical}
 
     <div id="result" class="result hide"></div>
     <section id="predictionActionPanel" class="prediction-action-panel hide" aria-live="polite">
-      <div class="session-tools"><button id="newSessionBtn" class="secondary" type="button" onclick="startNewSession()">＋ New session</button></div>
       <h3>Tier selected · Ready for prediction review</h3>
       <p id="predictionActionIntro">Review the backend model output before opening the possible-conditions summary.</p>
       <div id="structuredPredictionInputs" class="structured-prediction">
