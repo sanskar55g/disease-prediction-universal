@@ -129,13 +129,6 @@ class Tier2:
     def _load(self):
         if self._art is None:
             self._art = joblib.load(require(MODELS / "tier2" / "tier2_model.joblib", "python backend/scripts/train_tier2.py"))
-            ev = self._art["evidences"]
-            # name -> code lookup from the English questions/values in the release
-            self._name2code = {}
-            for code, e in ev.items():
-                self._name2code[e["question_en"].lower()] = code
-                for tok in e.get("abbr_en", "").lower().split():
-                    pass
         return self._art
 
     def red_flags(self, symptoms: list[str]) -> list[dict]:
@@ -143,9 +136,25 @@ class Tier2:
         return [{"symptom": s, "reason": r} for s, r in self.RED_FLAGS.items() if any(s in x for x in low)]
 
     def run(self, intake: dict) -> dict:
-        art = self._load()
         req = intake.get("tier2") or {}
-        codes: list[str] = req.get("evidence_codes") or []
+        codes = req.get("evidence_codes") or []
+        if not codes:
+            return {
+                "available": False,
+                "skipped": True,
+                "differential": [],
+                "n_evidence_used": 0,
+                "reason": "Tier 2 requires DDXPlus evidence codes. Natural-language symptoms must be mapped to the dataset's evidence tokens before this classifier can make a meaningful prediction.",
+            }
+        if not isinstance(codes, list) or not all(isinstance(code, str) for code in codes):
+            return {
+                "available": False,
+                "skipped": True,
+                "differential": [],
+                "n_evidence_used": 0,
+                "reason": "tier2.evidence_codes must be a list of DDXPlus evidence-token strings.",
+            }
+        art = self._load()
         age, sex = int(intake.get("age") or 40), (intake.get("sex") or "F")[0].upper()
         from scipy import sparse
         bag = art["vectorizer"].transform([" ".join(codes)])
