@@ -18,6 +18,7 @@ class LoginRequest(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1)
+    session_id: str | None = Field(default=None, max_length=64)
     structured: dict[str, Any] = {}
     symptoms: list[str] = []
     symptom_duration_days: float | None = None
