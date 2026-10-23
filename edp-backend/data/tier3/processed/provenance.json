@@ -1,1 +1,11 @@
-{"index.joblib": {"source": "built by build_tier3.py from tier3/raw", "n_diseases": 12867}}
+{
+  "index.joblib": {
+    "source": "built by build_tier3.py from tier3/raw",
+    "url": "local-build://tier3/raw",
+    "sha256": "89efeb0bf15503dd96b464973e7ffaee88b7cf37a25af30a61d83bfd111a07ae",
+    "bytes": 9698821,
+    "rows": 12867,
+    "fetched_at": "2026-10-23T12:30:30+00:00",
+    "note": ""
+  }
+}

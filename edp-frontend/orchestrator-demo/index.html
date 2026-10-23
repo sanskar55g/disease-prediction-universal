@@ -3779,7 +3779,7 @@ if(token){req('/me').then(d=>{user=d;document.getElementById('auth').classList.a
     try{localStorage.removeItem(KEY)}catch(_){}
     refresh();if(state)state.textContent='Cleared';txt.focus();
   });
-  // restore the last analysis result so a reload doesn't wipe the agent findings either
+  // restore the last analysis ressult so a reload doesn't wipe the agent findings either
   try{
     const last=JSON.parse(sessionStorage.getItem('udp_last_analysis')||'null');
     if(last&&last.response){

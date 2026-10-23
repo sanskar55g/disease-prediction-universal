@@ -23,6 +23,7 @@ from .security import create_token, hash_password, user_id_from_token, verify_pa
 from .tiers.engines import engines
 from .guidance import generate_guidance
 from .prediction_inputs import build_prediction_engine_input
+from .prediction_input_builder import answers_to_evidence_codes
 
 app = FastAPI(title="Universal Disease Prediction API", version="1.0.0")
 
@@ -87,6 +88,48 @@ def route_with_agents(user: User, intake: dict, session: Session) -> dict:
 
 def run_prediction(user: User, intake: dict, session: Session, history: str) -> dict:
     intake = dict(intake)
+
+    # Convert structured Tier 2 questionnaire answers into DDXPlus evidence tokens.
+    tier2_input = dict(intake.get("tier2") or {})
+    evidence_answers = tier2_input.pop("answers", None)
+
+    if evidence_answers is not None:
+        if not isinstance(evidence_answers, dict):
+            raise HTTPException(
+                status_code=422,
+                detail="tier2.answers must be an object of evidence answers.",
+            )
+
+        try:
+            evidence_catalog = engines()[2].evidence_catalog()
+            generated_codes = answers_to_evidence_codes(
+                evidence_catalog,
+                evidence_answers,
+            )
+        except (ValueError, TypeError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(
+                status_code=503,
+                detail=f"Could not load the Tier 2 evidence catalog: {str(exc)[:200]}",
+            ) from exc
+
+        existing_codes = tier2_input.get("evidence_codes") or []
+        if not isinstance(existing_codes, list) or not all(
+            isinstance(code, str) and code.strip() for code in existing_codes
+        ):
+            raise HTTPException(
+                status_code=422,
+                detail="tier2.evidence_codes must be a list of non-empty strings.",
+            )
+
+        tier2_input["evidence_codes"] = list(
+            dict.fromkeys(
+                [code.strip() for code in existing_codes] + generated_codes
+            )
+        )
+
+    intake["tier2"] = tier2_input
     intake["medical_history"] = history
     decision = classify(intake)
     routed_payloads = decision.get("payloads", {}) or {}
@@ -117,7 +160,7 @@ def run_prediction(user: User, intake: dict, session: Session, history: str) -> 
                 results[str(tier)] = {
                     "available": False,
                     "skipped": True,
-                    "reason": "Tier 2 requires DDXPlus evidence codes. Free-text symptoms are not automatically converted into those model features yet, so this tier was skipped rather than returning a misleading result.",
+                    "reason": "Tier 2 requires DDXPlus evidence codes. Submit structured questionnaire answers in tier2.answers or provide tier2.evidence_codes; free-text symptoms alone are not converted into DDXPlus features.",
                 }
                 continue
             model_input = build_prediction_engine_input(tier, intake, payload, symptoms, hpo_terms)

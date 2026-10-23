@@ -22,7 +22,7 @@ from pathlib import Path
 import joblib
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.data_guard import require, tier_dir  # noqa: E402
+from app.data_guard import require, tier_dir, record_provenance  # noqa: E402
 from app.tiers.ontology import ancestors, parse_obo  # noqa: E402
 
 RAW, OUT = tier_dir(4, "raw"), tier_dir(4, "processed")
@@ -68,5 +68,10 @@ if __name__ == "__main__":
 
     joblib.dump({"disorders": disorders, "expanded": expanded, "ic": ic, "meta": meta, "n": n},
                 OUT / "index.joblib")
-    (OUT / "provenance.json").write_text('{"index.joblib": {"source": "built by build_tier4.py from tier4/raw", "n_disorders": %d}}' % n)
+    record_provenance(
+    OUT / "index.joblib",
+    source="built by build_tier4.py from tier4/raw",
+    url="local-build://tier4/raw",
+    rows=n,
+)
     print(f"  -> {OUT / 'index.joblib'}")

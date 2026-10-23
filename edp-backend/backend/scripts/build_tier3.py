@@ -22,7 +22,7 @@ from pathlib import Path
 import joblib
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.data_guard import require, tier_dir  # noqa: E402
+from app.data_guard import require, tier_dir, record_provenance  # noqa: E402
 from app.tiers.ontology import ancestors, parse_obo  # noqa: E402
 
 RAW, OUT = tier_dir(3, "raw"), tier_dir(3, "processed")
@@ -70,5 +70,10 @@ if __name__ == "__main__":
                 xrefs[key] = sorted({xx for xx in t["xrefs"] if xx.split(":")[0] in {"ICD10CM", "ICD10", "SCTID", "OMIM", "Orphanet", "MESH"}})
     joblib.dump({"disease_phenos": expanded, "disease_direct": {d: sorted(h) for d, h in direct.items()},
                  "idf": idf, "names": names, "xrefs": dict(xrefs), "n_diseases": n}, OUT / "index.joblib")
-    (OUT / "provenance.json").write_text('{"index.joblib": {"source": "built by build_tier3.py from tier3/raw", "n_diseases": %d}}' % n)
+    record_provenance(
+    OUT / "index.joblib",
+    source="built by build_tier3.py from tier3/raw",
+    url="local-build://tier3/raw",
+    rows=n,
+)
     print(f"  -> {OUT / 'index.joblib'}  ({n:,} diseases, {len(xrefs):,} with MONDO cross-refs)")
