@@ -84,18 +84,67 @@ def route_with_agents(user: User, intake: dict, session: Session) -> dict:
     return decision
 
 
+def _prediction_engine_input(tier: int, intake: dict, payload: dict, symptoms: list[str], hpo_terms: list[str]) -> dict:
+    """Adapt router hand-off data to the input contract each engine actually expects."""
+    model_input = {**intake, **payload}
+    if tier == 1:
+        original = intake.get("tier1") or {}
+        model_input["tier1"] = {
+            **original,
+            "disease": payload.get("disease") or original.get("disease"),
+            "features": payload.get("features") or intake.get("structured") or original.get("features") or {},
+        }
+    elif tier == 2:
+        original = intake.get("tier2") or {}
+        model_input["tier2"] = {
+            **original,
+            "evidence_codes": payload.get("evidence_codes") or original.get("evidence_codes") or [],
+        }
+    elif tier == 3:
+        model_input["symptoms"] = payload.get("symptoms") or symptoms
+    elif tier == 4:
+        model_input["symptoms"] = payload.get("symptoms") or symptoms
+        model_input["hpo_terms"] = payload.get("hpo_terms") or hpo_terms
+    return model_input
+
+
 def run_prediction(user: User, intake: dict, session: Session, history: str) -> dict:
     intake = dict(intake)
     intake["medical_history"] = history
     decision = classify(intake)
+    routed_payloads = decision.get("payloads", {}) or {}
+
+    # The router enriches free text before building its payloads. Reuse those
+    # extracted symptoms for every phenotype tier, even if that tier was not
+    # selected as primary/secondary by the router.
+    symptoms = list(intake.get("symptoms") or [])
+    hpo_terms = list(intake.get("hpo_terms") or [])
+    for payload in routed_payloads.values():
+        if not symptoms and payload.get("symptoms"):
+            symptoms = list(payload["symptoms"])
+        if not hpo_terms and payload.get("hpo_terms"):
+            hpo_terms = list(payload["hpo_terms"])
+
     results = {}
-    available_engines = engines()
-    # Run each configured tier once so results can be compared across tiers.
-    # A tier failure is captured without preventing the remaining tiers from running.
-    for tier, engine in available_engines.items():
+    for tier, engine in engines().items():
+        payload = routed_payloads.get(str(tier), {}) or {}
         try:
-            payload = decision.get("payloads", {}).get(str(tier), {})
-            results[str(tier)] = engine.run({**intake, **payload})
+            if tier == 1 and not ((intake.get("tier1") or {}).get("disease") or payload.get("disease")):
+                results[str(tier)] = {
+                    "available": False,
+                    "skipped": True,
+                    "reason": "Tier 1 is a disease-specific risk model. Select a Tier 1 disease and provide its structured risk features before running it.",
+                }
+                continue
+            if tier == 2 and not ((intake.get("tier2") or {}).get("evidence_codes") or payload.get("evidence_codes")):
+                results[str(tier)] = {
+                    "available": False,
+                    "skipped": True,
+                    "reason": "Tier 2 requires DDXPlus evidence codes. Free-text symptoms are not automatically converted into those model features yet, so this tier was skipped rather than returning a misleading result.",
+                }
+                continue
+            model_input = _prediction_engine_input(tier, intake, payload, symptoms, hpo_terms)
+            results[str(tier)] = engine.run(model_input)
         except Exception as exc:
             results[str(tier)] = {"available": False, "error": str(exc)[:500]}
     result = {
