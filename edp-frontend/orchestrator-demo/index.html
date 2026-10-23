@@ -2827,9 +2827,34 @@ textarea.node-input{min-height:74px;resize:vertical}
 .node-action.loading::after{content:"";display:inline-block;width:10px;height:10px;margin-left:8px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;vertical-align:-1px;animation:udpspin .7s linear infinite}
 @keyframes udpspin{to{transform:rotate(360deg)}}
 @media(max-width:980px){.debate-node.node-symptom{width:auto}}
+
+/* Structured tier inputs, session controls and prediction follow-up */
+.session-tools{display:flex;gap:10px;justify-content:flex-end;align-items:center;margin:12px 0;flex-wrap:wrap}.header-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.session-tools button{font-size:12px}
+.structured-prediction{margin:16px 0;padding:16px;border:1px solid #dce8ed;border-radius:14px;background:#f8fbfc}
+.structured-prediction h4{margin:0 0 10px;color:#173347}
+.structured-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.structured-field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.structured-field label{font-size:12px;font-weight:700;color:#476072}
+.structured-field input,.structured-field select,.evidence-answer-row select,.evidence-answer-row input{width:100%;padding:9px;border:1px solid #ccdce4;border-radius:8px;background:#fff;color:#173347}
+.evidence-question-tools{display:flex;gap:8px;margin:10px 0}
+.evidence-question-tools select{flex:1;min-width:0;padding:9px;border:1px solid #ccdce4;border-radius:8px;background:#fff}
+.evidence-answer-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(160px,1fr) auto;gap:8px;align-items:center;margin:8px 0;padding:9px;background:#fff;border:1px solid #e1e9ee;border-radius:9px}
+.evidence-answer-row .question-label{font-size:12px;color:#29475a;overflow-wrap:anywhere}
+.evidence-answer-row button{border:1px solid #d7e1e7;background:#fff;border-radius:7px;padding:7px}
+.tier-input-status{font-size:12px;color:#60788a;line-height:1.5;margin-top:8px}
+.prediction-followup{margin-top:18px;padding:16px;border:1px solid #cfe4e6;border-radius:14px;background:#f7fcfc}
+.prediction-followup h4{margin:0 0 6px}
+.prediction-followup p{font-size:12px;color:#617889}
+.prediction-followup textarea{width:100%;min-height:76px;padding:11px;border:1px solid #cbdde4;border-radius:10px;resize:vertical;background:#fff;color:#183447}
+.prediction-followup .followup-log{display:flex;flex-direction:column;gap:8px;margin:12px 0;max-height:260px;overflow:auto}
+.followup-message{padding:10px 12px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.5}
+.followup-message.user{background:#dff7f3;align-self:flex-end;max-width:90%}
+.followup-message.assistant{background:#fff;border:1px solid #e0e9ee;align-self:flex-start;max-width:95%}
+@media(max-width:700px){.structured-grid{grid-template-columns:1fr}.evidence-answer-row{grid-template-columns:1fr}.session-tools{justify-content:flex-start}}
 </style></head>
 <body><div id="auth" class="auth"><div class="authbox"><h2>Universal Disease Prediction</h2><p class="muted">Research / demo decision-support platform</p><input id="name" class="field" placeholder="Name (register only)"><input id="email" class="field" placeholder="Email"><input id="password" type="password" class="field" placeholder="Password (8+ characters)"><div class="row"><button id="loginBtn" type="button" class="primary">Login</button><button id="registerBtn" type="button" class="secondary">Create account</button></div><p id="authmsg" class="small"></p></div></div>
-<div class="app"><header class="top"><div class="brand">Universal <span>Disease Prediction</span></div><div><span id="userpill" class="pill">Not signed in</span> <button class="secondary" onclick="logout()">Logout</button></div></header>
+<div class="app"><header class="top"><div class="brand">Universal <span>Disease Prediction</span></div><div class="header-actions"><button id="newSessionBtn" class="secondary" type="button" onclick="startNewSession()">＋ New session</button> <span id="userpill" class="pill">Not signed in</span> <button class="secondary" onclick="logout()">Logout</button></div></header>
 <section class="slideshow" aria-label="Healthcare platform slideshow">
   <div class="slide">
     <div class="slide-content">
@@ -3122,6 +3147,21 @@ textarea.node-input{min-height:74px;resize:vertical}
     <section id="predictionActionPanel" class="prediction-action-panel hide" aria-live="polite">
       <h3>Tier selected · Ready for prediction review</h3>
       <p id="predictionActionIntro">Review the backend model output before opening the possible-conditions summary.</p>
+      <div id="structuredPredictionInputs" class="structured-prediction">
+        <h4>Required model inputs</h4>
+        <p class="muted">Choose a Tier 1 disease and answer at least one Tier 2 evidence question. Tier 1 may impute unanswered risk features; the result will list any missing features.</p>
+        <div class="structured-grid">
+          <div class="structured-field"><label for="predictionAge">Age</label><input id="predictionAge" type="number" min="0" max="120" placeholder="e.g. 35"></div>
+          <div class="structured-field"><label for="predictionSex">Sex used by model</label><select id="predictionSex"><option value="">Select</option><option value="M">Male</option><option value="F">Female</option></select></div>
+          <div class="structured-field"><label for="tier1DiseaseSelect">Tier 1 disease risk model</label><select id="tier1DiseaseSelect"><option value="">Loading available models…</option></select></div>
+        </div>
+        <div id="tier1FeatureFields" class="structured-grid" style="margin-top:12px"></div>
+        <div style="margin-top:18px"><div class="structured-field"><label for="tier2QuestionSelect">Tier 2 evidence questions</label></div>
+          <div class="evidence-question-tools"><select id="tier2QuestionSelect"><option value="">Loading evidence catalog…</option></select><button id="addEvidenceQuestionBtn" type="button" class="secondary" onclick="addTier2Question()">Add question</button></div>
+          <div id="tier2AnswerRows"></div>
+        </div>
+        <div id="tierInputStatus" class="tier-input-status">Loading Tier 1 models and Tier 2 evidence questions…</div>
+      </div>
       <button id="predictDiseaseBtn" class="primary" type="button" onclick="predictDisease()" disabled>Predict My Disease →</button>
       <div id="predictionReview" class="prediction-detail hide"></div>
       <p class="prediction-disclaimer">Decision-support only. Model outputs are possibilities, not a diagnosis. Do not start, stop, or change medication based on this screen. Seek a qualified clinician for interpretation.</p>
@@ -3170,6 +3210,11 @@ textarea.node-input{min-height:74px;resize:vertical}
 const API=location.protocol==='file:'?'http://localhost:8000/api':(localStorage.getItem('udp_api')||'http://localhost:8000/api');let token=localStorage.getItem('udp_token')||'';let user=null;
 let lastChatTier=null;
 let lastPredictionResponse=null;
+let currentSessionId=localStorage.getItem('udp_session_id')||newSessionId();
+let tier1SchemaCache={};
+let tier2EvidenceCatalog=[];
+let predictionFollowupMessages=[];
+function newSessionId(){const id=(globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID():('session-'+Date.now()+'-'+Math.random().toString(36).slice(2));localStorage.setItem('udp_session_id',id);return id;}
 const agents=[['History Agent','Retrieves longitudinal medical records, documents and prior predictions.','📋'],['Symptom Agent','Normalizes symptoms, onset, duration and patient context.','🩺'],['Evidence Agent','Combines structured findings from reports and uploaded evidence.','🔬'],['Triage Agent','Checks red flags, acute/chronic patterns and evidence strength.','🚑'],['Tier Router','Selects the applicable prediction tier using deterministic rules.','🧠']];
 let orbitIndex=0;
 let orbitDecision=null;
@@ -3372,9 +3417,45 @@ async function requestCareGuidance(prediction,panel,button){
     renderList('Suggested specialists',data.specialists);renderList('Prevention measures',data.prevention_measures);renderList('Diet suggestions',data.diet_suggestions);renderList('Activity and exercise',data.activity_suggestions);renderList('Warning signs',data.warning_signs);
     if(data.when_to_seek_care){const p=document.createElement('p');p.textContent='When to seek care: '+data.when_to_seek_care;section.appendChild(p)}
     const note=document.createElement('p');note.className='prediction-disclaimer';note.textContent=data.disclaimer||'This is general information, not a diagnosis or personalised treatment plan.';section.appendChild(note);
-    panel.appendChild(section);button.textContent='Guidance generated';
+    panel.appendChild(section);button.textContent='Guidance generated';renderPredictionChat(panel,prediction);
   }catch(e){const p=document.createElement('p');p.textContent='Could not generate Groq guidance: '+e.message+'. Check GROQ_API_KEY and backend logs.';panel.appendChild(p);button.disabled=false;button.textContent='Retry prevention & care guidance';}
 }
+
+document.getElementById('tier1DiseaseSelect')?.addEventListener('change',event=>loadTier1FeatureSchema(event.target.value));
+async function loadStructuredPredictionInputs(){
+  const status=document.getElementById('tierInputStatus'),diseaseSelect=document.getElementById('tier1DiseaseSelect'),questionSelect=document.getElementById('tier2QuestionSelect');
+  if(!diseaseSelect||!questionSelect)return;
+  try{
+    const [tier1,tier2]=await Promise.all([req('/tier1/diseases'),req('/tier2/evidence')]);
+    const diseases=Array.isArray(tier1.diseases)?tier1.diseases:[];
+    diseaseSelect.replaceChildren(new Option('Select a disease risk model',''));
+    for(const disease of diseases)diseaseSelect.add(new Option(disease.replaceAll('_',' '),disease));
+    tier2EvidenceCatalog=Array.isArray(tier2.evidence)?tier2.evidence:[];tier2EvidenceCatalog.sort((a,b)=>String(a.question).localeCompare(String(b.question)));
+    questionSelect.replaceChildren(new Option('Search/select an evidence question…',''));
+    for(const item of tier2EvidenceCatalog)questionSelect.add(new Option(item.question+' ('+item.code+')',item.code));
+    if(status)status.textContent=diseases.length?'Loaded '+diseases.length+' Tier 1 models and '+tier2EvidenceCatalog.length+' Tier 2 questions.':'No Tier 1 model artifacts are currently available; restore/train the model artifacts first.';
+  }catch(e){if(status)status.textContent='Could not load required model inputs: '+e.message+'. Check /api/status and backend model artifacts.';}
+}
+async function loadTier1FeatureSchema(disease){
+  const holder=document.getElementById('tier1FeatureFields');if(!holder)return;holder.replaceChildren();if(!disease)return;
+  try{const schema=tier1SchemaCache[disease]||await req('/tier1/schema/'+encodeURIComponent(disease));tier1SchemaCache[disease]=schema;
+    (schema.features||[]).forEach(feature=>{const wrapper=document.createElement('div');wrapper.className='structured-field';const label=document.createElement('label');label.textContent=feature.replaceAll('_',' ');label.htmlFor='tier1_'+feature;const input=document.createElement('input');input.id='tier1_'+feature;input.dataset.tier1Feature=feature;const dtype=(schema.dtypes||{})[feature]||'';if(dtype.startsWith('int')||dtype.startsWith('float')){input.type='number';input.step=dtype.startsWith('int')?'1':'any';}else{input.type='text';input.placeholder='Optional model feature';}wrapper.append(label,input);holder.appendChild(wrapper);});
+    const status=document.getElementById('tierInputStatus');if(status)status.textContent='Tier 1 '+(schema.label||disease)+': '+(schema.features||[]).length+' features. Fill known values; missing features are imputed and reported.';
+  }catch(e){const status=document.getElementById('tierInputStatus');if(status)status.textContent='Could not load Tier 1 features: '+e.message;}
+}
+function addTier2Question(){
+  const select=document.getElementById('tier2QuestionSelect'),holder=document.getElementById('tier2AnswerRows'),code=select?.value;if(!code||!holder)return;if(holder.querySelector('[data-tier2-code="'+code+'"]'))return;
+  const item=tier2EvidenceCatalog.find(e=>e.code===code);if(!item)return;const row=document.createElement('div');row.className='evidence-answer-row';row.dataset.tier2Code=code;
+  const title=document.createElement('div');title.className='question-label';title.textContent=item.question+' ['+code+']';const values=item.values&&typeof item.values==='object'?Object.entries(item.values):[];let control;
+  if(item.type==='B'){control=document.createElement('select');control.add(new Option('Choose yes/no',''));control.add(new Option('Yes','yes'));control.add(new Option('No','no'));}
+  else if(values.length){control=document.createElement('select');control.add(new Option(item.type==='M'?'Select values (Ctrl/⌘ for multiple)':'Choose a value',''));values.forEach(([id,meaning])=>control.add(new Option(String(meaning||id)+' ('+id+')',id)));if(item.type==='M')control.multiple=true;}
+  else{control=document.createElement('input');control.type='text';control.placeholder='Enter value ID, e.g. V_12';}
+  control.dataset.answerControl='true';const remove=document.createElement('button');remove.type='button';remove.textContent='Remove';remove.onclick=()=>row.remove();row.append(title,control,remove);holder.appendChild(row);
+}
+function renderPredictionChat(panel,prediction){if(document.getElementById('predictionFollowup'))return;predictionFollowupMessages=[];const section=document.createElement('section');section.className='prediction-followup';section.id='predictionFollowup';const heading=document.createElement('h4');heading.textContent='Ask Groq about your results';section.appendChild(heading);const intro=document.createElement('p');intro.textContent='Ask follow-up questions about the model findings or prevention guidance. Groq uses this result and the current conversation. This is health education, not a diagnosis.';section.appendChild(intro);const log=document.createElement('div');log.className='followup-log';log.id='predictionFollowupLog';section.appendChild(log);const textarea=document.createElement('textarea');textarea.id='predictionFollowupInput';textarea.placeholder='Ask what the result means or clarify a prevention measure…';section.appendChild(textarea);const sendButton=document.createElement('button');sendButton.type='button';sendButton.className='primary';sendButton.textContent='Ask Groq';sendButton.onclick=()=>sendPredictionFollowup(prediction,sendButton);section.appendChild(sendButton);panel.appendChild(section);}
+async function sendPredictionFollowup(prediction,button){const input=document.getElementById('predictionFollowupInput'),log=document.getElementById('predictionFollowupLog');const message=(input?.value||'').trim();if(!message||!log)return;predictionFollowupMessages.push({role:'user',content:message});const userBubble=document.createElement('div');userBubble.className='followup-message user';userBubble.textContent=message;log.appendChild(userBubble);input.value='';button.disabled=true;button.textContent='Groq is responding…';const wait=document.createElement('div');wait.className='followup-message assistant';wait.textContent='Thinking…';log.appendChild(wait);try{const result=await req('/guidance/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prediction,symptoms:String(window.lastPatientInput||''),messages:predictionFollowupMessages})});wait.textContent=result.answer||'No answer returned.';predictionFollowupMessages.push({role:'assistant',content:wait.textContent});}catch(e){wait.textContent='Could not get a Groq response: '+e.message+'. Check GROQ_API_KEY and backend logs.';predictionFollowupMessages.pop();}finally{button.disabled=false;button.textContent='Ask Groq';log.scrollTop=log.scrollHeight;}}
+function startNewSession(){if(!confirm('Start a new session? The current session remains saved in history.'))return;currentSessionId=newSessionId();lastChatTier=null;lastPredictionResponse=null;window.lastPatientInput='';window.liveAgentTrace=null;predictionFollowupMessages=[];['message','symptomInput','symptomDuration'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});const chatBox=document.getElementById('chat');if(chatBox)chatBox.replaceChildren();['result','predictionReview','predictionActionPanel'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.add('hide');if(id==='predictionReview')el.replaceChildren();}});const answers=document.getElementById('tier2AnswerRows');if(answers)answers.replaceChildren();const features=document.getElementById('tier1FeatureFields');if(features)features.replaceChildren();const disease=document.getElementById('tier1DiseaseSelect');if(disease)disease.value='';const status=document.getElementById('tierInputStatus');if(status)status.textContent='New session started. Enter symptoms to begin.';const btn=document.getElementById('predictDiseaseBtn');if(btn)btn.disabled=true;setAgents(0);renderAgentFindings(0);const state=document.getElementById('debateRunState');if(state)state.textContent='New session ready.';}
+
 async function predictDisease(){
   const btn=document.getElementById('predictDiseaseBtn');const panel=document.getElementById('predictionReview');
   if(!btn||!panel)return;
@@ -3383,7 +3464,24 @@ async function predictDisease(){
   btn.disabled=true;btn.textContent='Running all configured tiers…';panel.classList.remove('hide');panel.replaceChildren();
   const waiting=document.createElement('p');waiting.textContent='Running each configured tier engine. This may take a moment…';panel.appendChild(waiting);
   try{
-    const input=String(window.lastPatientInput||'').trim();const body={free_text:input,message:input};
+    const input=String(window.lastPatientInput||'').trim();
+    const tier1Disease=document.getElementById('tier1DiseaseSelect')?.value||'';
+    const tier1Features={};
+    document.querySelectorAll('[data-tier1-feature]').forEach(el=>{if(el.value.trim()!==''){tier1Features[el.dataset.tier1Feature]=el.type==='number'?Number(el.value):el.value.trim()}});
+    const tier2Answers={};
+    document.querySelectorAll('[data-tier2-code]').forEach(row=>{
+      const code=row.dataset.tier2Code;const control=row.querySelector('[data-answer-control]');
+      if(!control)return;
+      if(control.multiple){const values=Array.from(control.selectedOptions).map(o=>o.value).filter(Boolean);if(values.length)tier2Answers[code]=values;}
+      else if(control.value.trim()!==''){tier2Answers[code]=control.value.trim();}
+    });
+    if(!tier1Disease){throw new Error('Select a Tier 1 disease model before predicting.');}
+    if(!Object.keys(tier2Answers).length){throw new Error('Answer at least one Tier 2 evidence question before predicting.');}
+    const body={free_text:input,message:input,tier1:{disease:tier1Disease,features:tier1Features},tier2:{answers:tier2Answers}};
+    const ageValue=document.getElementById('predictionAge')?.value;
+    const sexValue=document.getElementById('predictionSex')?.value;
+    if(ageValue!=='')body.age=Number(ageValue);
+    if(sexValue)body.sex=sexValue;
     const durationMatch=input.match(/(?:duration|for)\s*: ?\s*(\d+(?:\.\d+)?)\s*(day|days|d|week|weeks|w|month|months|year|years)\b/i);
     if(durationMatch){const v=Number(durationMatch[1]);const u=durationMatch[2].toLowerCase();body.symptom_duration_days=Math.round(v*(u.startsWith('w')?7:u.startsWith('month')?30:u.startsWith('year')?365:1));}
     const prediction=await req('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -3483,6 +3581,7 @@ function setAgents(active=0,decision){
 }
 renderAgents();
 setAgents(0);
+loadStructuredPredictionInputs();
 renderAgentFindings(0);
 const debateRunStateInitial=document.getElementById('debateRunState');
 if(debateRunStateInitial)debateRunStateInitial.textContent='SYSTEM STANDBY';
@@ -3528,6 +3627,7 @@ async function handleAuth(mode){
     authEl.classList.add('hide');
     userpillEl.textContent=user.name||user.email;
     loadStatus();
+    loadStructuredPredictionInputs();
   }catch(e){
     console.error('Authentication error:',e);
     authmsgEl.textContent=e.message||'Login failed. Check that the backend is running.';
@@ -3643,7 +3743,7 @@ async function send(source='chat'){
       const multiplier=unit.startsWith('w')?7:unit.startsWith('month')?30:unit.startsWith('year')?365:1;
       durationDays=Math.round(value*multiplier);
     }
-    const requestBody={message:m};
+    const requestBody={message:m,session_id:currentSessionId};
     if(durationDays!==null)requestBody.symptom_duration_days=durationDays;
     const request=req('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(requestBody)});
     for(let i=0;i<4;i++){

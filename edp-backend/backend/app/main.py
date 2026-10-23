@@ -21,7 +21,7 @@ from .orchestrator.agents import collect_saved_evidence, run_agent_pipeline
 from .schemas import ChatRequest, LoginRequest, PredictionRequest, RegisterRequest
 from .security import create_token, hash_password, user_id_from_token, verify_password
 from .tiers.engines import engines
-from .guidance import generate_guidance
+from .guidance import answer_prediction_question, generate_guidance
 from .prediction_inputs import build_prediction_engine_input
 from .prediction_input_builder import answers_to_evidence_codes
 
@@ -50,28 +50,34 @@ def current_user(authorization: str | None = Header(default=None), session: Sess
         raise HTTPException(401, "User not found")
     return user
 
-def history_for(user: User, session: Session) -> str:
+def history_for(user: User, session: Session, session_id: str | None = None) -> str:
     records = session.query(MedicalRecord).filter_by(user_id=user.id).order_by(MedicalRecord.created_at.asc()).all()
     docs = session.query(MedicalDocument).filter_by(user_id=user.id).order_by(MedicalDocument.created_at.asc()).all()
-    msgs = session.query(ChatMessage).filter_by(user_id=user.id).order_by(ChatMessage.created_at.asc()).all()
+    message_query = session.query(ChatMessage).filter_by(user_id=user.id)
+    if session_id:
+        message_query = message_query.filter(ChatMessage.session_id == session_id)
+    else:
+        message_query = message_query.filter(ChatMessage.session_id.is_(None))
+    msgs = message_query.order_by(ChatMessage.created_at.asc()).all()
     return build_history_context(records, docs, msgs)
 
-def chat_context_for(user: User, session: Session, limit: int = 30) -> str:
+def chat_context_for(user: User, session: Session, session_id: str | None = None, limit: int = 30) -> str:
     msgs = (
         session.query(ChatMessage)
         .filter_by(user_id=user.id, role="user")
+        .filter(ChatMessage.session_id == session_id if session_id else ChatMessage.session_id.is_(None))
         .order_by(ChatMessage.created_at.asc())
         .all()
     )
     return "\n".join(f"[patient] {m.content}" for m in msgs[-limit:])
 
-def route_with_agents(user: User, intake: dict, session: Session) -> dict:
+def route_with_agents(user: User, intake: dict, session: Session, session_id: str | None = None) -> dict:
     """Run all five agents to completion, using persisted evidence before tier routing."""
     docs = session.query(MedicalDocument).filter_by(user_id=user.id).order_by(MedicalDocument.created_at.asc()).all()
     records = session.query(MedicalRecord).filter_by(user_id=user.id).order_by(MedicalRecord.created_at.asc()).all()
     evidence = collect_saved_evidence(docs, records)
     enriched = dict(intake)
-    enriched["medical_history"] = history_for(user, session)
+    enriched["medical_history"] = history_for(user, session, session_id)
     enriched, _ = run_agent_pipeline(enriched, evidence, {})
     decision = classify(enriched)
     _, trace = run_agent_pipeline(enriched, evidence, decision)
@@ -303,21 +309,23 @@ def predict(req: PredictionRequest, user: User = Depends(current_user), session:
 @app.post("/api/chat")
 def chat(req: ChatRequest, user: User = Depends(current_user), session: Session = Depends(db)):
     # Capture existing history before saving the current message.
-    previous_chat = chat_context_for(user, session)
-    medical_history = history_for(user, session)
+    session_id = req.session_id
+    previous_chat = chat_context_for(user, session, session_id)
+    medical_history = history_for(user, session, session_id)
 
-    session.add(ChatMessage(user_id=user.id, role="user", content=req.message))
+    session.add(ChatMessage(user_id=user.id, role="user", content=req.message, session_id=session_id))
     session.commit()
 
     intake = req.model_dump()
     intake["free_text"] = req.message
     intake["conversation_context"] = previous_chat
     intake["medical_history"] = medical_history
+    intake["session_id"] = session_id
 
     # Do not replace a structured symptom list supplied by the client.
     # The orchestrator's enrichment layer will extract/merge symptoms from
     # both the current message and previous patient messages.
-    result = route_with_agents(user, intake, session)
+    result = route_with_agents(user, intake, session, session_id)
     # Save the routing/agent trace for longitudinal audit, but do not run tier engines here.
     session.add(Prediction(user_id=user.id, request_json=json.dumps(intake, default=str),
                            result_json=json.dumps({"routing": result, "tier_results": {}}, default=str)))
@@ -325,12 +333,27 @@ def chat(req: ChatRequest, user: User = Depends(current_user), session: Session 
              "result": {"routing": result, "tier_results": {}, "agent_trace": result.get("agent_trace", []),
                         "medical_history_used": result.get("medical_history_used", False),
                         "evidence_summary": result.get("evidence_summary", {})}}
-    session.add(ChatMessage(user_id=user.id, role="assistant", content=json.dumps(reply, default=str)))
+    session.add(ChatMessage(user_id=user.id, role="assistant", content=json.dumps(reply, default=str), session_id=session_id))
 
     session.commit()
 
     return reply
 
+
+@app.post("/api/guidance/chat")
+def guidance_chat(payload: dict, user: User = Depends(current_user)):
+    prediction = payload.get("prediction")
+    messages = payload.get("messages")
+    if not isinstance(prediction, dict) or not prediction:
+        raise HTTPException(400, "A completed prediction result is required")
+    if not isinstance(messages, list) or not messages:
+        raise HTTPException(400, "At least one chat message is required")
+    try:
+        return answer_prediction_question(prediction, str(payload.get("symptoms", ""))[:4000], messages)
+    except RuntimeError as exc:
+        raise HTTPException(503, str(exc))
+    except Exception as exc:
+        raise HTTPException(502, f"Groq follow-up failed: {str(exc)[:250]}")
 
 @app.post("/api/guidance")
 def prevention_guidance(payload: dict, user: User = Depends(current_user)):
@@ -367,6 +390,13 @@ def status(user: User = Depends(current_user)):
 @app.get("/api/tier1/diseases")
 def tier1_diseases(user: User = Depends(current_user)):
     return engines()[1].status()
+
+@app.get("/api/tier1/schema/{disease}")
+def tier1_schema(disease: str, user: User = Depends(current_user)):
+    try:
+        return engines()[1].schema(disease)
+    except Exception as exc:
+        raise HTTPException(422, f"Could not load Tier 1 schema: {str(exc)[:250]}") from exc
 
 @app.get("/api/tier2/evidence")
 def tier2_evidence(user: User = Depends(current_user)):

@@ -5,7 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, create_engine
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
@@ -68,6 +68,7 @@ class ChatMessage(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     role: Mapped[str] = mapped_column(String(20))
     content: Mapped[str] = mapped_column(Text)
+    session_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
     user = relationship("User", back_populates="messages")
 
@@ -84,3 +85,8 @@ class Prediction(Base):
 
 def init_db():
     Base.metadata.create_all(engine)
+    # create_all does not add columns to an existing database; migrate older installs safely.
+    columns = {column["name"] for column in inspect(engine).get_columns("chat_messages")}
+    if "session_id" not in columns:
+        with engine.begin() as connection:
+            connection.execute(text("ALTER TABLE chat_messages ADD COLUMN session_id VARCHAR(64)"))
