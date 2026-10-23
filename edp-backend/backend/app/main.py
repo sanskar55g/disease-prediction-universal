@@ -22,6 +22,7 @@ from .schemas import ChatRequest, LoginRequest, PredictionRequest, RegisterReque
 from .security import create_token, hash_password, user_id_from_token, verify_password
 from .tiers.engines import engines
 from .guidance import generate_guidance
+from .prediction_inputs import build_prediction_engine_input
 
 app = FastAPI(title="Universal Disease Prediction API", version="1.0.0")
 
@@ -88,14 +89,39 @@ def run_prediction(user: User, intake: dict, session: Session, history: str) -> 
     intake = dict(intake)
     intake["medical_history"] = history
     decision = classify(intake)
+    routed_payloads = decision.get("payloads", {}) or {}
+
+    # The router enriches free text before building its payloads. Reuse those
+    # extracted symptoms for every phenotype tier, even if that tier was not
+    # selected as primary/secondary by the router.
+    symptoms = list(intake.get("symptoms") or [])
+    hpo_terms = list(intake.get("hpo_terms") or [])
+    for payload in routed_payloads.values():
+        if not symptoms and payload.get("symptoms"):
+            symptoms = list(payload["symptoms"])
+        if not hpo_terms and payload.get("hpo_terms"):
+            hpo_terms = list(payload["hpo_terms"])
+
     results = {}
-    available_engines = engines()
-    # Run each configured tier once so results can be compared across tiers.
-    # A tier failure is captured without preventing the remaining tiers from running.
-    for tier, engine in available_engines.items():
+    for tier, engine in engines().items():
+        payload = routed_payloads.get(str(tier), {}) or {}
         try:
-            payload = decision.get("payloads", {}).get(str(tier), {})
-            results[str(tier)] = engine.run({**intake, **payload})
+            if tier == 1 and not ((intake.get("tier1") or {}).get("disease") or payload.get("disease")):
+                results[str(tier)] = {
+                    "available": False,
+                    "skipped": True,
+                    "reason": "Tier 1 is a disease-specific risk model. Select a Tier 1 disease and provide its structured risk features before running it.",
+                }
+                continue
+            if tier == 2 and not ((intake.get("tier2") or {}).get("evidence_codes") or payload.get("evidence_codes")):
+                results[str(tier)] = {
+                    "available": False,
+                    "skipped": True,
+                    "reason": "Tier 2 requires DDXPlus evidence codes. Free-text symptoms are not automatically converted into those model features yet, so this tier was skipped rather than returning a misleading result.",
+                }
+                continue
+            model_input = build_prediction_engine_input(tier, intake, payload, symptoms, hpo_terms)
+            results[str(tier)] = engine.run(model_input)
         except Exception as exc:
             results[str(tier)] = {"available": False, "error": str(exc)[:500]}
     result = {

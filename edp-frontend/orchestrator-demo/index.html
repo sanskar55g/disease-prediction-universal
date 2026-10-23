@@ -3342,6 +3342,20 @@ function renderPredictionCandidates(panel,prediction){
       panel.appendChild(section);
     });
   }
+  const skipped=Object.entries(prediction.tier_results||{}).filter(([,result])=>result&&result.skipped&&result.reason);
+  skipped.forEach(([tier,result])=>{
+    const note=document.createElement('p');
+    note.className='prediction-disclaimer';
+    note.textContent='Tier '+tier+' not run: '+result.reason;
+    panel.appendChild(note);
+  });
+  const failed=Object.entries(prediction.tier_results||{}).filter(([,result])=>result&&result.error);
+  failed.forEach(([tier,result])=>{
+    const note=document.createElement('p');
+    note.className='prediction-disclaimer';
+    note.textContent='Tier '+tier+' failed: '+result.error;
+    panel.appendChild(note);
+  });
   const disclaimer=document.createElement('p');
   disclaimer.className='prediction-disclaimer';
   disclaimer.textContent='These are model outputs, not confirmed diagnoses. Rankings are shown within each tier because risk probabilities, classifier probabilities, and phenotype-matching scores are different measures and should not be compared directly.';
@@ -3359,7 +3373,7 @@ async function requestCareGuidance(prediction,panel,button){
     if(data.when_to_seek_care){const p=document.createElement('p');p.textContent='When to seek care: '+data.when_to_seek_care;section.appendChild(p)}
     const note=document.createElement('p');note.className='prediction-disclaimer';note.textContent=data.disclaimer||'This is general information, not a diagnosis or personalised treatment plan.';section.appendChild(note);
     panel.appendChild(section);button.textContent='Guidance generated';
-  }catch(e){const p=document.createElement('p');p.textContent='Could not generate Grok guidance: '+e.message+'. Check XAI_API_KEY and backend logs.';panel.appendChild(p);button.disabled=false;button.textContent='Retry prevention & care guidance';}
+  }catch(e){const p=document.createElement('p');p.textContent='Could not generate Groq guidance: '+e.message+'. Check GROQ_API_KEY and backend logs.';panel.appendChild(p);button.disabled=false;button.textContent='Retry prevention & care guidance';}
 }
 async function predictDisease(){
   const btn=document.getElementById('predictDiseaseBtn');const panel=document.getElementById('predictionReview');
