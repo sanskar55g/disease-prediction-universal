@@ -2852,6 +2852,1401 @@ textarea.node-input{min-height:74px;resize:vertical}
 .followup-message.user{background:#dff7f3;align-self:flex-end;max-width:90%}
 .followup-message.assistant{background:#fff;border:1px solid #e0e9ee;align-self:flex-start;max-width:95%}
 @media(max-width:700px){.structured-grid{grid-template-columns:1fr}.evidence-answer-row{grid-template-columns:1fr}.session-tools{justify-content:flex-start}}
+
+/* clinical debate room layout adjustment */
+.debate-layout {
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.75fr);
+  max-width: 1500px;
+  gap: 24px;
+}
+
+/* move orchestration phases and routing output lower */
+.debate-side {
+  padding-top: 90px;
+}
+
+/* give the agent visualization more room */
+.debate-network {
+  height: 740px;
+  max-width: 1100px;
+}
+
+/* make agent cards slightly larger */
+.debate-node {
+  width: 290px;
+  min-height: 145px;
+}
+
+/* retain the existing responsive layout */
+@media (max-width: 980px) {
+  .debate-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .debate-side {
+    padding-top: 0;
+  }
+
+  .debate-network {
+    height: auto;
+  }
+}
+
+/* =========================================
+   PATIENT WORKSPACE — SINGLE COLUMN REDESIGN
+   ========================================= */
+
+   .patient-clinical-section {
+  width: min(1250px, calc(100% - 48px)) !important;
+  min-height: auto !important;
+  margin: 35px auto !important;
+  border-radius: 24px !important;
+}
+
+.clinical-workspace-shell {
+  padding: 48px 55px !important;
+}
+
+.clinical-workspace-head {
+  margin-bottom: 35px !important;
+}
+
+.clinical-workspace-head h2 {
+  font-size: 38px !important;
+  line-height: 1.2 !important;
+  letter-spacing: -1px;
+}
+
+.clinical-workspace-head p {
+  max-width: 850px !important;
+  font-size: 15px !important;
+  line-height: 1.75 !important;
+}
+
+/* Put every workspace section into one vertical flow */
+.clinical-command-center {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 22px !important;
+  align-items: stretch !important;
+}
+
+/* Remove the separate side-column layouts */
+.clinical-left-column,
+.clinical-center-column,
+.clinical-right-column {
+  display: contents !important;
+}
+
+/* Consistent full-width cards */
+.clinical-panel,
+.clinical-upload-card {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  min-height: auto !important;
+  padding: 27px 30px !important;
+  border-radius: 18px !important;
+}
+
+/* Larger section headings */
+.clinical-panel-heading h3 {
+  font-size: 20px !important;
+}
+
+.clinical-panel-heading > div > span {
+  font-size: 10px !important;
+}
+
+.clinical-panel-heading > b {
+  font-size: 10px !important;
+}
+
+/* Patient information */
+.patient-identity {
+  padding: 20px !important;
+  margin-bottom: 18px !important;
+}
+
+.patient-identity strong {
+  font-size: 15px !important;
+}
+
+.patient-identity span {
+  font-size: 12px !important;
+}
+
+.patient-info-rows > div {
+  padding: 15px 4px !important;
+  font-size: 13px !important;
+}
+
+/* Evidence source cards */
+.evidence-source-row {
+  padding: 17px 12px !important;
+  gap: 15px !important;
+}
+
+.evidence-source-row strong {
+  font-size: 14px !important;
+}
+
+.evidence-source-row span {
+  font-size: 12px !important;
+}
+
+.evidence-source-row em {
+  font-size: 10px !important;
+}
+
+/* Medical evidence upload */
+.clinical-upload-card {
+  text-align: center !important;
+  padding: 38px 35px !important;
+}
+
+.clinical-upload-card h3 {
+  font-size: 25px !important;
+}
+
+.clinical-upload-card p {
+  max-width: 750px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+}
+
+.upload-type-grid {
+  max-width: 750px;
+  margin: 25px auto !important;
+}
+
+.upload-type-grid > div {
+  padding: 17px !important;
+}
+
+.upload-type-grid b {
+  font-size: 13px !important;
+}
+
+.upload-type-grid small {
+  font-size: 11px !important;
+}
+
+.clinical-file-dropzone {
+  max-width: 750px;
+  margin: 20px auto !important;
+  padding: 30px !important;
+}
+
+/* AI pipeline */
+.pipeline-step {
+  padding: 17px 12px !important;
+}
+
+.pipeline-step b {
+  font-size: 14px !important;
+}
+
+.pipeline-step span {
+  font-size: 12px !important;
+}
+
+.pipeline-step em {
+  font-size: 10px !important;
+}
+
+/* Prediction routing */
+.tier-preview-empty {
+  padding: 25px !important;
+}
+
+.tier-preview-empty b {
+  font-size: 15px !important;
+}
+
+.tier-preview-empty small {
+  font-size: 12px !important;
+}
+
+.tier-preview-row {
+  padding: 12px 5px !important;
+  font-size: 11px !important;
+}
+
+/* Bottom summary */
+.clinical-bottom-strip {
+  margin-top: 25px !important;
+  padding: 20px 24px !important;
+}
+
+.clinical-bottom-strip b {
+  font-size: 13px !important;
+}
+
+/* Responsive layout */
+@media (max-width: 760px) {
+  .patient-clinical-section {
+    width: calc(100% - 20px) !important;
+  }
+
+  .clinical-workspace-shell {
+    padding: 28px 16px !important;
+  }
+
+  .clinical-workspace-head h2 {
+    font-size: 28px !important;
+  }
+
+  .clinical-panel,
+  .clinical-upload-card {
+    padding: 20px 16px !important;
+  }
+
+  .upload-type-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* =====================================================
+   UNIVERSAL DISEASE PREDICTION
+   GLOBAL WHITE + TEAL CLINICAL THEME
+   ===================================================== */
+
+   :root {
+  --udp-teal: #20b6a9;
+  --udp-teal-dark: #128f86;
+  --udp-teal-light: #e8f8f6;
+  --udp-border: #a9ded8;
+  --udp-border-soft: #d1eae7;
+  --udp-white: #ffffff;
+  --udp-surface: #f8fcfc;
+  --udp-text: #173447;
+  --udp-muted: #647d89;
+}
+
+/* Global page background and typography */
+body,
+.app {
+  background: #ffffff !important;
+  color: var(--udp-text) !important;
+}
+
+h1, h2, h3, h4, h5, b, strong {
+  color: var(--udp-text);
+}
+
+/* =====================================================
+   CLINICAL DEBATE ROOM
+   ===================================================== */
+
+.debate-room {
+  background: #ffffff !important;
+  color: var(--udp-text) !important;
+  border: 1px solid var(--udp-border-soft) !important;
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(18, 143, 134, .06);
+}
+
+.debate-room .orchestrator-heading h2 {
+  color: var(--udp-text) !important;
+}
+
+.debate-room .orchestrator-heading p {
+  color: var(--udp-muted) !important;
+}
+
+.debate-main,
+.debate-panel {
+  background: #ffffff !important;
+  border: 1px solid var(--udp-border) !important;
+  box-shadow: 0 8px 25px rgba(18, 143, 134, .055) !important;
+}
+
+.debate-room-topline {
+  background: #f2fbfa !important;
+  color: var(--udp-teal-dark) !important;
+  border-bottom: 1px solid var(--udp-border-soft) !important;
+}
+
+.debate-session-tag {
+  color: var(--udp-muted) !important;
+}
+
+.debate-network {
+  background: #ffffff !important;
+}
+
+.debate-network-lines {
+  border-color: rgba(32, 182, 169, .35) !important;
+  box-shadow: 0 0 0 40px rgba(32, 182, 169, .025),
+              0 0 0 80px rgba(32, 182, 169, .015) !important;
+}
+
+.debate-network-lines i {
+  background: linear-gradient(
+    90deg,
+    rgba(32, 182, 169, .65),
+    rgba(32, 182, 169, .04)
+  ) !important;
+}
+
+.debate-hub {
+  background: linear-gradient(145deg, #e7faf7, #ffffff) !important;
+  border: 1px solid var(--udp-teal) !important;
+  box-shadow: 0 8px 30px rgba(32, 182, 169, .12) !important;
+}
+
+.debate-hub span {
+  color: var(--udp-teal-dark) !important;
+}
+
+.debate-hub b {
+  color: var(--udp-text) !important;
+}
+
+.debate-hub small {
+  color: var(--udp-muted) !important;
+}
+
+/* All agent cards */
+.debate-node {
+  background: #ffffff !important;
+  color: var(--udp-text) !important;
+  border: 1px solid var(--udp-border) !important;
+  box-shadow: 0 5px 18px rgba(18, 143, 134, .07) !important;
+}
+
+.debate-node b,
+.debate-node .node-heading b {
+  color: var(--udp-text) !important;
+}
+
+.debate-node small,
+.debate-node .node-readonly {
+  color: var(--udp-muted) !important;
+}
+
+.debate-node em {
+  color: var(--udp-teal-dark) !important;
+}
+
+.debate-node:hover,
+.debate-node.active {
+  background: #f0fbf9 !important;
+  border-color: var(--udp-teal) !important;
+  box-shadow: 0 0 0 3px rgba(32, 182, 169, .09) !important;
+}
+
+.debate-node .node-icon {
+  background: var(--udp-teal-light) !important;
+}
+
+.node-input {
+  background: #ffffff !important;
+  color: var(--udp-text) !important;
+  border: 1px solid var(--udp-border) !important;
+}
+
+.node-input::placeholder {
+  color: #849ba4 !important;
+}
+
+.chip {
+  background: #effaf8 !important;
+  border-color: var(--udp-border) !important;
+  color: var(--udp-teal-dark) !important;
+}
+
+/* Active agent and hand-off panels */
+.debate-active-card {
+  background: #f8fcfc !important;
+  border-top: 1px solid var(--udp-border-soft) !important;
+}
+
+.debate-agent-title h3 {
+  color: var(--udp-text) !important;
+}
+
+.debate-agent-title p,
+.debate-argument-label {
+  color: var(--udp-muted) !important;
+}
+
+.debate-argument {
+  background: #f1faf9 !important;
+  color: var(--udp-text) !important;
+  border-left-color: var(--udp-teal) !important;
+}
+
+.agent-findings-panel {
+  background: #ffffff !important;
+  border: 1px solid var(--udp-border) !important;
+}
+
+.agent-findings-head h3 {
+  color: var(--udp-text) !important;
+}
+
+.agent-findings-intro {
+  color: var(--udp-muted) !important;
+}
+
+.agent-finding {
+  background: #f8fcfc !important;
+  border: 1px solid var(--udp-border-soft) !important;
+}
+
+.agent-finding b {
+  color: var(--udp-teal-dark) !important;
+}
+
+.agent-finding p,
+.agent-finding.waiting p {
+  color: var(--udp-muted) !important;
+}
+
+/* Workflow phases */
+.debate-phase {
+  background: #f8fcfc !important;
+  border: 1px solid transparent !important;
+}
+
+.debate-phase b {
+  color: var(--udp-text) !important;
+}
+
+.debate-phase small {
+  color: var(--udp-muted) !important;
+}
+
+.debate-phase.current {
+  background: #eaf8f6 !important;
+  border-color: var(--udp-teal) !important;
+}
+
+.debate-phase > span,
+.debate-phase.done > span {
+  background: #d9f2ee !important;
+  color: var(--udp-teal-dark) !important;
+}
+
+.debate-phase i {
+  color: var(--udp-muted) !important;
+}
+
+.debate-tier {
+  background: #f8fcfc !important;
+  border-color: var(--udp-border-soft) !important;
+}
+
+.debate-tier b {
+  color: var(--udp-text) !important;
+}
+
+.debate-tier small {
+  color: var(--udp-muted) !important;
+}
+
+.debate-tier.selected {
+  background: #eaf8f6 !important;
+  border-color: var(--udp-teal) !important;
+}
+
+.debate-disclaimer,
+.debate-footer {
+  color: var(--udp-muted) !important;
+}
+
+/* =====================================================
+   PATIENT CLINICAL WORKSPACE
+   ===================================================== */
+
+.patient-clinical-section {
+  background: #ffffff !important;
+  border: 1px solid var(--udp-border) !important;
+  box-shadow: 0 15px 45px rgba(18, 143, 134, .07) !important;
+}
+
+.patient-clinical-section::before {
+  background: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.patient-clinical-section::after {
+  display: none !important;
+}
+
+.clinical-bg-slideshow {
+  opacity: .035 !important;
+}
+
+.clinical-workspace-head h2,
+.patient-clinical-heading h2 {
+  color: var(--udp-text) !important;
+}
+
+.clinical-workspace-head p,
+.patient-clinical-heading p {
+  color: var(--udp-muted) !important;
+}
+
+.clinical-panel,
+.clinical-glass,
+.clinical-upload-card {
+  background: #ffffff !important;
+  border: 1px solid var(--udp-border) !important;
+  color: var(--udp-text) !important;
+  box-shadow: 0 7px 24px rgba(18, 143, 134, .055) !important;
+}
+
+.clinical-panel h3,
+.clinical-glass h3,
+.clinical-upload-card h3 {
+  color: var(--udp-text) !important;
+}
+
+.clinical-panel-heading h3,
+.clinical-panel-heading > div > span {
+  color: var(--udp-text) !important;
+}
+
+.clinical-panel-heading > b {
+  color: var(--udp-teal-dark) !important;
+}
+
+.patient-identity,
+.patient-id-card,
+.clinical-stat,
+.evidence-row {
+  background: #f2faf9 !important;
+  border: 1px solid var(--udp-border-soft) !important;
+}
+
+.patient-identity strong,
+.patient-id-card b,
+.clinical-stat strong,
+.evidence-row b {
+  color: var(--udp-text) !important;
+}
+
+.patient-identity span,
+.patient-id-card span,
+.clinical-stat span,
+.evidence-row span {
+  color: var(--udp-muted) !important;
+}
+
+.patient-info-rows > div {
+  border-bottom: 1px solid #e6f1ef !important;
+}
+
+.patient-info-rows span {
+  color: var(--udp-muted) !important;
+}
+
+.patient-info-rows b {
+  color: var(--udp-text) !important;
+}
+
+.evidence-source-row {
+  border-bottom: 1px solid #e6f1ef !important;
+}
+
+.evidence-source-row strong {
+  color: var(--udp-text) !important;
+}
+
+.evidence-source-row span {
+  color: var(--udp-muted) !important;
+}
+
+/* Upload area */
+.clinical-file-dropzone {
+  background: #f4fbfa !important;
+  border: 1px dashed var(--udp-teal) !important;
+  color: var(--udp-text) !important;
+}
+
+.clinical-file-dropzone strong {
+  color: var(--udp-text) !important;
+}
+
+.clinical-file-dropzone small,
+.clinical-upload-message {
+  color: var(--udp-muted) !important;
+}
+
+.upload-type-grid > div {
+  background: #f7fbfb !important;
+  border: 1px solid var(--udp-border-soft) !important;
+}
+
+.upload-type-grid b {
+  color: var(--udp-text) !important;
+}
+
+.upload-type-grid small {
+  color: var(--udp-muted) !important;
+}
+
+/* Pipeline */
+.pipeline-step {
+  background: #f7fbfb !important;
+  border: 1px solid var(--udp-border-soft) !important;
+  border-radius: 12px;
+}
+
+.pipeline-step b {
+  color: var(--udp-text) !important;
+}
+
+.pipeline-step span {
+  color: var(--udp-muted) !important;
+}
+
+.pipeline-step strong {
+  background: #e2f6f2 !important;
+  color: var(--udp-teal-dark) !important;
+}
+
+.pipeline-step em {
+  color: var(--udp-teal-dark) !important;
+}
+
+.pipeline-line {
+  background: var(--udp-border) !important;
+}
+
+/* Prediction routing */
+.tier-preview-empty,
+.tier-preview-row {
+  background: #f7fbfb !important;
+  border-color: var(--udp-border-soft) !important;
+}
+
+.tier-preview-empty b,
+.tier-preview-row span {
+  color: var(--udp-text) !important;
+}
+
+.tier-preview-empty small,
+.tier-preview-row em {
+  color: var(--udp-muted) !important;
+}
+
+/* Workspace bottom strip */
+.clinical-bottom-strip {
+  background: #f1faf8 !important;
+  border: 1px solid var(--udp-border) !important;
+}
+
+.clinical-bottom-strip b {
+  color: var(--udp-text) !important;
+}
+
+.clinical-bottom-strip span {
+  color: var(--udp-teal-dark) !important;
+}
+
+/* =====================================================
+   CONSULTATION AND OTHER DASHBOARD PANELS
+   ===================================================== */
+
+.panel,
+.clinical-tools-panel,
+.clinical-consultation-panel {
+  background: #ffffff !important;
+  color: var(--udp-text) !important;
+  border: 1px solid var(--udp-border) !important;
+  box-shadow: 0 8px 25px rgba(18, 143, 134, .05) !important;
+}
+
+.clinical-tools-panel {
+  background: #ffffff !important;
+}
+
+.clinical-tools-panel .nav {
+  color: var(--udp-text) !important;
+  background: #ffffff !important;
+  border: 1px solid transparent !important;
+}
+
+.clinical-tools-panel .nav.active,
+.clinical-tools-panel .nav:hover {
+  background: #eaf8f6 !important;
+  border-color: var(--udp-border) !important;
+  color: var(--udp-teal-dark) !important;
+}
+
+.tools-info-card {
+  background: #f2faf9 !important;
+  border-color: var(--udp-border) !important;
+}
+
+.tools-info-card b {
+  color: var(--udp-text) !important;
+}
+
+.tools-info-card small {
+  color: var(--udp-muted) !important;
+}
+
+.consultation-hero,
+.consultation-flow-strip,
+.consultation-empty-state,
+.triage-explainer,
+.structured-prediction,
+.prediction-action-panel,
+.prediction-detail,
+.prediction-followup {
+  background: #ffffff !important;
+  border-color: var(--udp-border-soft) !important;
+}
+
+.consultation-hero h1,
+.consultation-empty-state b,
+.triage-explainer b,
+.prediction-action-panel h3 {
+  color: var(--udp-text) !important;
+}
+
+.consultation-hero p,
+.consultation-empty-state span,
+.triage-explainer,
+.prediction-action-panel p {
+  color: var(--udp-muted) !important;
+}
+
+/* Inputs and fields throughout the application */
+input:not([type="file"]),
+textarea,
+select {
+  background: #ffffff !important;
+  color: var(--udp-text) !important;
+  border-color: var(--udp-border) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #849ba4 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--udp-teal) !important;
+  box-shadow: 0 0 0 3px rgba(32, 182, 169, .10) !important;
+  outline: none !important;
+}
+
+/* Buttons retain the existing teal identity */
+button.primary,
+.node-action {
+  background: linear-gradient(
+    100deg,
+    #20b6a9,
+    #168fba
+  ) !important;
+  color: #ffffff !important;
+}
+
+button.secondary,
+.node-clear {
+  background: #ffffff !important;
+  color: var(--udp-text) !important;
+  border: 1px solid var(--udp-border) !important;
+}
+
+/* Badges and status labels */
+.debate-counter,
+.clinical-mini-status,
+.clinical-secure-pill,
+.clinical-live-badge {
+  background: #eaf8f6 !important;
+  border-color: var(--udp-border) !important;
+  color: var(--udp-teal-dark) !important;
+}
+
+/* Keep the white header consistent */
+.top {
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--udp-border-soft) !important;
+}
+
+/* =====================================================
+   RESPONSIVE SAFETY
+   ===================================================== */
+
+@media (max-width: 760px) {
+  .debate-room {
+    padding: 35px 12px !important;
+  }
+
+  .debate-main,
+  .debate-panel {
+    border-radius: 16px !important;
+  }
+
+  .clinical-workspace-shell {
+    padding: 25px 15px !important;
+  }
+
+  .patient-clinical-section {
+    background: #ffffff !important;
+  }
+}
+
+/* ==========================================
+   AESTHETIC OUTER BACKGROUND
+   Soft mint / blue-green clinical theme
+   ========================================== */
+
+   html {
+  background: #f1f8f7 !important;
+}
+
+body {
+  background:
+    radial-gradient(
+      ellipse at 8% 8%,
+      rgba(32, 182, 169, 0.10),
+      transparent 34%
+    ),
+    radial-gradient(
+      ellipse at 92% 28%,
+      rgba(72, 157, 190, 0.09),
+      transparent 32%
+    ),
+    radial-gradient(
+      ellipse at 50% 90%,
+      rgba(32, 182, 169, 0.07),
+      transparent 38%
+    ),
+    #f1f8f7 !important;
+
+  background-attachment: fixed !important;
+}
+
+.app {
+  background: transparent !important;
+}
+
+/* Give major sections a subtle tinted canvas */
+.debate-room,
+.patient-clinical-section {
+  background: rgba(234, 245, 244, 0.82) !important;
+}
+
+/* Keep all individual cards pure white */
+.debate-main,
+.debate-panel,
+.debate-node,
+.debate-active-card,
+.agent-findings-panel,
+.agent-finding,
+.clinical-panel,
+.clinical-upload-card,
+.clinical-tools-panel,
+.clinical-consultation-panel,
+.clinical-glass {
+  background: #ffffff !important;
+}
+
+/* Soft elevation and consistent teal borders */
+.debate-main,
+.debate-panel,
+.agent-findings-panel,
+.clinical-panel,
+.clinical-upload-card,
+.clinical-tools-panel,
+.clinical-consultation-panel {
+  border: 1px solid #c5e4df !important;
+  box-shadow:
+    0 8px 28px rgba(28, 111, 105, 0.055),
+    0 2px 5px rgba(28, 111, 105, 0.025) !important;
+}
+
+/* Keep the header clean */
+.top {
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(12px);
+}
+
+/* Light tinted backgrounds for secondary information */
+.debate-room-topline,
+.debate-phase,
+.agent-finding,
+.clinical-bottom-strip,
+.patient-identity,
+.evidence-source-row:hover {
+  background: #f5fbfa !important;
+}
+
+/* Avoid dark image overlays in the clinical workspace */
+.patient-clinical-section::before,
+.patient-clinical-section::after {
+  display: none !important;
+}
+
+.clinical-bg-slideshow {
+  opacity: 0.025 !important;
+}
+
+/* Subtle teal hover response */
+.debate-panel,
+.clinical-panel,
+.agent-finding {
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.debate-panel:hover,
+.clinical-panel:hover {
+  border-color: #82cfc5 !important;
+  box-shadow: 0 12px 32px rgba(28, 111, 105, 0.09) !important;
+}
+
+/* ==========================================
+   FLOATING PREMIUM TITLE DESIGN
+   ========================================== */
+
+/* Main floating brand */
+.top .brand {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  display: inline-flex !important;
+  align-items: center;
+  white-space: nowrap;
+
+  padding: 10px 25px !important;
+  border: 1px solid rgba(32, 182, 169, .19);
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, .82);
+  backdrop-filter: blur(16px);
+
+  font-family: Inter, "Segoe UI", sans-serif !important;
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  letter-spacing: -1.7px !important;
+
+  color: #153b46 !important;
+
+  box-shadow:
+    0 5px 15px rgba(24, 110, 105, .045),
+    0 14px 35px rgba(24, 110, 105, .07),
+    inset 0 1px 0 rgba(255, 255, 255, .95);
+
+  animation: floatingBrand 5s ease-in-out infinite;
+  transition: box-shadow .3s ease;
+}
+
+.top .brand span {
+  margin-left: 8px !important;
+  font-size: 34px !important;
+  font-weight: 350 !important;
+  letter-spacing: -1.6px !important;
+
+  background: linear-gradient(
+    110deg,
+    #168f86,
+    #20b6a9,
+    #438fa9
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
+@keyframes floatingBrand {
+  0%, 100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-4px);
+  }
+}
+
+/* Main section titles */
+.orchestrator-heading h2,
+.clinical-workspace-head h2 {
+  font-family: Inter, "Segoe UI", sans-serif !important;
+  font-size: clamp(30px, 3vw, 42px) !important;
+  font-weight: 800 !important;
+  letter-spacing: -1.8px !important;
+  line-height: 1.15 !important;
+  color: #173b49 !important;
+  text-shadow: 0 3px 15px rgba(32, 182, 169, .08);
+}
+
+/* Subtle teal accent beneath headings */
+.orchestrator-heading h2::after,
+.clinical-workspace-head h2::after {
+  content: "";
+  display: block;
+  width: 58px;
+  height: 4px;
+  margin: 13px auto 0;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #20b6a9, #5cb8c1);
+  box-shadow: 0 3px 12px rgba(32, 182, 169, .18);
+}
+
+/* Other section headings */
+.clinical-panel-heading h3,
+.debate-panel-head h3 {
+  font-weight: 750 !important;
+  letter-spacing: -.4px;
+}
+
+/* Mobile adjustments */
+@media(max-width:760px) {
+  .top .brand {
+    font-size: 21px !important;
+    padding: 8px 11px !important;
+    letter-spacing: -.8px !important;
+  }
+
+  .top .brand span {
+    font-size: 21px !important;
+    margin-left: 4px !important;
+  }
+
+  .orchestrator-heading h2,
+  .clinical-workspace-head h2 {
+    font-size: 29px !important;
+  }
+}
+
+/* ==========================================
+   QUICK NAVIGATION BAR
+   ========================================== */
+
+   html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+.quick-nav {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  width: fit-content;
+  max-width: calc(100% - 30px);
+  margin: 25px auto 35px;
+  padding: 10px;
+
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(16px);
+  border: 1px solid #b9e2dc;
+  border-radius: 17px;
+
+  box-shadow:
+    0 8px 25px rgba(28,111,105,.07),
+    0 2px 5px rgba(28,111,105,.035);
+}
+
+.quick-nav a,
+.quick-nav button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+
+  padding: 11px 15px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+
+  background: transparent;
+  color: #365b65;
+  text-decoration: none;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.quick-nav a:hover,
+.quick-nav button:hover {
+  background: #eaf8f6;
+  border-color: #b9e2dc;
+  color: #128f86;
+  transform: translateY(-2px);
+}
+
+.quick-nav a:focus-visible,
+.quick-nav button:focus-visible {
+  outline: 3px solid rgba(32,182,169,.25);
+  outline-offset: 2px;
+}
+
+/* Give target sections breathing room */
+#debateSection,
+#patientSection,
+#consultationSection {
+  scroll-margin-top: 100px;
+}
+
+/* Mobile navigation */
+@media(max-width:760px) {
+  .quick-nav {
+    width: calc(100% - 28px);
+    max-width: none;
+    gap: 6px;
+    padding: 9px;
+  }
+
+  .quick-nav a,
+  .quick-nav button {
+    flex: 1 1 42%;
+    font-size: 11px;
+    padding: 10px 7px;
+  }
+}
+
+
+
+/* =========================================================
+   UDP FINAL UI REFINEMENTS — FRONTEND ONLY
+   Appended overrides; existing API calls and IDs are retained.
+========================================================= */
+:root{
+  --udp-teal:#18a999;
+  --udp-teal-dark:#087f75;
+  --udp-ink:#173447;
+  --udp-muted:#647d89;
+  --udp-canvas:#f1f8f7;
+  --udp-line:#d6e9e6;
+}
+html{scroll-behavior:smooth;scroll-padding-top:100px;background:var(--udp-canvas)}
+body{
+  background:
+    radial-gradient(ellipse at 8% 8%,rgba(32,182,169,.09),transparent 34%),
+    radial-gradient(ellipse at 92% 28%,rgba(72,157,190,.075),transparent 32%),
+    #f1f8f7;
+  background-attachment:fixed;
+  color:var(--udp-ink);
+}
+.app{background:transparent}
+.top{background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom-color:#dcebe8}
+.brand{letter-spacing:-.7px}
+.brand span{background:linear-gradient(100deg,#12a998,#328db4);-webkit-background-clip:text;background-clip:text;color:transparent}
+.slideshow{border-radius:0 0 24px 24px;box-shadow:0 16px 40px rgba(24,70,78,.10)}
+.orchestrator-showcase{
+  color:#173447;
+  background:linear-gradient(145deg,#eaf5f4,#f5fbfa 55%,#eaf5f4);
+  border-top:1px solid #d9ece8;border-bottom:1px solid #d9ece8;
+}
+.orchestrator-showcase::before{border-color:rgba(20,160,148,.12);box-shadow:0 0 0 90px rgba(20,160,148,.025),0 0 0 180px rgba(20,160,148,.018)}
+.orchestrator-heading .eyebrow{background:#e2f6f2;border-color:#bfe7e0;color:#087f75}
+.orchestrator-heading h2{color:#173b49}
+.orchestrator-heading p{color:#647d89}
+.quick-nav{
+  position:sticky;top:82px;z-index:80;
+  display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;
+  width:fit-content;max-width:100%;margin:24px auto 30px;padding:9px;
+  border:1px solid #cfe7e2;border-radius:17px;background:rgba(255,255,255,.91);
+  box-shadow:0 8px 28px rgba(24,70,78,.08);backdrop-filter:blur(14px)
+}
+.quick-nav a,.quick-nav button{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border:1px solid transparent;border-radius:11px;padding:10px 14px;
+  background:transparent;color:#55717a;text-decoration:none;font-size:12px;font-weight:750;
+  transition:background .2s,border-color .2s,color .2s,transform .2s
+}
+.quick-nav a:hover,.quick-nav button:hover{background:#eff9f7;color:#087f75;border-color:#d1ebe5}
+.quick-nav .active{background:#dff5f0;color:#087f75;border-color:#b9e5dc}
+#debateSection,#patientSection,#consultationSection{scroll-margin-top:105px}
+.debate-layout{max-width:1500px}
+.debate-network,.debate-hub,.debate-node,.debate-active-card,.agent-findings-panel,.debate-side-card{
+  filter:none
+}
+.patient-clinical-section{
+  background:#edf7f5!important;border:1px solid #d5eae5!important;
+  box-shadow:0 18px 55px rgba(26,76,78,.08)!important
+}
+.patient-clinical-section::before,.patient-clinical-section::after{opacity:0!important}
+.patient-clinical-section .clinical-workspace-shell{position:relative;z-index:2}
+.patient-clinical-section .clinical-workspace-head h2,
+.patient-clinical-section .clinical-workspace-head p{color:#173b49}
+.patient-clinical-section .clinical-panel,
+.patient-clinical-section .clinical-glass{
+  background:#fff!important;border:1px solid #d8eae6!important;
+  box-shadow:0 8px 24px rgba(26,76,78,.055)!important;color:#173447!important;
+  backdrop-filter:none!important
+}
+.patient-clinical-section .clinical-panel h3,
+.patient-clinical-section .clinical-panel strong,
+.patient-clinical-section .clinical-panel b,
+.patient-clinical-section .clinical-glass h3{color:#173b49!important}
+.patient-clinical-section .clinical-panel span,
+.patient-clinical-section .clinical-glass p{color:#647d89}
+.patient-clinical-section .clinical-kicker{color:#078f83!important}
+.patient-overview-card{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;
+  margin:0 0 20px;padding:15px;border:1px solid #d2e8e3;border-radius:16px;
+  background:rgba(255,255,255,.92);box-shadow:0 7px 22px rgba(26,76,78,.045)
+}
+.patient-overview-stat{min-width:0;padding:7px 12px;border-right:1px solid #e5f0ed}
+.patient-overview-stat:last-child{border-right:0}
+.patient-overview-stat span{display:block;color:#718994;font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
+.patient-overview-stat strong{display:block;margin-top:6px;color:#173b49;font-size:20px;overflow-wrap:anywhere}
+.patient-overview-stat small{display:block;margin-top:3px;color:#83969d;font-size:10px}
+.orchestration-progress{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  margin:14px 0 18px;padding:12px 14px;border:1px solid #cfe7e2;border-radius:14px;
+  background:rgba(255,255,255,.88)
+}
+.orchestration-progress .progress-step{
+  display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:9px;
+  color:#82959b;background:#f5f9f8;font-size:10px;font-weight:800
+}
+.orchestration-progress .progress-step::before{
+  content:"";width:7px;height:7px;border-radius:50%;background:#c3d4d1
+}
+.orchestration-progress .progress-step.current{background:#e2f6f2;color:#087f75}
+.orchestration-progress .progress-step.current::before{background:#18a999;box-shadow:0 0 0 4px rgba(24,169,153,.12)}
+.orchestration-progress .progress-step.done{background:#eff8f5;color:#39766e}
+.orchestration-progress .progress-step.done::before{background:#36ad8f}
+.upload-dropzone{
+  margin-top:10px;padding:12px;border:1px dashed #9ccfc6;border-radius:12px;
+  background:#f5fbfa;color:#56727a;font-size:11px;line-height:1.5
+}
+.upload-dropzone.dragover{border-color:#18a999;background:#e6f8f4;box-shadow:0 0 0 3px rgba(24,169,153,.08)}
+.upload-dropzone strong{display:block;color:#087f75;font-size:12px}
+.upload-file-meta{margin-top:7px;color:#526e76;overflow-wrap:anywhere}
+.upload-clear{
+  margin-top:8px;padding:5px 9px;border:1px solid #d3e5e1;border-radius:8px;
+  background:#fff;color:#647d89;font-size:10px;font-weight:700
+}
+.result:not(.hide){
+  border-color:#bfe4dc;background:linear-gradient(145deg,#fff,#f1faf8);
+  border-radius:16px;box-shadow:0 8px 24px rgba(24,100,88,.06)
+}
+.result .tier{background:#def5ef;color:#087f75}
+.prediction-disclaimer,.medical-disclaimer,.prediction-detail .disclaimer{
+  color:#6c7f86!important;font-size:11px;line-height:1.6
+}
+.clinical-consultation-grid{background:transparent}
+.clinical-consultation-grid .panel{border-color:#dceae7;box-shadow:0 9px 28px rgba(24,70,78,.055)}
+.chat-window{border-color:#cfe3df}
+.chat-window-header{background:linear-gradient(135deg,#e9f7f4,#d9f0eb);border-bottom:1px solid #c7e5df;color:#173b49}
+.chat-window-header b{color:#173b49}
+.chat-subtitle{color:#5d7c82}
+.chat-live{color:#087f75}
+.chat-close{background:#fff;color:#41636a;border-color:#cfe3df}
+.chat-window .chat{background:#f6fbfa}
+@media(max-width:760px){
+  .quick-nav{position:relative;top:auto;width:100%;border-radius:14px}
+  .quick-nav a,.quick-nav button{flex:1 1 42%;padding:9px 8px;font-size:11px}
+  .patient-overview-card{grid-template-columns:1fr 1fr;gap:8px}
+  .patient-overview-stat:nth-child(2){border-right:0}
+  .patient-overview-stat{padding:8px}
+  .patient-overview-stat strong{font-size:17px}
+  .orchestration-progress{gap:6px}
+  .orchestration-progress .progress-step{flex:1 1 42%;font-size:9px}
+  .slideshow{border-radius:0 0 16px 16px}
+}
+@media(prefers-reduced-motion:reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Keep the slideshow rotating */
+  .slideshow .slide {
+    animation: slideShow 20s infinite !important;
+  }
+
+  .slideshow .slide:nth-child(1) {
+    animation-delay: 0s !important;
+  }
+
+  .slideshow .slide:nth-child(2) {
+    animation-delay: 5s !important;
+  }
+
+  .slideshow .slide:nth-child(3) {
+    animation-delay: 10s !important;
+  }
+
+  .slideshow .slide:nth-child(4) {
+    animation-delay: 15s !important;
+  }
+
+  .chat-launcher,
+  .chat-ai-avatar,
+  .chat-window .bot::before {
+    animation: none !important;
+  }
+}
+.slideshow {
+  position: relative;
+  width: 100%;
+  height: 58vh;
+  min-height: 430px;
+  max-height: 680px;
+  overflow: hidden;
+  background: #eaf5f4;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: slideShow 20s infinite;
+}
+
+.slide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(4,24,38,.65),
+    rgba(4,24,38,.25),
+    rgba(4,24,38,.08)
+  );
+}
+
+.slide:nth-child(1) {
+  background-image: url("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=2000&q=85");
+  animation-delay: 0s;
+}
+
+.slide:nth-child(2) {
+  background-image: url("https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&fit=crop&w=2000&q=85");
+  animation-delay: 5s;
+}
+
+.slide:nth-child(3) {
+  background-image: url("https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=2000&q=85");
+  animation-delay: 10s;
+}
+
+.slide:nth-child(4) {
+  background-image: url("https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=2000&q=85");
+  animation-delay: 15s;
+}
 </style></head>
 <body><div id="auth" class="auth"><div class="authbox"><h2>Universal Disease Prediction</h2><p class="muted">Research / demo decision-support platform</p><input id="name" class="field" placeholder="Name (register only)"><input id="email" class="field" placeholder="Email"><input id="password" type="password" class="field" placeholder="Password (8+ characters)"><div class="row"><button id="loginBtn" type="button" class="primary">Login</button><button id="registerBtn" type="button" class="secondary">Create account</button></div><p id="authmsg" class="small"></p></div></div>
 <div class="app"><header class="top"><div class="brand">Universal <span>Disease Prediction</span></div><div class="header-actions"><button id="newSessionBtn" class="secondary" type="button" onclick="startNewSession()">＋ New session</button> <span id="userpill" class="pill">Not signed in</span> <button class="secondary" onclick="logout()">Logout</button></div></header>
@@ -2887,11 +4282,18 @@ textarea.node-input{min-height:74px;resize:vertical}
   <div class="slide-dots"><span></span><span></span><span></span><span></span></div>
 </section>
 
-<section class="orchestrator-showcase debate-room" aria-label="AI orchestrator live debate room">
+<section id="debateSection" class="orchestrator-showcase debate-room" aria-label="AI orchestrator live debate room">
   <div class="orchestrator-heading">
     <span class="eyebrow">Multi-agent intelligence · live orchestration</span>
     <h2>Clinical Debate Room</h2>
     <p>Follow the hand-off between specialized agents as the system gathers context, reviews evidence, checks risk and selects a prediction tier.</p>
+    
+<nav class="quick-nav" aria-label="Quick section navigation">
+  <a href="#debateSection">⌘ Clinical Debate</a>
+  <a href="#patientSection">♙ Patient Workspace</a>
+  <a href="#consultationSection">✚ AI Consultation</a>
+</nav>
+
   </div>
 
   <div class="debate-layout">
@@ -2990,7 +4392,7 @@ textarea.node-input{min-height:74px;resize:vertical}
 </section>
 
 
-<section class="patient-clinical-section" aria-label="Patient clinical evidence workspace">
+<section id="patientSection" class="patient-clinical-section" aria-label="Patient clinical evidence workspace">
   <div class="clinical-bg-slideshow" aria-hidden="true">
     <div class="clinical-bg-slide clinical-bg-slide-1"></div>
     <div class="clinical-bg-slide clinical-bg-slide-2"></div>
@@ -3112,7 +4514,7 @@ textarea.node-input{min-height:74px;resize:vertical}
   </div>
 </section>
 
-<div class="grid clinical-consultation-grid">
+<div id="consultationSection" class="grid clinical-consultation-grid">
   <aside class="panel side clinical-tools-panel">
     <div class="consultation-nav-heading">
       <span>CLINICAL TOOLS</span>
@@ -3889,4 +5291,146 @@ if(token){req('/me').then(d=>{user=d;document.getElementById('auth').classList.a
     }
   }catch(_){}
 })();
-</script></body></html>
+</script>
+<script>
+/* =========================================================
+   UDP UX ENHANCEMENTS — no backend/API contract changes
+========================================================= */
+(function(){
+  const $ = id => document.getElementById(id);
+
+  // Add useful quick links while preserving the existing three anchors.
+  const nav = document.querySelector('.quick-nav');
+  if(nav && !nav.querySelector('[data-quick="history"]')){
+    const historyBtn=document.createElement('button');
+    historyBtn.type='button'; historyBtn.dataset.quick='history';
+    historyBtn.textContent='▤ Medical History';
+    historyBtn.addEventListener('click',()=>{
+      $('consultationSection')?.scrollIntoView({behavior:'smooth',block:'start'});
+      if(typeof window.loadHistory==='function') window.loadHistory();
+    });
+    const statusBtn=document.createElement('button');
+    statusBtn.type='button'; statusBtn.dataset.quick='status';
+    statusBtn.textContent='◈ Model Status';
+    statusBtn.addEventListener('click',()=>{
+      $('consultationSection')?.scrollIntoView({behavior:'smooth',block:'start'});
+      if(typeof window.loadStatus==='function') window.loadStatus();
+    });
+    nav.append(historyBtn,statusBtn);
+  }
+
+  // Highlight the current section in the quick navigation.
+  const navLinks=[...document.querySelectorAll('.quick-nav a[href^="#"]')];
+  if('IntersectionObserver' in window && navLinks.length){
+    const observer=new IntersectionObserver(entries=>{
+      const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+      if(!visible)return;
+      navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+visible.target.id));
+    },{rootMargin:'-18% 0px -62% 0px',threshold:[0,.15,.35,.6]});
+    navLinks.forEach(a=>{const target=$(a.getAttribute('href').slice(1));if(target)observer.observe(target)});
+  }
+
+  // Add a real-data patient summary; values stay unknown until the API responds.
+  const workspace=document.querySelector('#patientSection .clinical-workspace-head');
+  if(workspace && ! $('patientOverviewCard')){
+    const card=document.createElement('div');
+    card.id='patientOverviewCard';card.className='patient-overview-card';
+    card.innerHTML=`
+      <div class="patient-overview-stat"><span>Account</span><strong id="overviewAccount">—</strong><small>Signed-in profile</small></div>
+      <div class="patient-overview-stat"><span>History records</span><strong id="overviewRecords">—</strong><small>Saved patient history</small></div>
+      <div class="patient-overview-stat"><span>Documents</span><strong id="overviewDocuments">—</strong><small>Uploaded evidence</small></div>
+      <div class="patient-overview-stat"><span>Predictions</span><strong id="overviewPredictions">—</strong><small>Saved model outputs</small></div>`;
+    workspace.insertAdjacentElement('afterend',card);
+  }
+  async function refreshOverview(){
+    if(!localStorage.getItem('udp_token'))return;
+    try{
+      const response=await fetch((localStorage.getItem('udp_api')||'http://localhost:8000/api')+'/history',{
+        headers:{Authorization:'Bearer '+localStorage.getItem('udp_token')}
+      });
+      if(!response.ok)throw new Error('History unavailable');
+      const data=await response.json();
+      const me=await fetch((localStorage.getItem('udp_api')||'http://localhost:8000/api')+'/me',{
+        headers:{Authorization:'Bearer '+localStorage.getItem('udp_token')}
+      }).then(r=>r.ok?r.json():null).catch(()=>null);
+      if($('overviewAccount'))$('overviewAccount').textContent=me?.name||me?.email||'Signed in';
+      if($('overviewRecords'))$('overviewRecords').textContent=Array.isArray(data.records)?data.records.length:'—';
+      if($('overviewDocuments'))$('overviewDocuments').textContent=Array.isArray(data.documents)?data.documents.length:'—';
+      if($('overviewPredictions'))$('overviewPredictions').textContent=Array.isArray(data.predictions)?data.predictions.length:'—';
+    }catch(_){
+      if($('overviewAccount'))$('overviewAccount').textContent='Unavailable';
+      ['overviewRecords','overviewDocuments','overviewPredictions'].forEach(id=>{if($(id))$(id).textContent='—'});
+    }
+  }
+  refreshOverview();
+  const oldLogin=window.login;
+  if(typeof oldLogin==='function'){
+    window.login=async function(){const out=await oldLogin.apply(this,arguments);setTimeout(refreshOverview,500);return out};
+  }
+  const oldRegister=window.register;
+  if(typeof oldRegister==='function'){
+    window.register=async function(){const out=await oldRegister.apply(this,arguments);setTimeout(refreshOverview,500);return out};
+  }
+
+  // Explicit five-stage progress strip. It reflects the existing setAgents() calls.
+  const debateTopline=document.querySelector('.debate-room-topline');
+  if(debateTopline && !$('udpProgressStrip')){
+    const strip=document.createElement('div');
+    strip.id='udpProgressStrip';strip.className='orchestration-progress';
+    ['History','Symptoms','Evidence','Triage','Tier Router'].forEach((label,i)=>{
+      const step=document.createElement('span');step.className='progress-step';step.dataset.step=String(i);step.textContent=String(i+1).padStart(2,'0')+' '+label;strip.appendChild(step);
+    });
+    debateTopline.insertAdjacentElement('afterend',strip);
+  }
+  function updateProgress(index,complete=false){
+    document.querySelectorAll('#udpProgressStrip .progress-step').forEach((el,i)=>{
+      el.classList.toggle('done',complete||i<index);
+      el.classList.toggle('current',!complete&&i===index);
+    });
+  }
+  if(typeof window.setAgents==='function'){
+    const originalSetAgents=window.setAgents;
+    window.setAgents=function(index,...args){
+      const result=originalSetAgents.call(this,index,...args);
+      updateProgress(Number(index)||0,false);
+      return result;
+    };
+  }
+  updateProgress(-1,false);
+
+  // File preview and drag/drop affordance. Existing orchestration still uploads via /documents.
+  const fileInput=$('agentEvidenceFile');
+  if(fileInput){
+    const zone=document.createElement('div');
+    zone.className='upload-dropzone';zone.tabIndex=0;
+    zone.innerHTML='<strong>Drop a report here or choose a file above</strong><span>Accepted: PDF, PNG, JPG, WEBP, TXT, CSV</span><div class="upload-file-meta" id="udpUploadPreview">No file selected</div><button type="button" class="upload-clear" id="udpClearUpload">Clear selection</button>';
+    fileInput.insertAdjacentElement('afterend',zone);
+    const preview=$('udpUploadPreview');
+    const showFile=file=>{
+      if(!preview)return;
+      if(!file){preview.textContent='No file selected';return}
+      const size=file.size<1024*1024?(file.size/1024).toFixed(1)+' KB':(file.size/1024/1024).toFixed(2)+' MB';
+      preview.textContent=file.name+' · '+size;
+    };
+    fileInput.addEventListener('change',()=>showFile(fileInput.files?.[0]));
+    zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('dragover')});
+    zone.addEventListener('dragleave',()=>zone.classList.remove('dragover'));
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();zone.classList.remove('dragover');
+      const file=e.dataTransfer?.files?.[0];if(!file)return;
+      const allowed=/\.(pdf|png|jpe?g|webp|txt|csv)$/i.test(file.name);
+      if(!allowed){if($('agentUploadMsg'))$('agentUploadMsg').textContent='Unsupported file type. Choose PDF, image, TXT or CSV.';return}
+      try{const transfer=new DataTransfer();transfer.items.add(file);fileInput.files=transfer.files;showFile(file)}
+      catch(_){if($('agentUploadMsg'))$('agentUploadMsg').textContent='Use the file chooser to select this file.'}
+    });
+    zone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fileInput.click()}});
+    $('udpClearUpload')?.addEventListener('click',()=>{fileInput.value='';showFile(null);if($('agentUploadMsg'))$('agentUploadMsg').textContent='File selection cleared.'});
+  }
+
+  // Refresh summary after the existing history action completes.
+  const historyButton=[...document.querySelectorAll('.quick-nav button')].find(b=>b.dataset.quick==='history');
+  historyButton?.addEventListener('click',()=>setTimeout(refreshOverview,900));
+})();
+</script>
+
+</body></html>
